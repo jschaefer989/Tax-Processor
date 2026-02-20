@@ -31,8 +31,8 @@ export default function NewYearButton(props: NewYearButtonProps) {
   }, [setError, setIsLoading, setNames, setNewYear, setYear, taxBehavior]);
 
   return (
-    <button onClick={onStartNewYear} disabled={isLoading}>
-      Start new year
+    <button className="new-year-button" onClick={onStartNewYear} disabled={isLoading}>
+      Start new year <span className="arrow">→</span>
     </button>
   );
 }

@@ -8,6 +8,7 @@ import NewYearPage from "./NewYearPage";
 import YearButton from "./YearButton";
 import BeginButton from "./BeginButton";
 import DatabaseConnectionForm from "./DatabaseConnectionForm";
+import type { ContextMenuProps } from "./ContextMenu";
 
 interface StartPageProps {
   readonly taxBehavior: TaxBehavior;
@@ -28,6 +29,7 @@ interface StartPageProps {
   >;
   readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuProps | undefined>>;
 }
 
 export default function StartPage(props: StartPageProps) {
@@ -46,6 +48,7 @@ export default function StartPage(props: StartPageProps) {
     setLastSavedTime,
     setNoDbConnection,
     setShowStartPage,
+    setContextMenu
   } = props;
 
   const [years, setYears] = useState<number[]>([]);
@@ -131,6 +134,7 @@ export default function StartPage(props: StartPageProps) {
             setNames={setNames}
             setIsLoading={setIsLoading}
             setError={setError}
+            setContextMenu={setContextMenu}
           />
         ))}
         <div className={`names-container ${year ? "visible" : ""}`}>

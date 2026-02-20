@@ -608,3 +608,54 @@ button:disabled {
     gap: 0.75rem;
   }
 }
+
+.new-year-button {
+  background: var(--accent-strong);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.new-year-button .arrow {
+  transition: transform 200ms ease;
+  display: inline-block;
+}
+
+.new-year-button:hover .arrow {
+  transform: translateX(4px);
+}
+
+.context-menu {
+  background: var(--panel);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  min-width: 160px;
+}
+
+.context-menu-option {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  transition: background 150ms ease;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.context-menu-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.context-menu-option:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.context-menu-icon {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}

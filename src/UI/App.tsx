@@ -8,6 +8,8 @@ import Header from "./Header";
 import MainForm from "./MainForm";
 import StartPage from "./StartPage";
 import Toast from "./Toast";
+import ContextMenu from "./ContextMenu";
+import type { ContextMenuProps } from "./ContextMenu";
 
 function App() {
   const taxBehavior = useMemo(() => new TaxBehavior(), []);
@@ -27,10 +29,13 @@ function App() {
   const [name, setName] = useState<string | undefined>(undefined);
   const [noDbConnection, setNoDbConnection] = useState<boolean>(false);
   const [showStartPage, setShowStartPage] = useState(true);
+  const [contextMenu, setContextMenu] = useState<ContextMenuProps | undefined>(undefined);
   //#endregion useState
 
   return (
     <div className="app">
+      {toastMessage && <Toast toastMessage={toastMessage} />}
+      {contextMenu && <ContextMenu {...contextMenu} />}
       {showStartPage ? (
         <StartPage
           taxBehavior={taxBehavior}
@@ -47,10 +52,10 @@ function App() {
           setNoDbConnection={setNoDbConnection}
           noDbConnection={noDbConnection}
           setShowStartPage={setShowStartPage}
+          setContextMenu={setContextMenu}
         />
       ) : (
         <>
-          {toastMessage && <Toast toastMessage={toastMessage} />}
           <Header
             currentStep={currentStep}
             isLoading={isLoading}
