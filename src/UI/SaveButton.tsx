@@ -44,7 +44,17 @@ export default function SaveButton(props: SaveButtonProps) {
       setToastMessage,
       setLastSavedTime,
     );
-  }, [year, currentStep]);
+  }, [
+    currentStep,
+    name,
+    responses,
+    setError,
+    setIsSaving,
+    setLastSavedTime,
+    setToastMessage,
+    taxBehavior,
+    year,
+  ]);
   //#endregion useCallback
 
   return (

@@ -25,11 +25,13 @@ function App() {
   );
   const [year, setYear] = useState<number | undefined>(undefined);
   const [name, setName] = useState<string | undefined>(undefined);
+  const [noDbConnection, setNoDbConnection] = useState<boolean>(false);
+  const [showStartPage, setShowStartPage] = useState(true);
   //#endregion useState
 
   return (
     <div className="app">
-      {year === undefined || name === undefined ? (
+      {showStartPage ? (
         <StartPage
           taxBehavior={taxBehavior}
           year={year}
@@ -42,6 +44,9 @@ function App() {
           setLastSavedTime={setLastSavedTime}
           setIsLoading={setIsLoading}
           setName={setName}
+          setNoDbConnection={setNoDbConnection}
+          noDbConnection={noDbConnection}
+          setShowStartPage={setShowStartPage}
         />
       ) : (
         <>
@@ -58,6 +63,7 @@ function App() {
             setLastSavedTime={setLastSavedTime}
             year={year}
             name={name}
+            noDbConnection={noDbConnection}
           />
 
           <main className="layout">

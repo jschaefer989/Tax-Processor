@@ -12,8 +12,15 @@ interface NewYearButtonProps {
 }
 
 export default function NewYearButton(props: NewYearButtonProps) {
-  const { taxBehavior, setNames, setError, setIsLoading, setYear, setNewYear, isLoading } =
-    props;
+  const {
+    taxBehavior,
+    setNames,
+    setError,
+    setIsLoading,
+    setYear,
+    setNewYear,
+    isLoading,
+  } = props;
 
   const onStartNewYear = useCallback(async () => {
     setIsLoading(true);
@@ -21,7 +28,7 @@ export default function NewYearButton(props: NewYearButtonProps) {
     setYear(new Date().getFullYear() - 1);
     setNewYear(true);
     setIsLoading(false);
-  }, []);
+  }, [setError, setIsLoading, setNames, setNewYear, setYear, taxBehavior]);
 
   return (
     <button onClick={onStartNewYear} disabled={isLoading}>

@@ -4,6 +4,7 @@ import type TaxResponse from "../DataModel/TaxResponse";
 import { Steps } from "../DataModel/TaxStep";
 import NameButton from "./NameButton";
 import HeaderTitle from "./HeaderTitle";
+import BeginButton from "./BeginButton";
 
 interface NewYearPageProps {
   readonly names: string[];
@@ -22,6 +23,8 @@ interface NewYearPageProps {
     React.SetStateAction<Date | undefined>
   >;
   readonly setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function NewYearPage(props: NewYearPageProps) {
@@ -38,6 +41,8 @@ export default function NewYearPage(props: NewYearPageProps) {
     setResponses,
     setLastSavedTime,
     setNewYear,
+    setNoDbConnection,
+    setShowStartPage,
   } = props;
 
   const [tempName, setTempName] = useState<string>("");
@@ -48,27 +53,6 @@ export default function NewYearPage(props: NewYearPageProps) {
     },
     [],
   );
-
-  const onStart = useCallback(async () => {
-    if (!tempName.trim()) {
-      return;
-    }
-    setError(undefined);
-    setIsLoading(true);
-    await taxBehavior.loadSteps(setCurrentStep, setError);
-    await taxBehavior.resumeProgress(
-      year,
-      tempName.trim(),
-      setCurrentStep,
-      setResponses,
-      setError,
-      setLastSavedTime,
-    );
-    setName(tempName.trim());
-    setNewYear(false);
-    setCurrentStep(Steps.Income);
-    setIsLoading(false);
-  }, [tempName, year]);
 
   return (
     <>
@@ -86,6 +70,7 @@ export default function NewYearPage(props: NewYearPageProps) {
           setError={setError}
           setResponses={setResponses}
           setLastSavedTime={setLastSavedTime}
+          setNoDbConnection={setNoDbConnection}
         />
       ))}
       <div className="new-taxpayer-form">
@@ -98,13 +83,21 @@ export default function NewYearPage(props: NewYearPageProps) {
             onChange={(event) => onInputNewName(event)}
           />
         </label>
-        <button
-          className="new-taxpayer-form-button"
-          onClick={onStart}
-          disabled={isLoading || tempName.trim() === ""}
-        >
-          Begin
-        </button>
+        <BeginButton
+          tempName={tempName}
+          year={year}
+          taxBehavior={taxBehavior}
+          isLoading={isLoading}
+          setError={setError}
+          setIsLoading={setIsLoading}
+          setCurrentStep={setCurrentStep}
+          setResponses={setResponses}
+          setLastSavedTime={setLastSavedTime}
+          setName={setName}
+          setNewYear={setNewYear}
+          setNoDbConnection={setNoDbConnection}
+          setShowStartPage={setShowStartPage}
+        />
       </div>
     </>
   );

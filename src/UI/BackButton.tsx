@@ -13,7 +13,7 @@ export default function BackButton(props: BackButtonProps) {
 
   const currentIndex = useMemo(
     () => taxBehavior.getStepIndex(currentStep),
-    [currentStep],
+    [currentStep, taxBehavior],
   );
 
   const handleBack = useCallback(() => {

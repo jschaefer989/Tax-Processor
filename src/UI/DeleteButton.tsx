@@ -1,9 +1,7 @@
 import { useCallback } from "react";
 import type { TaxBehavior } from "../DataModel/TaxBehavior";
-import type { Steps } from "../DataModel/TaxStep";
 
 interface ClearButtonProps {
-  readonly currentStep: Steps;
   readonly taxBehavior: TaxBehavior;
   readonly isSaving: boolean;
   readonly isDeleting: boolean;
@@ -21,7 +19,6 @@ interface ClearButtonProps {
 
 export default function DeleteButton(props: ClearButtonProps) {
   const {
-    currentStep,
     taxBehavior,
     isSaving,
     isDeleting,
@@ -42,7 +39,7 @@ export default function DeleteButton(props: ClearButtonProps) {
       taxBehavior.deleteProgress(year, name, setIsDeleting, setToastMessage);
       setLastSavedTime(undefined);
     }
-  }, [currentStep, year, name]);
+  }, [name, setIsDeleting, setLastSavedTime, setToastMessage, taxBehavior, year]);
   //#endregion useCallback
 
   return (

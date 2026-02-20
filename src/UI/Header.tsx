@@ -19,8 +19,9 @@ interface HeaderProps {
   readonly setLastSavedTime: React.Dispatch<
     React.SetStateAction<Date | undefined>
   >;
-  readonly year: number;
-  readonly name: string;
+  readonly year?: number;
+  readonly name?: string;
+  readonly noDbConnection: boolean;
 }
 
 export default function Header(props: HeaderProps) {
@@ -36,12 +37,13 @@ export default function Header(props: HeaderProps) {
     setLastSavedTime,
     year,
     name,
+    noDbConnection,
   } = props;
 
   return (
     <header>
       <div className="header-top">
-        <HeaderTitle year={year.toString()} name={name} />
+        <HeaderTitle year={year?.toString()} name={name} />
         <div className="data-buttons">
           <HeaderButtons
             currentStep={currentStep}
@@ -54,6 +56,7 @@ export default function Header(props: HeaderProps) {
             setLastSavedTime={setLastSavedTime}
             year={year}
             name={name}
+            noDbConnection={noDbConnection}
           />
         </div>
       </div>

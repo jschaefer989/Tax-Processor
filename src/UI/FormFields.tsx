@@ -26,7 +26,7 @@ export default function FormFields(props: FormFieldsProps) {
         return [...prev, new TaxResponse(fieldId, value)];
       }
     });
-  }, []);
+  }, [setResponses]);
   //#endregion useCallback
 
   return (

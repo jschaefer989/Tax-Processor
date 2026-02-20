@@ -1,11 +1,11 @@
 import { useCallback } from "react";
-import type TaxResponse from "../DataModel/TaxResponse";
-import type { Steps } from "../DataModel/TaxStep";
 import type { TaxBehavior } from "../DataModel/TaxBehavior";
+import { Steps } from "../DataModel/TaxStep";
+import type TaxResponse from "../DataModel/TaxResponse";
 
-interface NameButtonProps {
-  readonly year: number;
-  readonly name: string;
+interface BeginButtonProps {
+  readonly tempName?: string;
+  readonly year?: number;
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
   readonly setName: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -18,54 +18,72 @@ interface NameButtonProps {
   readonly setLastSavedTime: React.Dispatch<
     React.SetStateAction<Date | undefined>
   >;
+  readonly setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function NameButton(props: NameButtonProps) {
+export default function BeginButton(props: BeginButtonProps) {
   const {
-    year,
-    name,
-    taxBehavior,
+    tempName,
     isLoading,
-    setName,
+    setError,
     setIsLoading,
     setCurrentStep,
-    setError,
     setResponses,
     setLastSavedTime,
+    setName,
+    setNewYear,
     setNoDbConnection,
+    setShowStartPage,
+    taxBehavior,
+    year,
   } = props;
 
-  const onClick = useCallback(async () => {
+  const onStart = useCallback(async () => {
+    if (tempName?.trim() === "") {
+      return;
+    }
+    setError(undefined);
     setIsLoading(true);
     await taxBehavior.loadSteps(setCurrentStep, setError);
-    await taxBehavior.resumeProgress(
-      year,
-      name,
-      setCurrentStep,
-      setResponses,
-      setError,
-      setLastSavedTime,
-      setNoDbConnection,
-    );
-    setName(name);
+    if (year && tempName) {
+      await taxBehavior.resumeProgress(
+        year,
+        tempName.trim(),
+        setCurrentStep,
+        setResponses,
+        setError,
+        setLastSavedTime,
+        setNoDbConnection,
+      );
+    }
+    setName(tempName?.trim());
+    setNewYear(false);
+    setCurrentStep(Steps.Income);
     setIsLoading(false);
+    setShowStartPage(false);
   }, [
-    name,
     setCurrentStep,
     setError,
     setIsLoading,
     setLastSavedTime,
     setName,
+    setNewYear,
     setNoDbConnection,
     setResponses,
     taxBehavior,
+    tempName,
     year,
   ]);
 
   return (
-    <button onClick={onClick} disabled={isLoading}>
-      {name}
+    <button
+      className="new-taxpayer-form-button"
+      onClick={onStart}
+      disabled={isLoading || tempName?.trim() === ""}
+    >
+      Begin
     </button>
   );
 }

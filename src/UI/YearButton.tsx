@@ -27,7 +27,7 @@ export default function YearButton(props: YearButtonProps) {
     await taxBehavior.loadNames(year, setNames, setError);
     setYear(year);
     setIsLoading(false);
-  }, [year]);
+  }, [setError, setIsLoading, setNames, setYear, taxBehavior, year]);
 
   return (
     <button onClick={onClick} disabled={isLoading}>

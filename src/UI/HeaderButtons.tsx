@@ -18,8 +18,9 @@ interface HeaderButtonsProps {
   readonly setLastSavedTime: React.Dispatch<
     React.SetStateAction<Date | undefined>
   >;
-  readonly year: number;
-  readonly name: string
+  readonly year?: number;
+  readonly name?: string;
+  readonly noDbConnection: boolean;
 }
 
 export default function HeaderButtons(props: HeaderButtonsProps) {
@@ -33,13 +34,29 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
     lastSavedTime,
     setLastSavedTime,
     year,
-    name
+    name,
+    noDbConnection,
   } = props;
 
   //#region useState
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   //#endregion useState
+
+  if (noDbConnection) {
+    return (
+      <div className="last-save-text-wrapper">
+        <div className="last-save-text">
+          No database connection. Progress will not be saved.
+        </div>
+      </div>
+    );
+  }
+
+  if (!year || !name) {
+    setError("Year or name is missing. Cannot save progress.");
+    return null;
+  }
 
   return (
     <>
@@ -64,7 +81,6 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
             name={name}
           />
           <DeleteButton
-            currentStep={currentStep!}
             taxBehavior={taxBehavior}
             isSaving={isSaving}
             isDeleting={isDeleting}

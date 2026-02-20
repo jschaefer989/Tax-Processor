@@ -33,7 +33,7 @@ export default function MainForm(props: MainFormProps) {
       return undefined;
     }
     return taxBehavior.getStep(currentStep);
-  }, [currentStep]);
+  }, [currentStep, taxBehavior]);
   //#endregion useMemo
 
   if (isLoading) {

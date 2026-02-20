@@ -25,23 +25,42 @@ if (string.IsNullOrWhiteSpace(connectionString))
     connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 }
 
-if (string.IsNullOrEmpty(connectionString))
+var usingPostgres = false;
+
+if (!string.IsNullOrWhiteSpace(connectionString))
 {
-    Console.WriteLine("DATABASE_URL is not set. Provide a Postgres connection string.");
-    Environment.Exit(1);
+    connectionString = NormalizeConnectionString(connectionString!);
+
+    if (CanConnectToPostgres(connectionString))
+    {
+        usingPostgres = true;
+    }
+    else
+    {
+        Console.WriteLine("Postgres connection is configured but unreachable. Falling back to in-memory storage for local development.");
+    }
 }
 
-connectionString = NormalizeConnectionString(connectionString);
+if (usingPostgres)
+{
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-dataSourceBuilder.EnableDynamicJson();
-var dataSource = dataSourceBuilder.Build();
+    var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+    dataSourceBuilder.EnableDynamicJson();
+    var dataSource = dataSourceBuilder.Build();
 
-builder.Services.AddDbContext<TaxDbContext>(options =>
-    options
-    .UseNpgsql(dataSource)
-        .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
-);
+    builder.Services.AddDbContext<TaxDbContext>(options =>
+        options
+            .UseNpgsql(dataSource)
+            .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
+    );
+}
+else
+{
+    Console.WriteLine("DATABASE_URL is not set. Falling back to in-memory storage for local development.");
+    builder.Services.AddDbContext<TaxDbContext>(options =>
+        options.UseInMemoryDatabase("TaxProcessorLocal")
+    );
+}
 
 var app = builder.Build();
 
@@ -52,7 +71,10 @@ app.UseCors("AllowLocal");
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TaxDbContext>();
-    db.Database.Migrate();
+    if (usingPostgres)
+    {
+        db.Database.Migrate();
+    }
 }
 
 app.MapControllers();
@@ -155,4 +177,24 @@ static Dictionary<string, string> ParseQuery(string query)
     }
 
     return result;
+}
+
+static bool CanConnectToPostgres(string connectionString)
+{
+    try
+    {
+        var testBuilder = new NpgsqlConnectionStringBuilder(connectionString)
+        {
+            Timeout = 2,
+            CommandTimeout = 2
+        };
+
+        using var connection = new NpgsqlConnection(testBuilder.ConnectionString);
+        connection.Open();
+        return true;
+    }
+    catch
+    {
+        return false;
+    }
 }

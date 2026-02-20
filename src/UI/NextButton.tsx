@@ -13,7 +13,7 @@ export default function NextButton(props: NextButtonProps) {
 
   const currentIndex = useMemo(
     () => taxBehavior.getStepIndex(currentStep),
-    [currentStep],
+    [currentStep, taxBehavior],
   );
 
   const handleNext = useCallback(() => {

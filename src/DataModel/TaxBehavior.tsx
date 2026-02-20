@@ -19,6 +19,20 @@ export class TaxBehavior {
     return this.steps.findIndex((s) => s.step === step);
   }
 
+  async checkDatabaseConnection(
+    setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
+  ): Promise<boolean> {
+    try {
+      const response = await fetch("/api/progress/years");
+      const hasConnection = response.ok;
+      setNoDbConnection(!hasConnection);
+      return hasConnection;
+    } catch {
+      setNoDbConnection(true);
+      return false;
+    }
+  }
+
   async loadYears(
     setYears: (years: number[]) => void,
     setError: (error: string | undefined) => void,
@@ -100,10 +114,11 @@ export class TaxBehavior {
   async resumeProgress(
     year: number,
     name: string,
-    setCurrentStep: (step: Steps) => void,
-    setResponses: (responses: TaxResponse[]) => void,
-    setError: (error: string | undefined) => void,
-    setLastSavedTime: (time: Date | undefined) => void,
+    setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>,
+    setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>,
+    setError: React.Dispatch<React.SetStateAction<string | undefined>>,
+    setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>,
+    setNoDbConnection:  React.Dispatch<React.SetStateAction<boolean>>,
   ) {
     if (this.steps.length === 0) {
       return;
@@ -111,6 +126,10 @@ export class TaxBehavior {
     try {
       const response = await fetch(`/api/progress/${year}/${name}`);
       if (!response.ok) {
+        if (response.status === 500) {
+          setNoDbConnection(true);
+          return;
+        }
         if (response.status === 404) {
           return;
         }
@@ -191,7 +210,7 @@ export class TaxBehavior {
       }
       setToastMessage("Progress deleted.");
       setTimeout(() => setToastMessage(undefined), 3000);
-    } catch (err) {
+    } catch {
       setToastMessage("Failed to delete progress.");
     } finally {
       setIsDeleting(false);
