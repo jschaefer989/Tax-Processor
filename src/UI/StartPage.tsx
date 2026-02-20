@@ -7,6 +7,7 @@ import NewYearButton from "./NewYearButton";
 import NewYearPage from "./NewYearPage";
 import YearButton from "./YearButton";
 import BeginButton from "./BeginButton";
+import DatabaseConnectionForm from "./DatabaseConnectionForm";
 
 interface StartPageProps {
   readonly taxBehavior: TaxBehavior;
@@ -59,9 +60,8 @@ export default function StartPage(props: StartPageProps) {
     let isCancelled = false;
 
     const initialize = async () => {
-      const hasDbConnection = await taxBehavior.checkDatabaseConnection(
-        setNoDbConnection,
-      );
+      const hasDbConnection =
+        await taxBehavior.checkDatabaseConnection(setNoDbConnection);
 
       if (isCancelled) {
         return;
@@ -107,9 +107,13 @@ export default function StartPage(props: StartPageProps) {
       <p className="eyebrow">Tax Clarity</p>
       <h1>File with clarity, step by step.</h1>
       {noDbConnection ? (
-        <p className="subtitle">
-          No database connection. Progress will not be saved.
-        </p>
+        <DatabaseConnectionForm
+          taxBehavior={taxBehavior}
+          setYears={setYears}
+          setError={setError}
+          setNoDbConnection={setNoDbConnection}
+          isLoading={isLoading}
+        />
       ) : (
         <p className="subtitle">Pick a tax year to begin.</p>
       )}
@@ -143,7 +147,7 @@ export default function StartPage(props: StartPageProps) {
           />
         ))}
       {noDbConnection ? (
-        <BeginButton          
+        <BeginButton
           taxBehavior={taxBehavior}
           isLoading={isLoading}
           setError={setError}

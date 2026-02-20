@@ -23,12 +23,56 @@ export class TaxBehavior {
     setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
   ): Promise<boolean> {
     try {
-      const response = await fetch("/api/progress/years");
-      const hasConnection = response.ok;
-      setNoDbConnection(!hasConnection);
-      return hasConnection;
+      const response = await fetch("/api/health/db");
+      if (!response.ok) {
+        setNoDbConnection(true);
+        return false;
+      }
+
+      const data = (await response.json()) as { connected: boolean };
+      setNoDbConnection(!data.connected);
+      return data.connected;
     } catch {
       setNoDbConnection(true);
+      return false;
+    }
+  }
+
+  async testDatabaseConnection(
+    host: string,
+    port: number,
+    database: string,
+    username: string,
+    password: string,
+    setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
+    setError: React.Dispatch<React.SetStateAction<string | undefined>>,
+  ): Promise<boolean> {
+    try {
+      const response = await fetch("/api/health/db/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          host,
+          port,
+          database,
+          username,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json()) as { message?: string };
+        setNoDbConnection(true);
+        setError(data.message ?? "Unable to connect to database.");
+        return false;
+      }
+
+      setNoDbConnection(false);
+      setError(undefined);
+      return true;
+    } catch {
+      setNoDbConnection(true);
+      setError("Unable to connect to database.");
       return false;
     }
   }
