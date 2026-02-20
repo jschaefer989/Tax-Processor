@@ -63,16 +63,16 @@ export class TaxBehavior {
       if (!response.ok) {
         const data = (await response.json()) as { message?: string };
         setNoDbConnection(true);
-        setError(data.message ?? "Unable to connect to database.");
+        setError(data.message ?? "Unable to connect to database: " + response.statusText);
         return false;
       }
 
       setNoDbConnection(false);
       setError(undefined);
       return true;
-    } catch {
+    } catch (err) {
       setNoDbConnection(true);
-      setError("Unable to connect to database.");
+      setError(err instanceof Error ? err.message : "Unable to connect to database.");
       return false;
     }
   }

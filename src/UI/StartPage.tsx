@@ -110,7 +110,6 @@ export default function StartPage(props: StartPageProps) {
         <DatabaseConnectionForm
           taxBehavior={taxBehavior}
           setYears={setYears}
-          setError={setError}
           setNoDbConnection={setNoDbConnection}
           isLoading={isLoading}
         />

@@ -4,7 +4,6 @@ import type { TaxBehavior } from "../DataModel/TaxBehavior";
 interface DatabaseConnectionFormProps {
   readonly taxBehavior: TaxBehavior;
   readonly setYears: React.Dispatch<React.SetStateAction<number[]>>;
-  readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
   readonly isLoading: boolean;
 }
@@ -12,7 +11,7 @@ interface DatabaseConnectionFormProps {
 export default function DatabaseConnectionForm(
   props: DatabaseConnectionFormProps,
 ) {
-  const { taxBehavior, setYears, setError, setNoDbConnection, isLoading } =
+  const { taxBehavior, setYears, setNoDbConnection, isLoading } =
     props;
 
   // #region useState
@@ -21,6 +20,7 @@ export default function DatabaseConnectionForm(
   const [dbName, setDbName] = useState("");
   const [dbUsername, setDbUsername] = useState("");
   const [dbPassword, setDbPassword] = useState("");
+  const [error, setError] = useState<string | undefined>(undefined);
   // #endregion
 
   // #region useCallback
@@ -57,6 +57,7 @@ export default function DatabaseConnectionForm(
       <p className="subtitle">
         No database connection. Enter database details to test a connection.
       </p>
+      {error && <p className="error">{error}</p>}
       <div className="new-taxpayer-form">
         <label className="field">
           <span>Host</span>
