@@ -1,0 +1,50 @@
+:root {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #f4f0e6;
+  background-color: #0b111b;
+  --text: #f4f0e6;
+  --muted: rgba(244, 240, 230, 0.68);
+  --panel: rgba(18, 27, 40, 0.92);
+  --accent: #f6c65b;
+  --accent-strong: #f5a444;
+  --shadow: 0 25px 45px -35px rgba(3, 8, 20, 0.8);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #1b2b3a, transparent 50%),
+    radial-gradient(circle at 20% 10%, rgba(255, 214, 140, 0.2), transparent 55%),
+    linear-gradient(135deg, #0b111b, #101826 55%, #0a0f1a);
+  color: var(--text);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(255, 214, 140, 0.15), transparent 45%),
+    radial-gradient(circle at 15% 80%, rgba(103, 178, 255, 0.12), transparent 45%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#root {
+  min-height: 100vh;
+}

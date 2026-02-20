@@ -1,0 +1,83 @@
+import { useMemo, useState } from "react";
+import "../App.css";
+import { TaxBehavior } from "../DataModel/TaxBehavior";
+import TaxResponse from "../DataModel/TaxResponse";
+import { Steps } from "../DataModel/TaxStep";
+import FileSidebar from "./FileSidebar";
+import Header from "./Header";
+import MainForm from "./MainForm";
+import StartPage from "./StartPage";
+import Toast from "./Toast";
+
+function App() {
+  const taxBehavior = useMemo(() => new TaxBehavior(), []);
+
+  //#region useState
+  const [currentStep, setCurrentStep] = useState<Steps | undefined>(undefined);
+  const [responses, setResponses] = useState<TaxResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [lastSavedTime, setLastSavedTime] = useState<Date | undefined>(
+    undefined,
+  );
+  const [toastMessage, setToastMessage] = useState<string | undefined>(
+    undefined,
+  );
+  const [year, setYear] = useState<number | undefined>(undefined);
+  const [name, setName] = useState<string | undefined>(undefined);
+  //#endregion useState
+
+  return (
+    <div className="app">
+      {year === undefined || name === undefined ? (
+        <StartPage
+          taxBehavior={taxBehavior}
+          year={year}
+          name={name}
+          isLoading={isLoading}
+          setYear={setYear}
+          setCurrentStep={setCurrentStep}
+          setError={setError}
+          setResponses={setResponses}
+          setLastSavedTime={setLastSavedTime}
+          setIsLoading={setIsLoading}
+          setName={setName}
+        />
+      ) : (
+        <>
+          {toastMessage && <Toast toastMessage={toastMessage} />}
+          <Header
+            currentStep={currentStep}
+            isLoading={isLoading}
+            setCurrentStep={setCurrentStep}
+            taxBehavior={taxBehavior}
+            responses={responses}
+            setError={setError}
+            setToastMessage={setToastMessage}
+            lastSavedTime={lastSavedTime}
+            setLastSavedTime={setLastSavedTime}
+            year={year}
+            name={name}
+          />
+
+          <main className="layout">
+            <section className="panel">
+              <MainForm
+                currentStep={currentStep}
+                responses={responses}
+                isLoading={isLoading}
+                error={error}
+                taxBehavior={taxBehavior}
+                setCurrentStep={setCurrentStep}
+                setResponses={setResponses}
+              />
+            </section>
+            <FileSidebar />
+          </main>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default App;
