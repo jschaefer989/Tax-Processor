@@ -71,6 +71,7 @@ export default function NewYearPage(props: NewYearPageProps) {
           setResponses={setResponses}
           setLastSavedTime={setLastSavedTime}
           setNoDbConnection={setNoDbConnection}
+          setShowStartPage={setShowStartPage}
         />
       ))}
       <div className="new-taxpayer-form">

@@ -4,7 +4,7 @@ import type { Steps } from "../DataModel/TaxStep";
 import type { TaxBehavior } from "../DataModel/TaxBehavior";
 
 interface NameButtonProps {
-  readonly year: number;
+  readonly year?: number;
   readonly name: string;
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
@@ -19,6 +19,7 @@ interface NameButtonProps {
     React.SetStateAction<Date | undefined>
   >;
   readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function NameButton(props: NameButtonProps) {
@@ -34,22 +35,26 @@ export default function NameButton(props: NameButtonProps) {
     setResponses,
     setLastSavedTime,
     setNoDbConnection,
+    setShowStartPage,
   } = props;
 
   const onClick = useCallback(async () => {
     setIsLoading(true);
     await taxBehavior.loadSteps(setCurrentStep, setError);
-    await taxBehavior.resumeProgress(
-      year,
-      name,
-      setCurrentStep,
-      setResponses,
-      setError,
-      setLastSavedTime,
-      setNoDbConnection,
-    );
+    if (year) {
+      await taxBehavior.resumeProgress(
+        year,
+        name,
+        setCurrentStep,
+        setResponses,
+        setError,
+        setLastSavedTime,
+        setNoDbConnection,
+      );
+    }
     setName(name);
     setIsLoading(false);
+    setShowStartPage(false);
   }, [
     name,
     setCurrentStep,

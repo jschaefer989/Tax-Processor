@@ -68,10 +68,11 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
   min-height: 60vh;
   gap: 1.5rem;
+  margin-top: 20vh;
 }
 
 .start-page h1 {
@@ -85,6 +86,17 @@ header {
 
 .start-page .subtitle {
   margin: 0 auto;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-card {
@@ -310,6 +322,62 @@ header {
   gap: 1.75rem;
 }
 
+.panel.years-container {
+  width: 150px;
+  transition: max-height 2s;
+  max-height:  100px;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.names-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.names-container.visible {
+  opacity: 1;
+}
+
+.names-container > * {  
+  pointer-events: none;
+}
+
+.names-container.visible > * {
+  animation: fadeInSlide 500ms ease-out both;
+  pointer-events: auto;
+}
+
+.names-container.visible > *:nth-child(1) {
+  animation-delay: 150ms;
+}
+
+.names-container.visible > *:nth-child(2) {
+  animation-delay: 250ms;
+}
+
+.names-container.visible > *:nth-child(3) {
+  animation-delay: 350ms;
+}
+
+.names-container.visible > *:nth-child(n+4) {
+  animation-delay: 450ms;
+}
+
 .panel__header {
   display: flex;
   justify-content: space-between;
@@ -388,6 +456,13 @@ button:disabled {
   opacity: 0.6;
   transform: none;
   box-shadow: none;
+}
+
+.year-button.selected {
+  background: #b8860b;
+  color: #ffffff;
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.3), 0 18px 30px -20px rgba(184, 134, 11, 0.7);
 }
 
 .ghost {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import type { TaxBehavior } from "../DataModel/TaxBehavior";
 import type TaxResponse from "../DataModel/TaxResponse";
 import type { Steps } from "../DataModel/TaxStep";
@@ -116,35 +116,43 @@ export default function StartPage(props: StartPageProps) {
       ) : (
         <p className="subtitle">Pick a tax year to begin.</p>
       )}
-      {years?.map((year) => (
-        <YearButton
-          key={year}
-          year={year}
-          taxBehavior={taxBehavior}
-          isLoading={isLoading}
-          setYear={setYear}
-          setNames={setNames}
-          setIsLoading={setIsLoading}
-          setError={setError}
-        />
-      ))}
-      {year &&
-        names?.map((name) => (
-          <NameButton
-            key={name}
-            year={year}
-            name={name}
+      <div
+        className="panel years-container"
+        style={{ maxHeight: year ? "1000px" : "100px" }}
+      >
+        {years?.map((otherYear) => (
+          <YearButton
+            key={otherYear}
+            year={otherYear}
+            selectedYear={year}
             taxBehavior={taxBehavior}
             isLoading={isLoading}
-            setName={setName}
+            setYear={setYear}
+            setNames={setNames}
             setIsLoading={setIsLoading}
-            setCurrentStep={setCurrentStep}
             setError={setError}
-            setResponses={setResponses}
-            setLastSavedTime={setLastSavedTime}
-            setNoDbConnection={setNoDbConnection}
           />
         ))}
+        <div className={`names-container ${year ? "visible" : ""}`}>
+          {names?.map((name) => (
+            <NameButton
+              key={name}
+              year={year}
+              name={name}
+              taxBehavior={taxBehavior}
+              isLoading={isLoading}
+              setName={setName}
+              setIsLoading={setIsLoading}
+              setCurrentStep={setCurrentStep}
+              setError={setError}
+              setResponses={setResponses}
+              setLastSavedTime={setLastSavedTime}
+              setNoDbConnection={setNoDbConnection}
+              setShowStartPage={setShowStartPage}
+            />
+          ))}
+        </div>
+      </div>
       {noDbConnection ? (
         <BeginButton
           taxBehavior={taxBehavior}
