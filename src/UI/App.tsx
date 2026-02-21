@@ -6,7 +6,7 @@ import { Steps } from "../DataModel/TaxStep";
 import FileSidebar from "./FileSidebar";
 import Header from "./Header";
 import MainForm from "./MainForm";
-import StartPage from "./StartPage";
+import StartPage from "./StartPage/StartPage";
 import Toast from "./Toast";
 import ContextMenu from "./ContextMenu";
 import type { ContextMenuProps } from "./ContextMenu";
@@ -39,16 +39,16 @@ function App() {
       {showStartPage ? (
         <StartPage
           taxBehavior={taxBehavior}
-          year={year}
-          name={name}
+          selectedYear={year}
+          selectedName={name}
           isLoading={isLoading}
-          setYear={setYear}
+          setSelectedYear={setYear}
           setCurrentStep={setCurrentStep}
           setError={setError}
           setResponses={setResponses}
           setLastSavedTime={setLastSavedTime}
           setIsLoading={setIsLoading}
-          setName={setName}
+          setSelectedName={setName}
           setNoDbConnection={setNoDbConnection}
           noDbConnection={noDbConnection}
           setShowStartPage={setShowStartPage}

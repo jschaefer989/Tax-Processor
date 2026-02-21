@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
-import type { TaxBehavior } from "../DataModel/TaxBehavior";
-import type TaxResponse from "../DataModel/TaxResponse";
-import { Steps } from "../DataModel/TaxStep";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type TaxResponse from "../../DataModel/TaxResponse";
+import { Steps } from "../../DataModel/TaxStep";
 import NameButton from "./NameButton";
-import HeaderTitle from "./HeaderTitle";
+import HeaderTitle from "../HeaderTitle";
 import BeginButton from "./BeginButton";
 
 interface NewYearPageProps {
@@ -12,7 +12,7 @@ interface NewYearPageProps {
   readonly name: string | undefined;
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
-  readonly setName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly setSelectedName: React.Dispatch<React.SetStateAction<string | undefined>>;
   readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setCurrentStep: React.Dispatch<
     React.SetStateAction<Steps | undefined>
@@ -34,7 +34,7 @@ export default function NewYearPage(props: NewYearPageProps) {
     taxBehavior,
     isLoading,
     name,
-    setName,
+    setSelectedName,
     setIsLoading,
     setCurrentStep,
     setError,
@@ -64,7 +64,7 @@ export default function NewYearPage(props: NewYearPageProps) {
           year={year}
           taxBehavior={taxBehavior}
           isLoading={isLoading}
-          setName={setName}
+          setSelectedName={setSelectedName}
           setIsLoading={setIsLoading}
           setCurrentStep={setCurrentStep}
           setError={setError}
@@ -94,7 +94,7 @@ export default function NewYearPage(props: NewYearPageProps) {
           setCurrentStep={setCurrentStep}
           setResponses={setResponses}
           setLastSavedTime={setLastSavedTime}
-          setName={setName}
+          setSelectedName={setSelectedName}
           setNewYear={setNewYear}
           setNoDbConnection={setNoDbConnection}
           setShowStartPage={setShowStartPage}

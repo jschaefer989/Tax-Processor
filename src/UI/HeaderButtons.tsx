@@ -46,7 +46,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
   if (noDbConnection) {
     return (
       <div className="last-save-text-wrapper">
-        <div className="last-save-text">
+        <div className="last-save-text subtitle-chip subtitle-chip--error-soft">
           No database connection. Progress will not be saved.
         </div>
       </div>

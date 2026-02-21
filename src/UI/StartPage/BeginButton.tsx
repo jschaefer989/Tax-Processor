@@ -1,14 +1,14 @@
 import { useCallback } from "react";
-import type TaxResponse from "../DataModel/TaxResponse";
-import type { Steps } from "../DataModel/TaxStep";
-import type { TaxBehavior } from "../DataModel/TaxBehavior";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import { Steps } from "../../DataModel/TaxStep";
+import type TaxResponse from "../../DataModel/TaxResponse";
 
-interface NameButtonProps {
+interface BeginButtonProps {
+  readonly tempName?: string;
   readonly year?: number;
-  readonly name: string;
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
-  readonly setName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly setSelectedName: React.Dispatch<React.SetStateAction<string | undefined>>;
   readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setCurrentStep: React.Dispatch<
     React.SetStateAction<Steps | undefined>
@@ -18,33 +18,39 @@ interface NameButtonProps {
   readonly setLastSavedTime: React.Dispatch<
     React.SetStateAction<Date | undefined>
   >;
+  readonly setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function NameButton(props: NameButtonProps) {
+export default function BeginButton(props: BeginButtonProps) {
   const {
-    year,
-    name,
-    taxBehavior,
+    tempName,
     isLoading,
-    setName,
+    setError,
     setIsLoading,
     setCurrentStep,
-    setError,
     setResponses,
     setLastSavedTime,
+    setSelectedName,
+    setNewYear,
     setNoDbConnection,
     setShowStartPage,
+    taxBehavior,
+    year,
   } = props;
 
-  const onClick = useCallback(async () => {
+  const onStart = useCallback(async () => {
+    if (tempName?.trim() === "") {
+      return;
+    }
+    setError(undefined);
     setIsLoading(true);
     await taxBehavior.loadSteps(setCurrentStep, setError);
-    if (year) {
+    if (year && tempName) {
       await taxBehavior.resumeProgress(
         year,
-        name,
+        tempName.trim(),
         setCurrentStep,
         setResponses,
         setError,
@@ -52,25 +58,32 @@ export default function NameButton(props: NameButtonProps) {
         setNoDbConnection,
       );
     }
-    setName(name);
+    setSelectedName(tempName?.trim());
+    setNewYear(false);
+    setCurrentStep(Steps.Income);
     setIsLoading(false);
     setShowStartPage(false);
   }, [
-    name,
     setCurrentStep,
     setError,
     setIsLoading,
     setLastSavedTime,
-    setName,
+    setSelectedName,
+    setNewYear,
     setNoDbConnection,
     setResponses,
     taxBehavior,
+    tempName,
     year,
   ]);
 
   return (
-    <button onClick={onClick} disabled={isLoading}>
-      {name}
+    <button
+      className="new-taxpayer-form-button"
+      onClick={onStart}
+      disabled={isLoading || tempName?.trim() === ""}
+    >
+      Begin
     </button>
   );
 }

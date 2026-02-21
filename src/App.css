@@ -64,6 +64,23 @@ header {
   margin: 0;
 }
 
+.subtitle-chip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.subtitle-chip--error-soft {
+  color: #f3c9c9;
+  background: rgba(255, 130, 130, 0.12);
+  border: 1px solid rgba(255, 130, 130, 0.25);
+}
+
 .start-page {
   display: flex;
   flex-direction: column;
@@ -378,6 +395,120 @@ header {
   animation-delay: 450ms;
 }
 
+.db-connection-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.db-connection-toggle .arrow {
+  display: inline-block;
+  font-size: 1.2em;
+  line-height: 1;
+  transition: transform 220ms ease;
+}
+
+.expansion-arrow {
+  font-size: 1.5em;
+  transform-origin: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  line-height: 1;
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.db-connection-toggle[aria-expanded="true"] .expansion-arrow {
+  transform: rotate(180deg);
+}
+
+.db-connection-panel {
+  width: 100%;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 600ms ease;
+}
+
+.db-connection-panel.visible {
+  max-height: 1000px;
+}
+
+.new-taxpayer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 400px;
+  margin: 1rem auto 0;
+  padding: 2.5rem;
+  background: var(--panel);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.db-connection-form {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+.db-connection-form.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.db-connection-form > * {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+.db-connection-form.visible > * {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.db-connection-form.visible > *:nth-child(1) {
+  transition-delay: 130ms;
+}
+
+.db-connection-form.visible > *:nth-child(2) {
+  transition-delay: 190ms;
+}
+
+.db-connection-form.visible > *:nth-child(3) {
+  transition-delay: 250ms;
+}
+
+.db-connection-form.visible > *:nth-child(4) {
+  transition-delay: 310ms;
+}
+
+.db-connection-form.visible > *:nth-child(5) {
+  transition-delay: 370ms;
+}
+
+.db-connection-form.visible > *:nth-child(n+6) {
+  transition-delay: 430ms;
+}
+
+.new-taxpayer-form .field {
+  margin: 0;
+  gap: 0.75rem;
+}
+
+.new-taxpayer-form-button {
+  width: fit-content;
+  margin-top: 1rem;
+  background: var(--accent-strong);
+  font-size: x-large;
+  color: var(--text);
+  text-shadow: 0 1px 2px #283241;
+}
+
 .panel__header {
   display: flex;
   justify-content: space-between;
@@ -552,28 +683,6 @@ button:disabled {
     font-size: 0.75rem;
     padding: 0 0.25rem;
   }
-
-.new-taxpayer-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-width: 400px;
-  margin: 3rem auto 0;
-  padding: 2.5rem;
-  background: var(--panel);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.new-taxpayer-form .field {
-  margin: 0;
-  gap: 0.75rem;
-}
-
-.new-taxpayer-form-button {
-  width: 100%;
-  margin-top: 1rem;
-}
 
   .stepper-circle {
     width: 50px;
