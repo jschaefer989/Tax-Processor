@@ -1,36 +1,38 @@
 import { useMemo, useCallback } from "react";
-import type TaxField from "../DataModel/TaxField";
-import type TaxResponse from "../DataModel/TaxResponse";
+import type TaxField from "../../DataModel/TaxField";
+import type TaxResponse from "../../DataModel/TaxResponse";
+import type { TaxForm, TaxFieldLabel } from "../../DataModel/TaxResponse";
 
 interface EntryFieldComponentProps {
   field: TaxField;
+  line: number;
   responses: TaxResponse[];
-  onResponseChange: (fieldId: string, value: string) => void;
+  onResponseChange: (form: TaxForm, label: TaxFieldLabel, line: number, value: string) => void;
 }
 
 export default function EntryField(props: EntryFieldComponentProps) {
-  const { field, responses, onResponseChange } = props;
+  const { field, line, responses, onResponseChange } = props;
 
   //#region useMemo
   const value = useMemo(
-    () => responses.find((r) => r.id === field.id)?.value,
-    [responses, field.id],
+    () => responses.find((r) => r.form === field.form && r.label === field.taxFieldLabel && r.line === line)?.value,
+    [responses, field.form, field.taxFieldLabel, line],
   );
   //#endregion useMemo
 
   //#region useCallback
   const handleResponseChange = useCallback(
     (value: string) => {
-      onResponseChange(field.id, value);
+      onResponseChange(field.form, field.taxFieldLabel, line, value);
     },
-    [field.id, onResponseChange],
+    [field.form, field.taxFieldLabel, line, onResponseChange],
   );
   //#endregion useCallback
 
   if (field.type === "select") {
     return (
       <select
-        id={field.id}
+        id={field.taxFieldLabel}
         value={value}
         onChange={(event) => handleResponseChange(event.target.value)}
       >
@@ -50,7 +52,7 @@ export default function EntryField(props: EntryFieldComponentProps) {
       : field.type;
   return (
     <input
-      id={field.id}
+      id={field.taxFieldLabel}
       type={inputType}
       inputMode={field.type === "currency" ? "decimal" : undefined}
       step={field.type === "currency" ? "0.01" : undefined}

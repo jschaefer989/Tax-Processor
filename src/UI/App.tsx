@@ -3,13 +3,13 @@ import "../App.css";
 import { TaxBehavior } from "../DataModel/TaxBehavior";
 import TaxResponse from "../DataModel/TaxResponse";
 import { Steps } from "../DataModel/TaxStep";
-import FileSidebar from "./FileSidebar";
-import Header from "./Header";
-import MainForm from "./MainForm";
+import FileSidebar from "./Sidebar/FileSidebar";
+import MainAppHeader from "./MainAppHeader";
+import MainForm from "./Form/MainForm";
 import StartPage from "./StartPage/StartPage";
-import Toast from "./Toast";
-import ContextMenu from "./ContextMenu";
-import type { ContextMenuProps } from "./ContextMenu";
+import Toast from "./General/Toast";
+import ContextMenu from "./General/ContextMenu";
+import type { ContextMenuProps } from "./General/ContextMenu";
 
 function App() {
   const taxBehavior = useMemo(() => new TaxBehavior(), []);
@@ -17,6 +17,7 @@ function App() {
   //#region useState
   const [currentStep, setCurrentStep] = useState<Steps | undefined>(undefined);
   const [responses, setResponses] = useState<TaxResponse[]>([]);
+  // TODO: varify that this and setIsSaving and setIsDeleting are used correctly and consistently across the app
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [lastSavedTime, setLastSavedTime] = useState<Date | undefined>(
@@ -29,7 +30,10 @@ function App() {
   const [name, setName] = useState<string | undefined>(undefined);
   const [noDbConnection, setNoDbConnection] = useState<boolean>(false);
   const [showStartPage, setShowStartPage] = useState(true);
-  const [contextMenu, setContextMenu] = useState<ContextMenuProps | undefined>(undefined);
+  const [contextMenu, setContextMenu] = useState<ContextMenuProps | undefined>(
+    undefined,
+  );
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   //#endregion useState
 
   return (
@@ -56,7 +60,7 @@ function App() {
         />
       ) : (
         <>
-          <Header
+          <MainAppHeader
             currentStep={currentStep}
             isLoading={isLoading}
             setCurrentStep={setCurrentStep}
@@ -71,7 +75,9 @@ function App() {
             noDbConnection={noDbConnection}
           />
 
-          <main className="layout">
+          <main
+            className={`layout ${!sidebarExpanded ? "sidebar-collapsed" : ""}`}
+          >
             <section className="panel">
               <MainForm
                 currentStep={currentStep}
@@ -81,9 +87,18 @@ function App() {
                 taxBehavior={taxBehavior}
                 setCurrentStep={setCurrentStep}
                 setResponses={setResponses}
+                setError={setError}
+                setIsLoading={setIsLoading}
               />
             </section>
-            <FileSidebar />
+
+            <div className="sidebar-column">
+              <FileSidebar
+                responses={responses}
+                isExpanded={sidebarExpanded}
+                setIsExpanded={setSidebarExpanded}
+              />
+            </div>
           </main>
         </>
       )}

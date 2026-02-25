@@ -1,3 +1,4 @@
+import type { TaxFieldLabel, TaxForm } from "./TaxResponse";
 
 enum TaxFieldType {
   Text = "text",
@@ -13,19 +14,22 @@ interface ConstructionOptions {
 }
 
 export default class TaxField {
-  id: string;
+  form: TaxForm;
+  taxFieldLabel: TaxFieldLabel;
   label: string;
   type: TaxFieldType;
   helperText?: string;
   selectionOptions?: string[];
 
   constructor(
-    id: string,
+    form: TaxForm,
+    taxFieldLabel: TaxFieldLabel,
     label: string,
     type: TaxFieldType,
     constructionOptions?: ConstructionOptions,
   ) {
-    this.id = id;
+    this.form = form;
+    this.taxFieldLabel = taxFieldLabel;
     this.label = label;
     this.type = type;
     this.helperText = constructionOptions?.helperText;

@@ -1,7 +1,7 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
-import type { ContextMenuProps } from "../ContextMenu";
+import type { ContextMenuProps } from "../General/ContextMenu";
 import NameButton from "./NameButton";
 import NewYearButton from "./NewYearButton";
 import YearButton from "./YearButton";

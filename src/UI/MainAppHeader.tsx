@@ -24,7 +24,7 @@ interface HeaderProps {
   readonly noDbConnection: boolean;
 }
 
-export default function Header(props: HeaderProps) {
+export default function MainAppHeader(props: HeaderProps) {
   const {
     currentStep,
     isLoading,

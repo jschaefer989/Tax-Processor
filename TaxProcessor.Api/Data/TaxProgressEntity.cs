@@ -15,5 +15,5 @@ public class TaxProgressEntity
 
     public string? CurrentStepId { get; set; }
 
-    public TaxResponse[] Responses { get; set; } = Array.Empty<TaxResponse>();
+    public ICollection<TaxResponseEntity> Responses { get; set; } = new List<TaxResponseEntity>();
 }

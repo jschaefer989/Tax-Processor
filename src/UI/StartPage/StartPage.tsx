@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
-import type { ContextMenuProps } from "../ContextMenu";
+import type { ContextMenuProps } from "../General/ContextMenu";
 import MissingDatabaseControls from "./MissingDatabaseControls";
 import NewYearPage from "./NewYearPage";
 import YearSelectionControls from "./YearSelectionControls";
@@ -59,6 +59,7 @@ export default function StartPage(props: StartPageProps) {
       return;
     }
 
+    setIsLoading(true);
     let isCancelled = false;
 
     const initialize = async () => {
@@ -66,20 +67,24 @@ export default function StartPage(props: StartPageProps) {
         await taxBehavior.checkDatabaseConnection(setNoDbConnection);
 
       if (isCancelled) {
+        setIsLoading(false);
         return;
       }
 
       if (!hasDbConnection) {
+        setIsLoading(false);
         return;
       }
 
       taxBehavior.loadYears(setYears, setError);
+      setIsLoading(false);
     };
 
     initialize();
 
     return () => {
       isCancelled = true;
+      setIsLoading(false);
     };
   }, [setError, setNoDbConnection, taxBehavior, selectedYear]);
 

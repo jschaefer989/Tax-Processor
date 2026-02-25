@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using TaxProcessor.Api.Models;
 
 namespace TaxProcessor.Api.Data;
 
@@ -12,20 +10,18 @@ public class TaxDbContext : DbContext
 
     public DbSet<TaxProgressEntity> TaxProgress { get; set; } = null!;
 
+    public DbSet<TaxResponseEntity> TaxResponse { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        // Configure foreign key relationship
         modelBuilder
-            .Entity<TaxProgressEntity>()
-            .Property(p => p.Responses)
-            .HasColumnType("jsonb")
-            .Metadata.SetValueComparer(new ValueComparer<TaxResponse[]>(
-                (left, right) => (left ?? Array.Empty<TaxResponse>())
-                    .OrderBy(r => r.Id).SequenceEqual((right ?? Array.Empty<TaxResponse>()).OrderBy(r => r.Id)),
-                value => value.OrderBy(r => r.Id)
-                    .Aggregate(0, (hash, r) => HashCode.Combine(hash, r.Id, r.Value)),
-                value => value.OrderBy(r => r.Id).ToArray()
-            ));
+            .Entity<TaxResponseEntity>()
+            .HasOne<TaxProgressEntity>()
+            .WithMany(p => p.Responses)
+            .HasForeignKey(r => new { r.Year, r.Name })
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

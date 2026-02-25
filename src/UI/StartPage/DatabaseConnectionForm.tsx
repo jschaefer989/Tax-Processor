@@ -121,7 +121,6 @@ export default function DatabaseConnectionForm(
             />
           </label>
           <button
-            className="new-taxpayer-form-button"
             style={{ marginTop: "0.75rem" }}
             type="button"
             onClick={onConnectDatabase}

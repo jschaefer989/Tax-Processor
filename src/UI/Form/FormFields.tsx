@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import TaxResponse from "../DataModel/TaxResponse";
-import type { TaxStep } from "../DataModel/TaxStep";
+import TaxResponse, { TaxFieldLabel, TaxForm } from "../../DataModel/TaxResponse";
+import type { TaxStep } from "../../DataModel/TaxStep";
 import EntryField from "./EntryField";
 
 interface FormFieldsProps {
@@ -13,17 +13,17 @@ export default function FormFields(props: FormFieldsProps) {
   const { step, responses, setResponses } = props;
 
   //#region useCallback
-  const handleResponseChange = useCallback((fieldId: string, value: string) => {
+  const handleResponseChange = useCallback((form: TaxForm, label: TaxFieldLabel, line: number, value: string) => {
     setResponses((prev) => {
-      const existingIndex = prev.findIndex((r) => r.id === fieldId);
+      const existingIndex = prev.findIndex((r) => r.form === form && r.label === label && r.line === line);
       if (existingIndex !== -1) {
         // Update existing response
         const updated = [...prev];
-        updated[existingIndex] = new TaxResponse(fieldId, value);
+        updated[existingIndex] = new TaxResponse(form, label, line, value);
         return updated;
       } else {
         // Add new response
-        return [...prev, new TaxResponse(fieldId, value)];
+        return [...prev, new TaxResponse(form, label, line, value)];
       }
     });
   }, [setResponses]);
@@ -32,9 +32,10 @@ export default function FormFields(props: FormFieldsProps) {
   return (
     <div className="fields">
       {step.fields.map((field) => (
-        <label key={field.id} className="field">
+        <label key={field.taxFieldLabel} className="field">
           <span>{field.label}</span>
           <EntryField
+            line={0} // Replace with the actual line number if available
             field={field}
             responses={responses}
             onResponseChange={handleResponseChange}

@@ -14,36 +14,6 @@ public class StepsController : ControllerBase
         {
             new()
             {
-                Step = "filing-status",
-                Title = "Filing status",
-                Description = "Choose the filing status that matches your household situation.",
-                Fields = new()
-                {
-                    new()
-                    {
-                        Id = "filingStatus",
-                        Label = "Filing status",
-                        Type = TaxFieldType.Select,
-                        SelectionOptions = new()
-                        {
-                            "Single",
-                            "Married filing jointly",
-                            "Married filing separately",
-                            "Head of household",
-                            "Qualifying surviving spouse",
-                        },
-                    },
-                    new()
-                    {
-                        Id = "residencyState",
-                        Label = "State of residence",
-                        Type = TaxFieldType.Text,
-                        HelperText = "Used for state-level guidance and credits.",
-                    },
-                },
-            },
-            new()
-            {
                 Step = "income",
                 Title = "Income overview",
                 Description = "Enter high-level income details to determine required forms.",
@@ -51,70 +21,20 @@ public class StepsController : ControllerBase
                 {
                     new()
                     {
-                        Id = "w2Income",
+                        Form = TaxForm.Form1040.ToString(),
+                        TaxFieldLabel = TaxFieldLabel.oneA.ToString(),
                         Label = "W-2 wages (total)",
-                        Type = TaxFieldType.Currency,
+                        Type = TaxFieldType.Currency.ToString(),
                         HelperText = "Use the total from all W-2s before taxes.",
                     },
-                    new()
-                    {
-                        Id = "selfEmployment",
-                        Label = "Self-employment income",
-                        Type = TaxFieldType.Currency,
-                    },
-                    new()
-                    {
-                        Id = "interestIncome",
-                        Label = "Interest income",
-                        Type = TaxFieldType.Currency,
-                    },
                 },
-            },
-            new()
-            {
-                Step = "deductions",
-                Title = "Deductions and credits",
-                Description = "Share common deductions to estimate taxable income.",
-                Fields = new()
+                Files = new()
                 {
                     new()
                     {
-                        Id = "studentLoanInterest",
-                        Label = "Student loan interest paid",
-                        Type = TaxFieldType.Currency,
-                    },
-                    new()
-                    {
-                        Id = "mortgageInterest",
-                        Label = "Mortgage interest paid",
-                        Type = TaxFieldType.Currency,
-                    },
-                    new()
-                    {
-                        Id = "charitableGifts",
-                        Label = "Charitable donations",
-                        Type = TaxFieldType.Currency,
-                    },
-                },
-            },
-            new()
-            {
-                Step = "review",
-                Title = "Review and next steps",
-                Description = "We will summarize your answers and prepare a filing checklist.",
-                Fields = new()
-                {
-                    new()
-                    {
-                        Id = "preferredContact",
-                        Label = "Preferred contact email",
-                        Type = TaxFieldType.Text,
-                    },
-                    new()
-                    {
-                        Id = "filingDate",
-                        Label = "Target filing date",
-                        Type = TaxFieldType.Date,
+                        FromForm = ReadableForm.Form1099.ToString(),
+                        ToForm = TaxForm.Form1040.ToString(),
+                        Label = "1099 Form(s)",
                     },
                 },
             },
@@ -122,4 +42,26 @@ public class StepsController : ControllerBase
 
         return Ok(new { steps });
     }
+
+    [HttpPost("file")]
+    public async Task<ActionResult<TaxResponse[]>> ProcessFile([FromForm] UploadFileRequest request)
+    {
+        if (Enum.TryParse(request.Form, out ReadableForm form))
+        {
+            var result = await new FileProcessor().ProcessFile(request.File, form);
+            if (result.Success)
+            {
+                return Ok(result.Responses);
+            }
+            else
+            {
+                return BadRequest(new { message = result.ErrorMessage });
+            }
+        }
+        else
+        {
+            return BadRequest(new { message = "Invalid form type." });
+        }
+    }
+
 }

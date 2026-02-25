@@ -1,0 +1,156 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 200ms ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: #1a1f2e;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  width: 90%;
+  max-width: 500px;
+  animation: slideUp 300ms ease-out;
+  border: 1px solid #2a3142;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #2a3142;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #e8d4a8;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #8b8b8b;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 200ms, color 200ms;
+}
+
+.modal-close:hover {
+  background-color: #2a3142;
+  color: #e8d4a8;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.file-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-input-group label {
+  font-weight: 500;
+  color: #d4d4d4;
+}
+
+.file-input-group input[type="file"] {
+  padding: 8px;
+  border: 1px solid #3a4252;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background-color: #252d3d;
+  color: #d4d4d4;
+}
+
+.file-input-group input[type="file"]:focus {
+  outline: none;
+  border-color: #b8956a;
+  box-shadow: 0 0 0 3px rgba(184, 149, 106, 0.1);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid #2a3142;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 200ms, color 200ms;
+}
+
+.btn-primary {
+  background-color: #b8956a;
+  color: #1a1f2e;
+}
+
+.btn-primary:hover {
+  background-color: #c9a97a;
+}
+
+.btn-primary:active {
+  background-color: #a7845a;
+}
+
+.btn-secondary {
+  background-color: #2a3142;
+  color: #d4d4d4;
+}
+
+.btn-secondary:hover {
+  background-color: #3a4252;
+  color: #e8d4a8;
+}
+
+.btn-secondary:active {
+  background-color: #1a2332;
+}

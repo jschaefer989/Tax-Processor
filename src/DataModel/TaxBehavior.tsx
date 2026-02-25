@@ -146,9 +146,10 @@ export class TaxBehavior {
         throw new Error("Unable to load tax steps.");
       }
       const data = (await response.json()) as { steps: TaxStep[] };
-      this.steps = [...data.steps];
-      if (data.steps.length > 0) {
-        setCurrentStep(data.steps[0].step as Steps);
+      this.steps = data.steps;
+      
+      if (this.steps.length > 0) {
+        setCurrentStep(this.steps[0].step);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -184,7 +185,7 @@ export class TaxBehavior {
         return;
       }
       setCurrentStep(saved.currentStep as Steps);
-      setResponses(saved.responses.map((r) => new TaxResponse(r.id, r.value)));
+      setResponses(saved.responses.map((r) => new TaxResponse(r.form, r.label, r.line, r.value)));
       setLastSavedTime(new Date(saved.updatedAt));
     } catch (err) {
       setError(
@@ -258,6 +259,56 @@ export class TaxBehavior {
       setToastMessage("Failed to delete progress.");
     } finally {
       setIsDeleting(false);
+    }
+  }
+
+  async uploadTaxFile(
+    file: File,
+    formType: string,
+    setError: (error: string | undefined) => void,
+    setIsLoading: (loading: boolean) => void,
+    setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>,
+  ) {
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("form", formType);
+      const response = await fetch("/api/steps/file", {
+        method: "POST",
+        body: formData,
+      });
+      
+      const responseText = await response.text();
+      
+      if (!response.ok) {
+        try {
+          const errorData = JSON.parse(responseText) as { message?: string };
+          throw new Error(errorData.message ?? "Unable to upload file.");
+        } catch {
+          throw new Error(`Server error: ${responseText || response.statusText}`);
+        }
+      }
+      
+      if (!responseText) {
+        throw new Error("Server returned an empty response.");
+      }
+      
+      const data = JSON.parse(responseText) as Array<{ form: string; label: string; line: number; value: string }>;
+      const responses = data.map(
+        (item) =>
+          new TaxResponse(
+            item.form as never,
+            item.label as never,
+            item.line,
+            item.value,
+          ),
+      );
+      setResponses(responses);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to upload file.");
+    } finally {
+      setIsLoading(false);
     }
   }
 }
