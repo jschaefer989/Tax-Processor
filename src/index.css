@@ -48,3 +48,17 @@ a {
 #root {
   min-height: 100vh;
 }
+
+/* Import modular stylesheets */
+@import './styles/global.css';
+@import './styles/header.css';
+@import './styles/layout.css';
+@import './styles/sidebar.css';
+@import './styles/stepper.css';
+@import './styles/progress.css';
+@import './styles/forms.css';
+@import './styles/buttons.css';
+@import './styles/cards.css';
+@import './styles/components.css';
+@import './styles/pages.css';
+@import './styles/utilities.css';

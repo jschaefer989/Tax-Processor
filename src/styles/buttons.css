@@ -1,0 +1,63 @@
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.6rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: #1b1300;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 18px 30px -20px rgba(250, 200, 80, 0.7);
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+.year-button.selected {
+  background: #b8860b;
+  color: #ffffff;
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.3), 0 18px 30px -20px rgba(184, 134, 11, 0.7);
+}
+
+.new-year-button {
+  background: var(--accent-strong);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.new-year-button .arrow {
+  transition: transform 200ms ease;
+  display: inline-block;
+}
+
+.new-year-button:hover .arrow {
+  transform: translateX(4px);
+}
+
+.new-taxpayer-form-button {
+  width: fit-content;
+  margin-top: 1rem;
+  background: var(--accent-strong);
+  font-size: x-large;
+  color: var(--text);
+  text-shadow: 0 1px 2px #283241;
+}

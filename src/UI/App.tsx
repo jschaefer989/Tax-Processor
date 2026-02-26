@@ -70,7 +70,7 @@ export default function App() {
             setError={setError}
             setToastMessage={setToastMessage}
             lastSavedTime={lastSavedTime}
-            setLastSavedTime={setLastSavedTime}x
+            setLastSavedTime={setLastSavedTime}
             year={year}
             name={name}
             noDbConnection={noDbConnection}
