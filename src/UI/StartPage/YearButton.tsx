@@ -1,18 +1,24 @@
 import { useCallback } from "react";
+import ContextMenuOption, {
+  ContextMenuIcon,
+} from "../../DataModel/ContextMenuOption";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type { ContextMenuProps } from "../ContextMenu";
-import ContextMenuOption, { ContextMenuIcon } from "../../DataModel/ContextMenuOption";
+import type { ContextMenuProps } from "../General/ContextMenu";
 
 interface YearButtonProps {
   readonly year: number;
   readonly selectedYear: number | undefined;
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
-  readonly setSelectedYear: React.Dispatch<React.SetStateAction<number | undefined>>;
+  readonly setSelectedYear: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
   readonly setNames: React.Dispatch<React.SetStateAction<string[]>>;
   readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  readonly setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuProps | undefined>>;
+  readonly setContextMenu: React.Dispatch<
+    React.SetStateAction<ContextMenuProps | undefined>
+  >;
 }
 
 export default function YearButton(props: YearButtonProps) {
@@ -34,20 +40,30 @@ export default function YearButton(props: YearButtonProps) {
       setSelectedYear(undefined);
     } else {
       setIsLoading(true);
-      await taxBehavior.loadNames(year, setNames, setError);
+      await taxBehavior.loadNames(year, setNames, setError, setIsLoading);
       setSelectedYear(year);
       setIsLoading(false);
     }
-  }, [setError, setIsLoading, setNames, setSelectedYear, taxBehavior, year, selectedYear]);
+  }, [
+    year,
+    selectedYear,
+  ]);
 
-  const onDeleteYear = useCallback(async () => {
+  const onDeleteYear = useCallback(async () => {}, [year]);
 
-  }, [year]);
-
-  const onContextMenu = useCallback((event: React.MouseEvent) => {
-      event.preventDefault();    
-      setContextMenu({ x: event.clientX, y: event.clientY, options: [ new ContextMenuOption("Delete", onDeleteYear, ContextMenuIcon.Delete) ] });
-    }, [onDeleteYear]);
+  const onContextMenu = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault();
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        options: [
+          new ContextMenuOption("Delete", onDeleteYear, ContextMenuIcon.Delete),
+        ],
+      });
+    },
+    [onDeleteYear],
+  );
   //#endregion useCallback
 
   const isSelected = selectedYear === year;
@@ -58,6 +74,11 @@ export default function YearButton(props: YearButtonProps) {
       onClick={onClick}
       disabled={isLoading && !isSelected}
       onContextMenu={onContextMenu}
+      title={
+        isLoading && !isSelected
+          ? "Server is busy. Please wait..."
+          : `Select tax year ${year}`
+      }
     >
       {year}
     </button>

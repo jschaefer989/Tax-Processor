@@ -1,15 +1,16 @@
 import { useCallback, useMemo } from "react";
-import type { Steps } from "../DataModel/TaxStep";
-import type { TaxBehavior } from "../DataModel/TaxBehavior";
+import type { Steps } from "../../DataModel/TaxStep";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
 interface NextButtonProps {
   readonly taxBehavior: TaxBehavior;
   readonly currentStep: Steps;
   readonly setCurrentStep: (step: Steps) => void;
+  readonly isLoading: boolean;
 }
 
 export default function NextButton(props: NextButtonProps) {
-  const { taxBehavior, currentStep, setCurrentStep } = props;
+  const { taxBehavior, currentStep, setCurrentStep, isLoading } = props;
 
   const currentIndex = useMemo(
     () => taxBehavior.getStepIndex(currentStep),
@@ -25,7 +26,8 @@ export default function NextButton(props: NextButtonProps) {
   return (
     <button
       onClick={handleNext}
-      disabled={currentIndex >= taxBehavior.steps.length - 1}
+      disabled={currentIndex >= taxBehavior.steps.length - 1 || isLoading}
+      title={isLoading ? "Server is busy. Please wait..." : "Go to the next step."}
     >
       Next step
     </button>

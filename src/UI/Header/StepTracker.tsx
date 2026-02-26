@@ -1,16 +1,11 @@
-import { Steps } from "../DataModel/TaxStep";
+import { Steps } from "../../DataModel/TaxStep";
+
+// TODO: factor this out and make it more readable
 
 interface StepTrackerProps {
   readonly activeStep: Steps;
   readonly setActiveStep: (step: Steps) => void;
 }
-
-const stepLabels: Record<Steps, string> = {
-  [Steps.Income]: "Income",
-  [Steps.TaxAndCredits]: "Tax and Credits",
-  [Steps.PaymentsAndRefundableCredits]: "Payments and Refundable Credits",
-  [Steps.RefundOwe]: "Refund or Owe",
-};
 
 export default function StepTracker(props: StepTrackerProps) {
   const { activeStep, setActiveStep } = props;
@@ -70,7 +65,7 @@ export default function StepTracker(props: StepTrackerProps) {
                   isCompleted ? "completed" : isActive ? "active" : "inactive"
                 }`}
               >
-                {stepLabels[step]}
+                {getStepLabel(step)}
               </div>
             </div>
           );
@@ -78,4 +73,17 @@ export default function StepTracker(props: StepTrackerProps) {
       </div>
     </div>
   );
+}
+
+function getStepLabel(step: Steps): string {
+  switch (step) {
+    case Steps.Income:
+      return "Income";
+    case Steps.TaxAndCredits:
+      return "Tax and Credits";
+    case Steps.PaymentsAndRefundableCredits:
+      return "Payments and Refundable Credits";
+    case Steps.RefundOwe:
+      return "Refund or Owe";
+  }
 }

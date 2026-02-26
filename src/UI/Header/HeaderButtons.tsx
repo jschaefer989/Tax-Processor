@@ -1,15 +1,17 @@
-import { useState } from "react";
-import type { TaxBehavior } from "../DataModel/TaxBehavior";
-import type TaxResponse from "../DataModel/TaxResponse";
-import type { Steps } from "../DataModel/TaxStep";
-import SaveButton from "./SaveButton";
+import { useEffect } from "react";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type TaxResponse from "../../DataModel/TaxResponse";
+import type { Steps } from "../../DataModel/TaxStep";
 import DeleteButton from "./DeleteButton";
+import LastSavedText from "./LastSavedText";
+import SaveButton from "./SaveButton";
 
 interface HeaderButtonsProps {
   readonly currentStep: Steps | undefined;
   readonly responses: TaxResponse[];
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
+  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   readonly setToastMessage: React.Dispatch<
     React.SetStateAction<string | undefined>
@@ -29,6 +31,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
     responses,
     taxBehavior,
     isLoading,
+    setIsLoading,
     setError,
     setToastMessage,
     lastSavedTime,
@@ -36,12 +39,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
     year,
     name,
     noDbConnection,
-  } = props;
-
-  //#region useState
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  //#endregion useState
+  } = props;  
 
   if (noDbConnection) {
     return (
@@ -62,18 +60,13 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
     <>
       {!isLoading ? (
         <div className="last-save-text-wrapper">
-          <div className="last-save-text">
-            {lastSavedTime
-              ? `Last saved ${new Date(lastSavedTime).toLocaleString()}`
-              : "Not saved yet"}
-          </div>
+          <LastSavedText lastSavedTime={lastSavedTime} />
           <SaveButton
             currentStep={currentStep!}
             responses={responses}
             taxBehavior={taxBehavior}
-            isSaving={isSaving}
-            isDeleting={isDeleting}
-            setIsSaving={setIsSaving}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
             setError={setError}
             setToastMessage={setToastMessage}
             setLastSavedTime={setLastSavedTime}
@@ -82,14 +75,13 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
           />
           <DeleteButton
             taxBehavior={taxBehavior}
-            isSaving={isSaving}
-            isDeleting={isDeleting}
             lastSavedTime={lastSavedTime}
             year={year}
             name={name}
-            setIsDeleting={setIsDeleting}
+            isLoading={isLoading}
             setToastMessage={setToastMessage}
             setLastSavedTime={setLastSavedTime}
+            setIsLoading={setIsLoading}
           />
         </div>
       ) : (

@@ -8,7 +8,9 @@ interface BeginButtonProps {
   readonly year?: number;
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
-  readonly setSelectedName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly setSelectedName: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
   readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setCurrentStep: React.Dispatch<
     React.SetStateAction<Steps | undefined>
@@ -44,9 +46,8 @@ export default function BeginButton(props: BeginButtonProps) {
     if (tempName?.trim() === "") {
       return;
     }
-    setError(undefined);
-    setIsLoading(true);
-    await taxBehavior.loadSteps(setCurrentStep, setError);
+    setError(undefined);    
+    await taxBehavior.loadSteps(setCurrentStep, setError, setIsLoading);
     if (year && tempName) {
       await taxBehavior.resumeProgress(
         year,
@@ -56,32 +57,21 @@ export default function BeginButton(props: BeginButtonProps) {
         setError,
         setLastSavedTime,
         setNoDbConnection,
+        setIsLoading
       );
     }
     setSelectedName(tempName?.trim());
     setNewYear(false);
-    setCurrentStep(Steps.Income);
-    setIsLoading(false);
+    setCurrentStep(Steps.Income);    
     setShowStartPage(false);
-  }, [
-    setCurrentStep,
-    setError,
-    setIsLoading,
-    setLastSavedTime,
-    setSelectedName,
-    setNewYear,
-    setNoDbConnection,
-    setResponses,
-    taxBehavior,
-    tempName,
-    year,
-  ]);
+  }, [tempName, year]);
 
   return (
     <button
       className="new-taxpayer-form-button"
       onClick={onStart}
       disabled={isLoading || tempName?.trim() === ""}
+      title={isLoading ? "Server is busy. Please wait..." : ""}
     >
       Begin
     </button>

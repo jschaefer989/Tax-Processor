@@ -2,10 +2,10 @@ import { useMemo } from "react";
 import { TaxBehavior } from "../../DataModel/TaxBehavior";
 import TaxResponse from "../../DataModel/TaxResponse";
 import { Steps } from "../../DataModel/TaxStep";
-import BackButton from "../BackButton";
+import BackButton from "./BackButton";
 import FormFields from "./FormFields";
 import FormHeader from "./FormHeader";
-import NextButton from "../NextButton";
+import NextButton from "./NextButton";
 import FormFiles from "./FormFiles";
 
 interface MainFormProps {
@@ -76,11 +76,13 @@ export default function MainForm(props: MainFormProps) {
           taxBehavior={taxBehavior}
           currentStep={currentStep}
           setCurrentStep={setCurrentStep}
+          isLoading={isLoading}
         />
         <NextButton
           taxBehavior={taxBehavior}
           currentStep={currentStep}
           setCurrentStep={setCurrentStep}
+          isLoading={isLoading}
         />
       </div>
     </>

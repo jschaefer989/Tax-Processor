@@ -1,15 +1,16 @@
 import { useCallback, useMemo } from "react";
-import type { Steps } from "../DataModel/TaxStep";
-import type { TaxBehavior } from "../DataModel/TaxBehavior";
+import type { Steps } from "../../DataModel/TaxStep";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
 interface BackButtonProps {
   readonly taxBehavior: TaxBehavior;
   readonly currentStep: Steps;
   readonly setCurrentStep: (step: Steps) => void;
+  readonly isLoading: boolean;
 }
 
 export default function BackButton(props: BackButtonProps) {
-  const { taxBehavior, currentStep, setCurrentStep } = props;
+  const { taxBehavior, currentStep, setCurrentStep, isLoading } = props;
 
   const currentIndex = useMemo(
     () => taxBehavior.getStepIndex(currentStep),
@@ -26,7 +27,8 @@ export default function BackButton(props: BackButtonProps) {
     <button
       className="ghost"
       onClick={handleBack}
-      disabled={currentIndex === 0}
+      disabled={currentIndex === 0 || isLoading}
+      title={isLoading ? "Server is busy. Please wait..." : "Go back to the previous step."}
     >
       Back
     </button>

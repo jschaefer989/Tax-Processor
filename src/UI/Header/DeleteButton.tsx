@@ -1,14 +1,13 @@
 import { useCallback } from "react";
-import type { TaxBehavior } from "../DataModel/TaxBehavior";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
-interface ClearButtonProps {
+interface DeleteButtonProps {
   readonly taxBehavior: TaxBehavior;
-  readonly isSaving: boolean;
-  readonly isDeleting: boolean;
   readonly lastSavedTime: Date | undefined;
   readonly year: number;
   readonly name: string;
-  readonly setIsDeleting: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly isLoading: boolean;
+  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setToastMessage: React.Dispatch<
     React.SetStateAction<string | undefined>
   >;
@@ -17,15 +16,14 @@ interface ClearButtonProps {
   >;
 }
 
-export default function DeleteButton(props: ClearButtonProps) {
+export default function DeleteButton(props: DeleteButtonProps) {
   const {
     taxBehavior,
-    isSaving,
-    isDeleting,
     lastSavedTime,
     year,
     name,
-    setIsDeleting,
+    isLoading,
+    setIsLoading,
     setToastMessage,
     setLastSavedTime,
   } = props;
@@ -36,19 +34,24 @@ export default function DeleteButton(props: ClearButtonProps) {
       "Are you sure you want to delete all progress? This cannot be undone.",
     );
     if (confirmed) {
-      taxBehavior.deleteProgress(year, name, setIsDeleting, setToastMessage);
+      taxBehavior.deleteProgress(year, name, setIsLoading, setToastMessage);
       setLastSavedTime(undefined);
     }
-  }, [name, setIsDeleting, setLastSavedTime, setToastMessage, taxBehavior, year]);
+  }, [name, year]);
   //#endregion useCallback
 
   return (
     <button
       className="ghost"
       onClick={handleDelete}
-      disabled={isSaving || isDeleting || !lastSavedTime}
+      disabled={isLoading || !lastSavedTime}
+      title={
+        isLoading
+          ? "Server is busy. Please wait..."
+          : "Delete all progress for this year and name."
+      }
     >
-      {isDeleting ? "Deleting..." : "Delete progress"}
+      {"Delete progress"}
     </button>
   );
 }

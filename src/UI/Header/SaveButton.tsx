@@ -1,15 +1,14 @@
 import { useCallback } from "react";
-import type { TaxBehavior } from "../DataModel/TaxBehavior";
-import type TaxResponse from "../DataModel/TaxResponse";
-import type { Steps } from "../DataModel/TaxStep";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type TaxResponse from "../../DataModel/TaxResponse";
+import type { Steps } from "../../DataModel/TaxStep";
 
 interface SaveButtonProps {
   currentStep: Steps;
   responses: TaxResponse[];
   taxBehavior: TaxBehavior;
-  isSaving: boolean;
-  isDeleting: boolean;
-  setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
   setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>;
@@ -22,9 +21,8 @@ export default function SaveButton(props: SaveButtonProps) {
     currentStep,
     responses,
     taxBehavior,
-    isSaving,
-    isDeleting,
-    setIsSaving,
+    isLoading,
+    setIsLoading,
     setError,
     setToastMessage,
     setLastSavedTime,
@@ -40,30 +38,25 @@ export default function SaveButton(props: SaveButtonProps) {
       currentStep,
       responses,
       setError,
-      setIsSaving,
+      setIsLoading,
       setToastMessage,
       setLastSavedTime,
     );
-  }, [
-    currentStep,
-    name,
-    responses,
-    setError,
-    setIsSaving,
-    setLastSavedTime,
-    setToastMessage,
-    taxBehavior,
-    year,
-  ]);
+  }, [currentStep, name, responses, taxBehavior, year]);
   //#endregion useCallback
 
   return (
     <button
       className="button"
       onClick={handleSave}
-      disabled={isSaving || isDeleting}
+      disabled={isLoading}
+      title={
+        isLoading
+          ? "Server is busy. Please wait..."
+          : "Save your progress. You can resume later from where you left off."
+      }
     >
-      {isSaving ? "Saving..." : "Save progress"}
+      Save progress
     </button>
   );
 }

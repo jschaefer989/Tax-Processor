@@ -57,6 +57,7 @@ export default function MissingDatabaseControls(
         setYears={setYears}
         setNoDbConnection={setNoDbConnection}
         isLoading={isLoading}
+        setIsLoading={setIsLoading}
       />
     </>
   );

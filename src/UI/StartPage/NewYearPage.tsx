@@ -1,10 +1,11 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import { Steps } from "../../DataModel/TaxStep";
-import NameButton from "./NameButton";
-import HeaderTitle from "../HeaderTitle";
+import HeaderTitle from "../Header/HeaderTitle";
 import BeginButton from "./BeginButton";
+import NameButton from "./NameButton";
+import NewTaxpayerField from "./NewTaxpayerField";
 
 interface NewYearPageProps {
   readonly names: string[];
@@ -12,7 +13,9 @@ interface NewYearPageProps {
   readonly name: string | undefined;
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
-  readonly setSelectedName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly setSelectedName: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
   readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setCurrentStep: React.Dispatch<
     React.SetStateAction<Steps | undefined>
@@ -47,13 +50,6 @@ export default function NewYearPage(props: NewYearPageProps) {
 
   const [tempName, setTempName] = useState<string>("");
 
-  const onInputNewName = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setTempName(event.target.value);
-    },
-    [],
-  );
-
   return (
     <>
       <HeaderTitle year={year.toString()} name={name} />
@@ -75,15 +71,7 @@ export default function NewYearPage(props: NewYearPageProps) {
         />
       ))}
       <div className="new-taxpayer-form">
-        <label className="field">
-          <span>New taxpayer</span>
-          <input
-            id="new-name-input"
-            type="text"
-            placeholder="Enter taxpayer name"
-            onChange={(event) => onInputNewName(event)}
-          />
-        </label>
+        <NewTaxpayerField setTempName={setTempName} />
         <BeginButton
           tempName={tempName}
           year={year}

@@ -1,19 +1,21 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import ExpandArrowIcon from "../General/ExpandArrowIcon";
 import ExclamationMarkIcon from "../General/ExclamationMarkIcon";
+import ExpandArrowIcon from "../General/ExpandArrowIcon";
 
 interface DatabaseConnectionFormProps {
   readonly taxBehavior: TaxBehavior;
   readonly setYears: React.Dispatch<React.SetStateAction<number[]>>;
   readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
   readonly isLoading: boolean;
+  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function DatabaseConnectionForm(
   props: DatabaseConnectionFormProps,
 ) {
-  const { taxBehavior, setYears, setNoDbConnection, isLoading } = props;
+  const { taxBehavior, setYears, setNoDbConnection, isLoading, setIsLoading } =
+    props;
 
   // #region useState
   const [dbHost, setDbHost] = useState("localhost");
@@ -36,22 +38,17 @@ export default function DatabaseConnectionForm(
       dbPassword,
       setNoDbConnection,
       setError,
+      setIsLoading,
     );
 
     if (isConnected) {
-      taxBehavior.loadYears(setYears, setError);
+      taxBehavior.loadYears(setYears, setError, setIsLoading);
     }
-  }, [
-    dbHost,
-    dbPort,
-    dbName,
-    dbUsername,
-    dbPassword,
-    taxBehavior,
-    setNoDbConnection,
-    setError,
-    setYears,
-  ]);
+  }, [dbHost, dbPort, dbName, dbUsername, dbPassword]);
+
+  const toggleFormVisibility = useCallback(() => {
+    setShowForm((prev) => !prev);
+  }, []);
   // #endregion
 
   return (
@@ -59,7 +56,7 @@ export default function DatabaseConnectionForm(
       <button
         type="button"
         className="db-connection-toggle subtitle-chip subtitle-chip--error-soft"
-        onClick={() => setShowForm(!showForm)}
+        onClick={toggleFormVisibility}
         aria-expanded={showForm}
         aria-controls="db-connection-form"
       >
@@ -129,6 +126,11 @@ export default function DatabaseConnectionForm(
               dbHost.trim() === "" ||
               dbName.trim() === "" ||
               dbUsername.trim() === ""
+            }
+            title={
+              isLoading
+                ? "Server is busy. Please wait..."
+                : "Attempt to connect to the database with provided credentials"
             }
           >
             Connect database

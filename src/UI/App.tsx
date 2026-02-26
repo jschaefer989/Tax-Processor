@@ -4,20 +4,20 @@ import { TaxBehavior } from "../DataModel/TaxBehavior";
 import TaxResponse from "../DataModel/TaxResponse";
 import { Steps } from "../DataModel/TaxStep";
 import FileSidebar from "./Sidebar/FileSidebar";
-import MainAppHeader from "./MainAppHeader";
+import MainAppHeader from "./Header/MainAppHeader";
 import MainForm from "./Form/MainForm";
 import StartPage from "./StartPage/StartPage";
 import Toast from "./General/Toast";
 import ContextMenu from "./General/ContextMenu";
 import type { ContextMenuProps } from "./General/ContextMenu";
+import SidebarExpandButton from "./Sidebar/SidebarExpandButton";
 
-function App() {
+export default function App() {
   const taxBehavior = useMemo(() => new TaxBehavior(), []);
 
   //#region useState
   const [currentStep, setCurrentStep] = useState<Steps | undefined>(undefined);
   const [responses, setResponses] = useState<TaxResponse[]>([]);
-  // TODO: varify that this and setIsSaving and setIsDeleting are used correctly and consistently across the app
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [lastSavedTime, setLastSavedTime] = useState<Date | undefined>(
@@ -63,13 +63,14 @@ function App() {
           <MainAppHeader
             currentStep={currentStep}
             isLoading={isLoading}
+            setIsLoading={setIsLoading}
             setCurrentStep={setCurrentStep}
             taxBehavior={taxBehavior}
             responses={responses}
             setError={setError}
             setToastMessage={setToastMessage}
             lastSavedTime={lastSavedTime}
-            setLastSavedTime={setLastSavedTime}
+            setLastSavedTime={setLastSavedTime}x
             year={year}
             name={name}
             noDbConnection={noDbConnection}
@@ -92,6 +93,11 @@ function App() {
               />
             </section>
 
+            <SidebarExpandButton
+              sidebarExpanded={sidebarExpanded}
+              setSidebarExpanded={setSidebarExpanded}
+            />
+
             <div className="sidebar-column">
               <FileSidebar
                 responses={responses}
@@ -105,5 +111,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

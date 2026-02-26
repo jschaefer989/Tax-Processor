@@ -6,7 +6,9 @@ interface NewYearButtonProps {
   readonly setNames: React.Dispatch<React.SetStateAction<string[]>>;
   readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setSelectedYear: React.Dispatch<React.SetStateAction<number | undefined>>;
+  readonly setSelectedYear: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
   readonly setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
   readonly isLoading: boolean;
 }
@@ -23,15 +25,20 @@ export default function NewYearButton(props: NewYearButtonProps) {
   } = props;
 
   const onStartNewYear = useCallback(async () => {
-    setIsLoading(true);
-    await taxBehavior.loadAllNames(setNames, setError);
+    await taxBehavior.loadAllNames(setNames, setError, setIsLoading);
     setSelectedYear(new Date().getFullYear() - 1);
     setNewYear(true);
-    setIsLoading(false);
-  }, [setError, setIsLoading, setNames, setNewYear, setSelectedYear, taxBehavior]);
+  }, []);
 
   return (
-    <button className="new-year-button" onClick={onStartNewYear} disabled={isLoading}>
+    <button
+      className="new-year-button"
+      onClick={onStartNewYear}
+      disabled={isLoading}
+      title={
+        isLoading ? "Server is busy. Please wait..." : "Add a new tax year"
+      }
+    >
       Start new year <span className="arrow">→</span>
     </button>
   );

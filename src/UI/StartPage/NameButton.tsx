@@ -8,7 +8,9 @@ interface NameButtonProps {
   readonly name: string;
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
-  readonly setSelectedName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly setSelectedName: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
   readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setCurrentStep: React.Dispatch<
     React.SetStateAction<Steps | undefined>
@@ -39,8 +41,7 @@ export default function NameButton(props: NameButtonProps) {
   } = props;
 
   const onClick = useCallback(async () => {
-    setIsLoading(true);
-    await taxBehavior.loadSteps(setCurrentStep, setError);
+    await taxBehavior.loadSteps(setCurrentStep, setError, setIsLoading);
     if (year) {
       await taxBehavior.resumeProgress(
         year,
@@ -50,26 +51,21 @@ export default function NameButton(props: NameButtonProps) {
         setError,
         setLastSavedTime,
         setNoDbConnection,
+        setIsLoading,
       );
     }
     setSelectedName(name);
-    setIsLoading(false);
     setShowStartPage(false);
-  }, [
-    name,
-    setCurrentStep,
-    setError,
-    setIsLoading,
-    setLastSavedTime,
-    setSelectedName,
-    setNoDbConnection,
-    setResponses,
-    taxBehavior,
-    year,
-  ]);
+  }, [name, taxBehavior, year]);
 
   return (
-    <button onClick={onClick} disabled={isLoading}>
+    <button
+      onClick={onClick}
+      disabled={isLoading}
+      title={
+        isLoading ? "Server is busy. Please wait..." : `Continue with ${name}`
+      }
+    >
       {name}
     </button>
   );

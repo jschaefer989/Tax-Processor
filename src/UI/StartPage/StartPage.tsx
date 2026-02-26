@@ -58,35 +58,29 @@ export default function StartPage(props: StartPageProps) {
     if (selectedYear) {
       return;
     }
-
-    setIsLoading(true);
     let isCancelled = false;
 
     const initialize = async () => {
       const hasDbConnection =
-        await taxBehavior.checkDatabaseConnection(setNoDbConnection);
+        await taxBehavior.checkDatabaseConnection(setNoDbConnection, setIsLoading);
 
       if (isCancelled) {
-        setIsLoading(false);
         return;
       }
 
       if (!hasDbConnection) {
-        setIsLoading(false);
         return;
       }
 
-      taxBehavior.loadYears(setYears, setError);
-      setIsLoading(false);
+      taxBehavior.loadYears(setYears, setError, setIsLoading);
     };
 
     initialize();
 
     return () => {
       isCancelled = true;
-      setIsLoading(false);
     };
-  }, [setError, setNoDbConnection, taxBehavior, selectedYear]);
+  }, [selectedYear]);
 
   if (newYear && selectedYear !== undefined) {
     return (

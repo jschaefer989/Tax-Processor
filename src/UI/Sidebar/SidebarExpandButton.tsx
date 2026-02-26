@@ -19,6 +19,7 @@ export default function SidebarExpandButton(props: SidebarExpandButtonProps) {
         onClick={onClick}
         className="sidebar-toggle sidebar-toggle-center"
         aria-expanded={sidebarExpanded}
+        title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         <div className="sidebar-toggle-header">
           <ExpandArrowIcon
