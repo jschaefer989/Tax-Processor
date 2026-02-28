@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TaxProcessor.Api.Data;
 using TaxProcessor.Api.Models;
 
 namespace TaxProcessor.Api.Controllers;
@@ -48,7 +49,7 @@ public class StepsController : ControllerBase
     {
         if (Enum.TryParse(request.Form, out ReadableForm form))
         {
-            var result = await new FileProcessor().ProcessFile(request.File, form);
+            var result = await new TaxProcessor.Api.Data.FileProcessor().ProcessFile(request.File, form);
             if (result.Success)
             {
                 return Ok(result.Responses);

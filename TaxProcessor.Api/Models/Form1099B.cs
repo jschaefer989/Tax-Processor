@@ -1,3 +1,5 @@
+namespace TaxProcessor.Api.Models;
+
 public enum Term
 {
     Short,

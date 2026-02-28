@@ -18,5 +18,5 @@ public class TaxProgress
     public string? CurrentStep { get; set; }
 
     [JsonPropertyName("responses")]
-    public TaxResponse[] Responses { get; set; } = Array.Empty<TaxResponse>();
+    public TaxResponse[] Responses { get; set; } = [];
 }

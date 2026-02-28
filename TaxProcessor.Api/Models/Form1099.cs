@@ -1,3 +1,5 @@
+namespace TaxProcessor.Api.Models;
+
 public class Form1099
 {
     public decimal? OrdinaryDividends { get; set; }

@@ -20,9 +20,9 @@ public class ProgressController : ControllerBase
     public async Task<ActionResult<int[]>> GetYears()
     {
         var years = await _db.TaxProgress
-            .Select(p => p.Year)
+            .Select(progress => progress.Year)
             .Distinct()
-            .OrderByDescending(y => y)
+            .OrderByDescending(year => year)
             .ToArrayAsync();
         return Ok(years);
     }
@@ -31,7 +31,7 @@ public class ProgressController : ControllerBase
     public async Task<ActionResult<string[]>> GetAllNames()
     {
         var names = await _db.TaxProgress
-            .Select(p => p.Name)
+            .Select(progress => progress.Name)
             .ToArrayAsync();
         return Ok(names);
     }
@@ -40,8 +40,8 @@ public class ProgressController : ControllerBase
     public async Task<ActionResult<string[]>> GetNames(int year)
     {
         var names = await _db.TaxProgress
-            .Where(p => p.Year == year)
-            .Select(p => p.Name)
+            .Where(progress => progress.Year == year)
+            .Select(progress => progress.Name)
             .ToArrayAsync();
         return Ok(names);
     }
@@ -50,25 +50,12 @@ public class ProgressController : ControllerBase
     [HttpGet("{year}/{name}")]
     public async Task<ActionResult<TaxProgress>> GetProgress(int year, string name)
     {
-        var entity = await _db.TaxProgress
-            .Include(p => p.Responses)
-            .FirstOrDefaultAsync(p => p.Year == year && p.Name == name);
-        
+        var entity = await GetTaxProgressEntity(year, name);
+
         if (entity is null)
         {
             return NotFound(new { message = "Progress not found." });
         }
-
-        // Map TaxResponseEntity back to TaxResponse model
-        var responses = entity.Responses
-            .Select(r => new TaxResponse
-            {
-                Form = Enum.Parse<TaxForm>(r.Form),
-                Label = Enum.Parse<TaxFieldLabel>(r.Label),
-                Line = r.Line,
-                Value = r.Value
-            })
-            .ToArray();
 
         return Ok(new TaxProgress
         {
@@ -76,7 +63,7 @@ public class ProgressController : ControllerBase
             Name = entity.Name,
             UpdatedAt = entity.UpdatedAt,
             CurrentStep = entity.CurrentStepId,
-            Responses = responses,
+            Responses = entity.GetResponses(),
         });
     }
 
@@ -85,9 +72,7 @@ public class ProgressController : ControllerBase
     {
         var now = DateTime.UtcNow;
 
-        var entity = await _db.TaxProgress
-            .Include(p => p.Responses)
-            .FirstOrDefaultAsync(p => p.Year == request.Year && p.Name == request.Name);
+        var entity = await GetTaxProgressEntity(request.Year, request.Name);
 
         if (entity is null)
         {
@@ -105,39 +90,11 @@ public class ProgressController : ControllerBase
         {
             entity.UpdatedAt = now;
             entity.CurrentStepId = request.CurrentStep;
-            // Clear existing responses for this record
-            entity.Responses.Clear();
         }
 
-        // Convert TaxResponse models to TaxResponseEntity
-        if (request.Responses != null)
-        {
-            foreach (var response in request.Responses)
-            {
-                entity.Responses.Add(new TaxResponseEntity
-                {
-                    Year = request.Year,
-                    Name = request.Name,
-                    Form = response.Form.ToString(),
-                    Label = response.Label.ToString(),
-                    Line = response.Line,
-                    Value = response.Value
-                });
-            }
-        }
+        entity.UpdateResponses(request.Responses, request.Year, request.Name);   
 
         await _db.SaveChangesAsync();
-
-        // Return updated progress
-        var responses = entity.Responses
-            .Select(r => new TaxResponse
-            {
-            Form = Enum.Parse<TaxForm>(r.Form),
-            Label = Enum.Parse<TaxFieldLabel>(r.Label),
-            Line = r.Line,
-            Value = r.Value
-            })
-            .ToArray();
 
         return Ok(new TaxProgress
         {
@@ -145,7 +102,7 @@ public class ProgressController : ControllerBase
             Name = entity.Name,
             UpdatedAt = entity.UpdatedAt,
             CurrentStep = entity.CurrentStepId,
-            Responses = responses,
+            Responses = entity.GetResponses(),
         });
     }
 
@@ -162,5 +119,12 @@ public class ProgressController : ControllerBase
         await _db.SaveChangesAsync();
 
         return Ok(new { message = "Progress cleared successfully." });
+    }
+
+    private async Task<TaxProgressEntity?> GetTaxProgressEntity(int year, string name)
+    {
+        return await _db.TaxProgress
+            .Include(progress => progress.Responses)
+            .FirstOrDefaultAsync(progress => progress.Year == year && progress.Name == name);
     }
 }

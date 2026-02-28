@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using TaxProcessor.Api.Data;
+using TaxProcessor.Api.Models;
 
 namespace TaxProcessor.Api.Controllers;
 
@@ -72,18 +73,5 @@ public class HealthController : ControllerBase
                     : ex.Message
             });
         }
-    }
-
-    public class DbConnectionTestRequest
-    {
-        public string Host { get; set; } = string.Empty;
-
-        public int Port { get; set; } = 5432;
-
-        public string Database { get; set; } = string.Empty;
-
-        public string Username { get; set; } = string.Empty;
-
-        public string? Password { get; set; }
     }
 }

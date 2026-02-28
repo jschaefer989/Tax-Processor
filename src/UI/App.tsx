@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import "../App.css";
 import { TaxBehavior } from "../DataModel/TaxBehavior";
 import TaxResponse from "../DataModel/TaxResponse";
 import { Steps } from "../DataModel/TaxStep";
