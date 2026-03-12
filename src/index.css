@@ -11,6 +11,7 @@
 @import './styles/components.css';
 @import './styles/pages.css';
 @import './styles/utilities.css';
+@import './styles/footer.css';
 
 :root {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;

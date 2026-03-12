@@ -42,17 +42,17 @@ public class Form1099Processor : FileProcessor
                 else if (CurrentForm.HasValue)
                 {
                     // This is a data line for the current form
-                    if (CurrentForm.Value == ReadableForm.Form1099DIV)
+                    switch (CurrentForm.Value)
                     {
-                        ProcessForm1099DIVLine(new Form1099DIVLine(fields));
-                    }
-                    else if (CurrentForm.Value == ReadableForm.Form1099INT)
-                    {
-                        ProcessForm1099INTLine(new Form1099INTLine(fields));
-                    }
-                    else if (CurrentForm.Value == ReadableForm.Form1099B)
-                    {
-                        ProcessForm1099BLine(new Form1099BLine(fields));
+                        case ReadableForm.Form1099DIV:
+                            ProcessForm1099DIVLine(new Form1099DIVLine(fields));
+                            break;
+                        case ReadableForm.Form1099INT:
+                            ProcessForm1099INTLine(new Form1099INTLine(fields));
+                            break;
+                        case ReadableForm.Form1099B:
+                            ProcessForm1099BLine(new Form1099BLine(fields));
+                            break;
                     }
                 }
             }

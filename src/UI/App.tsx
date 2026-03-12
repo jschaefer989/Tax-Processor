@@ -11,6 +11,7 @@ import Toast from "./General/Toast";
 import MainAppHeader from "./Header/MainAppHeader";
 import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
+import { FeatureRequest } from "./Footer/FeatureRequest";
 
 export default function App() {
   const taxBehavior = useMemo(() => new TaxBehavior(), []);
@@ -130,6 +131,10 @@ export default function App() {
               />
             </div>
           </main>
+
+          <footer>
+            <FeatureRequest />
+          </footer>
         </>
       )}
     </div>
