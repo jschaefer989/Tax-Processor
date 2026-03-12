@@ -4,7 +4,7 @@ import TaxResponse from "../DataModel/TaxResponse";
 import { Steps } from "../DataModel/TaxStep";
 import { useContextMenu } from "../hooks/useContextMenu";
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
-import { FeatureRequest } from "./Footer/FeatureRequest";
+import { MainAppFooter } from "./Footer/MainAppFooter";
 import MainForm from "./Form/MainForm";
 import ContextMenu from "./General/ContextMenu";
 import { ExpandButton, ExpandDirection } from "./General/ExpandButton";
@@ -137,7 +137,7 @@ export default function App() {
           </main>
 
           <footer>
-            <FeatureRequest />
+            <MainAppFooter />
           </footer>
         </>
       )}

@@ -20,7 +20,9 @@ interface YearButtonProps {
   readonly setContextMenu: React.Dispatch<
     React.SetStateAction<ContextMenuProps | undefined>
   >;
-  readonly setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly setToastMessage: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
 }
 
 export default function YearButton(props: YearButtonProps) {
@@ -48,13 +50,10 @@ export default function YearButton(props: YearButtonProps) {
       setSelectedYear(year);
       setIsLoading(false);
     }
-  }, [
-    year,
-    selectedYear,
-  ]);
+  }, [year, selectedYear]);
 
   const onDeleteYear = useCallback(async () => {
-        const confirmed = window.confirm(
+    const confirmed = window.confirm(
       "Are you sure you want to delete this year and all associated tax returns? This cannot be undone.",
     );
     if (confirmed) {
