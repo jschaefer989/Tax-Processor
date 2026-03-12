@@ -83,7 +83,10 @@ export class TaxBehavior {
       if (!response.ok) {
         const data = (await response.json()) as { message?: string };
         setNoDbConnection(true);
-        setError(data.message ?? "Unable to connect to database: " + response.statusText);
+        setError(
+          data.message ??
+            "Unable to connect to database: " + response.statusText,
+        );
         return false;
       }
 
@@ -92,7 +95,9 @@ export class TaxBehavior {
       return true;
     } catch (err) {
       setNoDbConnection(true);
-      setError(err instanceof Error ? err.message : "Unable to connect to database.");
+      setError(
+        err instanceof Error ? err.message : "Unable to connect to database.",
+      );
       return false;
     } finally {
       setIsLoading(false);
@@ -123,7 +128,7 @@ export class TaxBehavior {
 
   async loadNames(
     year: number,
-    setNames:  React.Dispatch<React.SetStateAction<string[]>>,
+    setNames: React.Dispatch<React.SetStateAction<string[]>>,
     setError: (error: string | undefined) => void,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   ) {
@@ -147,7 +152,7 @@ export class TaxBehavior {
   }
 
   async loadAllNames(
-    setNames:  React.Dispatch<React.SetStateAction<string[]>>,
+    setNames: React.Dispatch<React.SetStateAction<string[]>>,
     setError: (error: string | undefined) => void,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   ) {
@@ -161,9 +166,7 @@ export class TaxBehavior {
       setNames(data);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to load all names.",
+        err instanceof Error ? err.message : "Unable to load all names.",
       );
     } finally {
       setIsLoading(false);
@@ -183,7 +186,7 @@ export class TaxBehavior {
       }
       const data = (await response.json()) as { steps: TaxStep[] };
       this.steps = data.steps;
-      
+
       if (this.steps.length > 0) {
         setCurrentStep(this.steps[0].step);
       }
@@ -201,7 +204,7 @@ export class TaxBehavior {
     setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>,
     setError: React.Dispatch<React.SetStateAction<string | undefined>>,
     setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>,
-    setNoDbConnection:  React.Dispatch<React.SetStateAction<boolean>>,
+    setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   ) {
     if (this.steps.length === 0) {
@@ -226,7 +229,11 @@ export class TaxBehavior {
       }
       setNoDbConnection(false);
       setCurrentStep(saved.currentStep as Steps);
-      setResponses(saved.responses.map((r) => new TaxResponse(r.form, r.label, r.line, r.value)));
+      setResponses(
+        saved.responses.map(
+          (r) => new TaxResponse(r.form, r.label, r.line, r.value),
+        ),
+      );
       setLastSavedTime(new Date(saved.updatedAt));
     } catch (err) {
       setError(
@@ -271,7 +278,6 @@ export class TaxBehavior {
       const savedTime = new Date(saved.updatedAt);
       setLastSavedTime(savedTime);
       setToastMessage(`Saved at ${savedTime.toLocaleTimeString()}`);
-      setTimeout(() => setToastMessage(undefined), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to save progress.");
     } finally {
@@ -294,12 +300,11 @@ export class TaxBehavior {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Unable to delete progress.");
+        throw new Error(response.statusText);
       }
       setToastMessage("Progress deleted.");
-      setTimeout(() => setToastMessage(undefined), 3000);
-    } catch {
-      setToastMessage("Failed to delete progress.");
+    } catch (err) {
+      setToastMessage("Failed to delete progress: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setIsLoading(false);
     }
@@ -321,23 +326,30 @@ export class TaxBehavior {
         method: "POST",
         body: formData,
       });
-      
+
       const responseText = await response.text();
-      
+
       if (!response.ok) {
         try {
           const errorData = JSON.parse(responseText) as { message?: string };
           throw new Error(errorData.message ?? "Unable to upload file.");
         } catch {
-          throw new Error(`Server error: ${responseText || response.statusText}`);
+          throw new Error(
+            `Server error: ${responseText || response.statusText}`,
+          );
         }
       }
-      
+
       if (!responseText) {
         throw new Error("Server returned an empty response.");
       }
-      
-      const data = JSON.parse(responseText) as Array<{ form: string; label: string; line: number; value: string }>;
+
+      const data = JSON.parse(responseText) as Array<{
+        form: string;
+        label: string;
+        line: number;
+        value: string;
+      }>;
       const responses = data.map(
         (item) =>
           new TaxResponse(
@@ -350,6 +362,27 @@ export class TaxBehavior {
       setResponses(responses);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to upload file.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async deleteYear(
+    year: number,
+    setIsLoading: (loading: boolean) => void,
+    setToastMessage: (message: string | undefined) => void,
+  ) {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/start/${year}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      setToastMessage("Year deleted.");
+    } catch (err) {
+      setToastMessage("Failed to delete year: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setIsLoading(false);
     }

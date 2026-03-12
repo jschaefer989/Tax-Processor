@@ -29,6 +29,7 @@ interface StartPageProps {
   readonly setContextMenu: React.Dispatch<
     React.SetStateAction<ContextMenuProps | undefined>
   >;
+  readonly setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 export default function StartPage(props: StartPageProps) {
@@ -48,6 +49,7 @@ export default function StartPage(props: StartPageProps) {
     setNoDbConnection,
     setShowStartPage,
     setContextMenu,
+    setToastMessage,
   } = props;
 
   const [years, setYears] = useState<number[]>([]);
@@ -132,6 +134,7 @@ export default function StartPage(props: StartPageProps) {
           setYear={setSelectedYear}
           setName={setSelectedName}
           setNames={setNames}
+          setYears={setYears}
           setIsLoading={setIsLoading}
           setError={setError}
           setContextMenu={setContextMenu}
@@ -141,6 +144,7 @@ export default function StartPage(props: StartPageProps) {
           setNoDbConnection={setNoDbConnection}
           setShowStartPage={setShowStartPage}
           setNewYear={setNewYear}
+          setToastMessage={setToastMessage}
         />
       )}
     </div>

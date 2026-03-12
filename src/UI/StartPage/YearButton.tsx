@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import ContextMenuOption, {
   ContextMenuIcon,
 } from "../../DataModel/ContextMenuOption";
@@ -14,11 +14,13 @@ interface YearButtonProps {
     React.SetStateAction<number | undefined>
   >;
   readonly setNames: React.Dispatch<React.SetStateAction<string[]>>;
+  readonly setYears: React.Dispatch<React.SetStateAction<number[]>>;
   readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   readonly setContextMenu: React.Dispatch<
     React.SetStateAction<ContextMenuProps | undefined>
   >;
+  readonly setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 export default function YearButton(props: YearButtonProps) {
@@ -29,9 +31,11 @@ export default function YearButton(props: YearButtonProps) {
     isLoading,
     setSelectedYear,
     setNames,
+    setYears,
     setIsLoading,
     setError,
     setContextMenu,
+    setToastMessage,
   } = props;
 
   //#region useCallback
@@ -49,7 +53,19 @@ export default function YearButton(props: YearButtonProps) {
     selectedYear,
   ]);
 
-  const onDeleteYear = useCallback(async () => {}, [year]);
+  const onDeleteYear = useCallback(async () => {
+        const confirmed = window.confirm(
+      "Are you sure you want to delete this year and all associated tax returns? This cannot be undone.",
+    );
+    if (confirmed) {
+      await taxBehavior.deleteYear(year, setIsLoading, setToastMessage);
+      setYears((prevYears) => prevYears.filter((y) => y !== year));
+      if (selectedYear === year) {
+        setSelectedYear(undefined);
+        setNames([]);
+      }
+    }
+  }, [year, selectedYear]);
 
   const onContextMenu = useCallback(
     (event: React.MouseEvent) => {

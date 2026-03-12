@@ -46,7 +46,9 @@ export default function App() {
 
   return (
     <div className="app" onClick={onWhitespaceClick}>
-      {toastMessage && <Toast toastMessage={toastMessage} />}
+      {toastMessage && (
+        <Toast toastMessage={toastMessage} setToastMessage={setToastMessage} />
+      )}
       {contextMenu && <ContextMenu {...contextMenu} />}
       {showStartPage ? (
         <StartPage
@@ -65,6 +67,7 @@ export default function App() {
           noDbConnection={noDbConnection}
           setShowStartPage={setShowStartPage}
           setContextMenu={setContextMenu}
+          setToastMessage={setToastMessage}
         />
       ) : (
         <>

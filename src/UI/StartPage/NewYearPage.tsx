@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import { Steps } from "../../DataModel/TaxStep";
@@ -49,6 +49,30 @@ export default function NewYearPage(props: NewYearPageProps) {
   } = props;
 
   const [tempName, setTempName] = useState<string>("");
+  
+  const onStart = useCallback(async () => {
+    if (tempName?.trim() === "") {
+      return;
+    }
+    setError(undefined);    
+    await taxBehavior.loadSteps(setCurrentStep, setError, setIsLoading);
+    if (year && tempName) {
+      await taxBehavior.resumeProgress(
+        year,
+        tempName.trim(),
+        setCurrentStep,
+        setResponses,
+        setError,
+        setLastSavedTime,
+        setNoDbConnection,
+        setIsLoading
+      );
+    }
+    setSelectedName(tempName?.trim());
+    setNewYear(false);
+    setCurrentStep(Steps.Income);    
+    setShowStartPage(false);
+  }, [tempName, year]);
 
   return (
     <>
@@ -71,21 +95,13 @@ export default function NewYearPage(props: NewYearPageProps) {
         />
       ))}
       <div className="new-taxpayer-form">
-        <NewTaxpayerField setTempName={setTempName} />
+        <NewTaxpayerField setTempName={setTempName} onStart={onStart} />
         <BeginButton
           tempName={tempName}
           year={year}
           taxBehavior={taxBehavior}
           isLoading={isLoading}
-          setError={setError}
-          setIsLoading={setIsLoading}
-          setCurrentStep={setCurrentStep}
-          setResponses={setResponses}
-          setLastSavedTime={setLastSavedTime}
-          setSelectedName={setSelectedName}
-          setNewYear={setNewYear}
-          setNoDbConnection={setNoDbConnection}
-          setShowStartPage={setShowStartPage}
+          onStart={onStart}
         />
       </div>
     </>

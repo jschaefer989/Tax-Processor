@@ -16,6 +16,7 @@ interface YearSelectionControlsProps {
   setYear: React.Dispatch<React.SetStateAction<number | undefined>>;
   setName: React.Dispatch<React.SetStateAction<string | undefined>>;
   setNames: React.Dispatch<React.SetStateAction<string[]>>;
+  setYears: React.Dispatch<React.SetStateAction<number[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   setContextMenu: React.Dispatch<
@@ -27,6 +28,7 @@ interface YearSelectionControlsProps {
   setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
   setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
   setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
+  setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 export default function YearSelectionControls(
@@ -40,6 +42,7 @@ export default function YearSelectionControls(
     years,
     setYear,
     setNames,
+    setYears,
     setName,
     setIsLoading,
     setError,
@@ -50,6 +53,7 @@ export default function YearSelectionControls(
     setNoDbConnection,
     setShowStartPage,
     setNewYear,
+    setToastMessage,
   } = props;
 
   return (
@@ -65,10 +69,12 @@ export default function YearSelectionControls(
               taxBehavior={taxBehavior}
               isLoading={isLoading}
               setSelectedYear={setYear}
-              setNames={setNames}
+              setNames={setNames}        
+              setYears={setYears}      
               setIsLoading={setIsLoading}
               setError={setError}
               setContextMenu={setContextMenu}
+              setToastMessage={setToastMessage}
             />
           ))}
           <ExpandContent expanded={!!year}>
