@@ -41,7 +41,7 @@ export default function DeleteButton(props: DeleteButtonProps) {
           : "Delete all progress for this year and name."
       }
     >
-      {"Delete progress"}
+      Restart
     </button>
   );
 }

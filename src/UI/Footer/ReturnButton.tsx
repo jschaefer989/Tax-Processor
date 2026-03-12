@@ -11,7 +11,7 @@ export function ReturnButton() {
   }, []);
 
   return (
-    <button className="return-button" onClick={onClick}>
+    <button className="ghost" onClick={onClick}>
       Return
     </button>
   );

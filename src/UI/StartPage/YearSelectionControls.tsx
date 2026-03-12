@@ -1,5 +1,6 @@
 import type { StartBehavior } from "../../DataModel/StartBehavior";
 import { ExpandContent } from "../General/ExpandContent";
+import { AddNameButton } from "./AddNameButton";
 import NameButton from "./NameButton";
 import NewYearButton from "./NewYearButton";
 import YearButton from "./YearButton";
@@ -41,6 +42,7 @@ export default function YearSelectionControls(
                 isLoading={isLoading}
               />
             ))}
+            <AddNameButton startBehavior={startBehavior} isLoading={isLoading} />
           </ExpandContent>
         </div>
       )}

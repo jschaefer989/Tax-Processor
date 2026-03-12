@@ -4,6 +4,7 @@ import type { Steps } from "../../DataModel/TaxStep";
 import DeleteButton from "./DeleteButton";
 import LastSavedText from "./LastSavedText";
 import SaveButton from "./SaveButton";
+import { ReturnButton } from "./ReturnButton";
 
 interface HeaderButtonsProps {
   readonly currentStep: Steps | undefined;
@@ -63,6 +64,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
             name={name}
             isLoading={isLoading}
           />
+          <ReturnButton isLoading={isLoading} />
         </div>
       ) : (
         <p>Loading...</p>
