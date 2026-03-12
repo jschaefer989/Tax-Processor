@@ -60,6 +60,7 @@ export default function NameButton(props: NameButtonProps) {
 
   return (
     <button
+    className="name-button"
       onClick={onClick}
       disabled={isLoading}
       title={

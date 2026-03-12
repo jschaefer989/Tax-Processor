@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-
-type ExpandDirection = "vertical" | "horizontal";
+import { ExpandDirection } from "./ExpandButton";
 
 interface ExpandContentProps {
   expanded: boolean;
@@ -10,14 +9,14 @@ interface ExpandContentProps {
 }
 
 export function ExpandContent(props: ExpandContentProps) {
-  const { expanded, children, direction = "vertical", className } = props;
+  const { expanded, children, direction = ExpandDirection.Down, className } = props;
 
   const contentRef = useRef<HTMLDivElement>(null);
   const contentInnerRef = useRef<HTMLDivElement>(null);
-  const [contentSize, setContentSize] = useState<string>("none");
+  const [contentSize, setContentSize] = useState<string>(expanded ? "none" : "0px");
   const prevExpanded = useRef(expanded);
 
-  const isVertical = direction === "vertical";
+  const isVertical = direction === ExpandDirection.Down || direction === ExpandDirection.Up;
 
   function getContentSize(): number {
     if (!contentInnerRef.current) return 0;

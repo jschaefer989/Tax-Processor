@@ -2,6 +2,7 @@ import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
 import type { ContextMenuProps } from "../General/ContextMenu";
+import { ExpandContent } from "../General/ExpandContent";
 import NameButton from "./NameButton";
 import NewYearButton from "./NewYearButton";
 import YearButton from "./YearButton";
@@ -55,10 +56,7 @@ export default function YearSelectionControls(
     <>
       <p className="subtitle">Pick a tax year to begin.</p>
       {years && years.length > 0 && (
-        <div
-          className="panel years-container"
-          style={{ maxHeight: year ? "1000px" : "100px" }}
-        >
+        <div className="years-container">
           {years.map((otherYear) => (
             <YearButton
               key={otherYear}
@@ -73,7 +71,7 @@ export default function YearSelectionControls(
               setContextMenu={setContextMenu}
             />
           ))}
-          <div className={`names-container ${year ? "visible" : ""}`}>
+          <ExpandContent expanded={!!year}>
             {names?.map((name) => (
               <NameButton
                 key={name}
@@ -91,7 +89,7 @@ export default function YearSelectionControls(
                 setShowStartPage={setShowStartPage}
               />
             ))}
-          </div>
+          </ExpandContent>
         </div>
       )}
       <NewYearButton
