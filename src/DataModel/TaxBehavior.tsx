@@ -42,6 +42,20 @@ export class TaxBehavior {
     }
   }
 
+  async getDatabaseConnectionStatus(): Promise<boolean> {
+    try {
+      const response = await fetch("/api/health/db");
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = (await response.json()) as { connected: boolean };
+      return data.connected;
+    } catch {
+      return false;
+    }
+  }
+
   async testDatabaseConnection(
     host: string,
     port: number,
@@ -210,6 +224,7 @@ export class TaxBehavior {
       if (saved.year !== year) {
         return;
       }
+      setNoDbConnection(false);
       setCurrentStep(saved.currentStep as Steps);
       setResponses(saved.responses.map((r) => new TaxResponse(r.form, r.label, r.line, r.value)));
       setLastSavedTime(new Date(saved.updatedAt));

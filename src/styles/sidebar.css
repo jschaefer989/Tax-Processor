@@ -1,28 +1,37 @@
 .sidebar-toggle {
   flex: 0 0 auto;
-  background: rgba(12, 20, 32, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 5px;
+  background: linear-gradient(180deg, rgba(246, 198, 91, 0.16), rgba(246, 198, 91, 0.08));
+  border: 1px solid rgba(246, 198, 91, 0.55);
+  border-radius: 999px;
   padding: 0;
-  box-shadow: var(--shadow);
+  box-shadow: 0 8px 18px -12px rgba(250, 200, 80, 0.75);
   cursor: pointer;
-  transition: all 200ms ease;
-  align-self: stretch;
+  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 160ms ease;
+  align-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 15px;
-  height: auto;
+  width: 28px;
+  min-width: 28px;
+  height: 62px;
+  color: var(--accent);
 }
 
 .sidebar-toggle:hover {
-  background: rgba(12, 20, 32, 0.88);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(246, 198, 91, 0.26), rgba(246, 198, 91, 0.12));
+  border-color: rgba(246, 198, 91, 0.8);
+  box-shadow: 0 12px 24px -14px rgba(250, 200, 80, 0.9);
+  transform: translateY(-1px);
+}
+
+.sidebar-toggle:focus-visible {
+  outline: 2px solid rgba(246, 198, 91, 0.75);
+  outline-offset: 2px;
 }
 
 .sidebar-toggle .expansion-arrow {
-  width: 5px;
-  height: 5px;
+  width: 10px;
+  height: 10px;
   transition: transform 300ms ease;
   flex-shrink: 0;
   display: flex;
@@ -30,8 +39,34 @@
   justify-content: center;
 }
 
-.sidebar-toggle[aria-expanded="true"] .expansion-arrow {
-  transform: rotate(180deg);
+.expand-button-inline {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  transition: transform 300ms ease, opacity 200ms ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.expand-button-inline:hover {
+  opacity: 0.8;
+  transform: scale(1.15);
+}
+
+.expand-button-inline:focus-visible {
+  outline: 1px solid rgba(246, 198, 91, 0.6);
+  outline-offset: 1px;
+  border-radius: 3px;
+}
+
+.expand-button-inline .expansion-arrow {
+  width: 12px;
+  height: 12px;
 }
 
 .sidebar-column {
@@ -57,16 +92,25 @@
 }
 
 .sidebar-panel {
-  max-height: 2000px;
+  transition: max-height 600ms ease, opacity 300ms ease;
+}
+
+.sidebar-panel--open {
+  max-height: 20000px;
+  overflow: visible;
+  opacity: 1;
+}
+
+.sidebar-panel--closed {
+  max-height: 0;
   overflow: hidden;
-  transition: max-height 600ms ease;
+  opacity: 0;
 }
 
 .sidebar-panel .panel__header {
-  background: rgba(12, 20, 32, 0.78);
+  background: var(--panel);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: none;
-  border-radius: 0 0 22px 22px;
+  border-radius: 22px;
   padding: 1.5rem;
   box-shadow: var(--shadow);
 }
@@ -77,15 +121,53 @@
 }
 
 .sidebar-card {
-  background: rgba(12, 20, 32, 0.78);
+  background: linear-gradient(
+    180deg,
+    rgba(20, 36, 58, 0.92),
+    rgba(16, 30, 50, 0.9)
+  );
   border-radius: 22px;
   padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(130, 170, 220, 0.2);
   box-shadow: var(--shadow);
+}
+
+.sidebar-card + .sidebar-card {
+  margin-top: 0.9rem;
 }
 
 .sidebar-card h3 {
   margin: 0 0 0.75rem;
+}
+
+.sidebar-card--nested {
+  background: linear-gradient(
+    180deg,
+    rgba(9, 20, 36, 0.74),
+    rgba(8, 18, 34, 0.62)
+  );
+  border-color: rgba(130, 170, 220, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  padding: 0.9rem 0.95rem;
+}
+
+.sidebar-card--nested h3 {
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: rgba(204, 221, 245, 0.92);
+  margin-bottom: 0.6rem;
+}
+
+.sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.sidebar-section-header--expanded {
+  margin-bottom: 0.5rem;
 }
 
 .sidebar-card ul {
@@ -96,9 +178,14 @@
   gap: 0.5rem;
 }
 
-.sidebar-toggle-wrapper {
+.sidebar-toggle-wrapper,
+.panel-toggle-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  align-self: stretch;
+  align-self: flex-start;
+  min-width: 36px;
+  position: sticky;
+  top: calc(50vh - 31px);
+  z-index: 2;
 }

@@ -1,4 +1,5 @@
-import TaxResponse, { TaxFieldLabel } from "../../DataModel/TaxResponse";
+import TaxResponse from "../../DataModel/TaxResponse";
+import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
 interface Form8949Page1Props {
@@ -13,11 +14,10 @@ export default function Form8949Page1(props: Form8949Page1Props) {
   }
 
   return (
-    <div className="sidebar-card">
-      <h3>Form 8949 - Part I</h3>
+    <FormHeader title="Form 8949 - Page 1">
         <FormSection
           responses={responses}
         />
-    </div>
+    </FormHeader>
   );
 }

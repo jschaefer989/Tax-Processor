@@ -7,8 +7,8 @@ public class Form1099Processor : FileProcessor
 {
     private bool IsHeader = false;
     private ReadableForm? CurrentForm = null;
-    private int ShortLine = 1;
-    private int LongLine = 1;
+    private int ShortLine = 0;
+    private int LongLine = 0;
 
     private readonly List<TaxResponse> Responses = [];
     private static readonly Dictionary<ReadableForm, string[]> expectedHeaders = new()
@@ -144,61 +144,62 @@ public class Form1099Processor : FileProcessor
     {
         var term = line.Term;
         var form = Get1099BTaxForm(term);
+        var lineNumber = IncrementLine(form);
 
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.oneA,
-            Line = IncrementLine(form),
+            Line = lineNumber,
             Value = line.Description,
         });
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.oneB,
-            Line = IncrementLine(form),
+            Line = lineNumber,
             Value = line.DateAcquired,
         });
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.oneC,
-            Line = IncrementLine(form),
+            Line = lineNumber,
             Value = line.DateSold,
         });
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.oneD,
-            Line = IncrementLine(form),
+            Line = lineNumber,
             Value = line.Proceeds,
         });
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.oneE,
-            Line = IncrementLine(form),
+            Line = lineNumber,
             Value = line.CostBasis,
         });
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.oneF,
-            Line = IncrementLine(form),
+            Line = lineNumber,
             Value = line.MarketDiscount,
         });
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.oneG,
-            Line = IncrementLine(form),
+            Line = lineNumber,
             Value = line.WashSaleLossDisallowed,
         });
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.formCode,
-            Line = IncrementLine(form),
+            Line = lineNumber,
             Value = line.FormCode,
         });
     }

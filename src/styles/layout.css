@@ -4,6 +4,20 @@
   align-items: flex-start;
 }
 
+.panel-shell {
+  flex: 1.2;
+  min-width: 0;
+  display: flex;
+  transition: flex 600ms ease, opacity 600ms ease;
+}
+
+.sidebar-shell {
+  flex: 0.8;
+  min-width: 0;
+  display: flex;
+  transition: flex 600ms ease, opacity 600ms ease;
+}
+
 .panel {
   flex: 1.2;
   background: var(--panel);
@@ -14,10 +28,41 @@
   flex-direction: column;
   gap: 1.75rem;
   min-width: 0;
+  transition: flex 600ms ease, opacity 600ms ease, width 600ms ease, padding 250ms ease;
+  overflow: hidden;
 }
 
 .layout.sidebar-collapsed .panel {
   animation: panelExpand 600ms ease;
+}
+
+.layout.main-collapsed .panel {
+  flex: 0;
+  width: 0;
+  opacity: 0;
+  padding: 0;
+  border-width: 0;
+  box-shadow: none;
+}
+
+.layout.main-collapsed .sidebar-column {
+  flex: 1.2;
+}
+
+.layout.main-collapsed .panel-shell {
+  flex: 0;
+}
+
+.layout.main-collapsed .sidebar-shell {
+  flex: 1.2;
+}
+
+.layout.sidebar-collapsed .sidebar-shell {
+  flex: 0;
+}
+
+.layout.sidebar-collapsed .panel-shell {
+  flex: 1.2;
 }
 
 @keyframes panelExpand {

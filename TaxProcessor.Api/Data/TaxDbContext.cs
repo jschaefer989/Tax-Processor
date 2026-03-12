@@ -19,7 +19,7 @@ public class TaxDbContext : DbContext
         // Configure foreign key relationship
         modelBuilder
             .Entity<TaxResponseEntity>()
-            .HasOne<TaxProgressEntity>()
+            .HasOne(r => r.TaxProgress)
             .WithMany(p => p.Responses)
             .HasForeignKey(r => new { r.Year, r.Name })
             .OnDelete(DeleteBehavior.Cascade);

@@ -2,14 +2,15 @@ import { useMemo, useState } from "react";
 import { TaxBehavior } from "../DataModel/TaxBehavior";
 import TaxResponse from "../DataModel/TaxResponse";
 import { Steps } from "../DataModel/TaxStep";
-import FileSidebar from "./Sidebar/FileSidebar";
-import MainAppHeader from "./Header/MainAppHeader";
+import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import MainForm from "./Form/MainForm";
-import StartPage from "./StartPage/StartPage";
-import Toast from "./General/Toast";
-import ContextMenu from "./General/ContextMenu";
 import type { ContextMenuProps } from "./General/ContextMenu";
-import SidebarExpandButton from "./Sidebar/SidebarExpandButton";
+import ContextMenu from "./General/ContextMenu";
+import { ExpandButton, ExpandDirection } from "./General/ExpandButton";
+import Toast from "./General/Toast";
+import MainAppHeader from "./Header/MainAppHeader";
+import FileSidebar from "./Sidebar/FileSidebar";
+import StartPage from "./StartPage/StartPage";
 
 export default function App() {
   const taxBehavior = useMemo(() => new TaxBehavior(), []);
@@ -32,8 +33,16 @@ export default function App() {
   const [contextMenu, setContextMenu] = useState<ContextMenuProps | undefined>(
     undefined,
   );
+  const [panelExpanded, setPanelExpanded] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   //#endregion useState
+
+  useRefreshDbConnection(
+    showStartPage,
+    noDbConnection,
+    taxBehavior,
+    setNoDbConnection,
+  );
 
   return (
     <div className="app">
@@ -76,7 +85,7 @@ export default function App() {
           />
 
           <main
-            className={`layout ${!sidebarExpanded ? "sidebar-collapsed" : ""}`}
+            className={`layout ${!sidebarExpanded ? "sidebar-collapsed" : ""} ${!panelExpanded ? "main-collapsed" : ""}`}
           >
             <section className="panel">
               <MainForm
@@ -92,10 +101,26 @@ export default function App() {
               />
             </section>
 
-            <SidebarExpandButton
-              sidebarExpanded={sidebarExpanded}
-              setSidebarExpanded={setSidebarExpanded}
-            />
+            {sidebarExpanded && (
+              <ExpandButton
+                expanded={panelExpanded}
+                setExpanded={setPanelExpanded}
+                title={
+                  panelExpanded
+                    ? "Collapse income overview"
+                    : "Expand income overview"
+                }
+              />
+            )}
+
+            {panelExpanded && (
+              <ExpandButton
+                expanded={sidebarExpanded}
+                setExpanded={setSidebarExpanded}
+                title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
+                direction={ExpandDirection.Right}
+              />
+            )}
 
             <div className="sidebar-column">
               <FileSidebar

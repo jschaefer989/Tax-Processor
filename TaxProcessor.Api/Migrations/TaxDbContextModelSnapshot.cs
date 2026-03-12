@@ -18,29 +18,63 @@ namespace TaxProcessor.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TaxProcessor.Api.Data.TaxProgressEntity", b =>
+            modelBuilder.Entity("TaxProcessor.Api.Data.TaxProgressEntity", builder =>
                 {
-                    b.Property<int>("Year")
+                    builder.Property<int>("Year")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
+                    builder.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CurrentStepId")
+                    builder.Property<string>("CurrentStepId")
                         .HasColumnType("text");
 
-                    b.Property<string>("Responses")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
-
-                    b.Property<DateTime>("UpdatedAt")
+                    builder.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Year", "Name");
+                    builder.HasKey("Year", "Name");
 
-                    b.ToTable("TaxProgress");
+                    builder.ToTable("TaxProgress");
+
+                    builder.Navigation("Responses");
                 });
+
+            modelBuilder.Entity("TaxProcessor.Api.Data.TaxResponseEntity", builder =>
+                {
+                    builder.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    builder.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    builder.Property<string>("Form")
+                        .HasColumnType("text");
+
+                    builder.Property<string>("Label")
+                        .HasColumnType("text");
+
+                    builder.Property<int>("Line")
+                        .HasColumnType("integer");
+
+                    builder.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    builder.HasKey("Year", "Name", "Form", "Label", "Line");
+
+                    builder.HasIndex("Year", "Name");
+
+                    builder.ToTable("TaxResponse");
+
+                    builder.HasOne("TaxProcessor.Api.Data.TaxProgressEntity", "TaxProgress")
+                        .WithMany("Responses")
+                        .HasForeignKey("Year", "Name")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    builder.Navigation("TaxProgress");
+                });
+
 #pragma warning restore 612, 618
         }
     }

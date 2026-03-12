@@ -1,4 +1,5 @@
 import TaxResponse, { TaxFieldLabel, TaxForm } from "../../DataModel/TaxResponse";
+import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
 interface Form1040Props {
@@ -14,16 +15,19 @@ export default function Form1040(props: Form1040Props) {
 
   const incomeResponses = getForm1040IncomeResponses(responses);
 
+  if (incomeResponses.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="sidebar-card">
-      <h3>Form 1040</h3>
+    <FormHeader title="Form 1040">
       {incomeResponses.length > 0 && (
         <FormSection
           title="Income"
           responses={incomeResponses}
         />
       )}
-    </div>
+    </FormHeader>
   );
 }
 
