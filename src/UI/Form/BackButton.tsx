@@ -5,12 +5,11 @@ import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 interface BackButtonProps {
   readonly taxBehavior: TaxBehavior;
   readonly currentStep: Steps;
-  readonly setCurrentStep: (step: Steps) => void;
   readonly isLoading: boolean;
 }
 
 export default function BackButton(props: BackButtonProps) {
-  const { taxBehavior, currentStep, setCurrentStep, isLoading } = props;
+  const { taxBehavior, currentStep, isLoading } = props;
 
   const currentIndex = useMemo(
     () => taxBehavior.getStepIndex(currentStep),
@@ -20,8 +19,8 @@ export default function BackButton(props: BackButtonProps) {
   const handleBack = useCallback(() => {
     const nextIndex = Math.max(currentIndex - 1, 0);
     const nextStep = taxBehavior.steps[nextIndex];
-    setCurrentStep(nextStep.step);
-  }, [currentIndex, taxBehavior.steps, setCurrentStep]);
+    taxBehavior.setCurrentStep(nextStep.step);
+  }, [currentIndex, taxBehavior.steps]);
 
   return (
     <button

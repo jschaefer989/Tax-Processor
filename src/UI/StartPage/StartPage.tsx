@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
-import type { Steps } from "../../DataModel/TaxStep";
-import type { ContextMenuProps } from "../General/ContextMenu";
+import { useStartBehavior } from "../../hooks/useStartBehavior";
 import MissingDatabaseControls from "./MissingDatabaseControls";
 import NewYearPage from "./NewYearPage";
 import YearSelectionControls from "./YearSelectionControls";
@@ -13,23 +11,7 @@ interface StartPageProps {
   readonly selectedName: string | undefined;
   readonly isLoading: boolean;
   readonly noDbConnection: boolean;
-  readonly setSelectedYear: React.Dispatch<React.SetStateAction<number | undefined>>;
-  readonly setSelectedName: React.Dispatch<React.SetStateAction<string | undefined>>;
-  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setCurrentStep: React.Dispatch<
-    React.SetStateAction<Steps | undefined>
-  >;
-  readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  readonly setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
-  readonly setLastSavedTime: React.Dispatch<
-    React.SetStateAction<Date | undefined>
-  >;
-  readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setContextMenu: React.Dispatch<
-    React.SetStateAction<ContextMenuProps | undefined>
-  >;
-  readonly setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly error: string | undefined;
 }
 
 export default function StartPage(props: StartPageProps) {
@@ -39,22 +21,11 @@ export default function StartPage(props: StartPageProps) {
     selectedName,
     isLoading,
     noDbConnection,
-    setCurrentStep,
-    setError,
-    setSelectedYear,
-    setSelectedName,
-    setIsLoading,
-    setResponses,
-    setLastSavedTime,
-    setNoDbConnection,
-    setShowStartPage,
-    setContextMenu,
-    setToastMessage,
+    error,
   } = props;
 
-  const [years, setYears] = useState<number[]>([]);
-  const [names, setNames] = useState<string[]>([]);
-  const [newYear, setNewYear] = useState<boolean>(false);
+  const { years, names, newYear, startBehavior } =
+    useStartBehavior(taxBehavior);
 
   useEffect(() => {
     if (selectedYear) {
@@ -63,8 +34,7 @@ export default function StartPage(props: StartPageProps) {
     let isCancelled = false;
 
     const initialize = async () => {
-      const hasDbConnection =
-        await taxBehavior.checkDatabaseConnection(setNoDbConnection, setIsLoading);
+      const hasDbConnection = await taxBehavior.checkDatabaseConnection();
 
       if (isCancelled) {
         return;
@@ -74,7 +44,7 @@ export default function StartPage(props: StartPageProps) {
         return;
       }
 
-      taxBehavior.loadYears(setYears, setError, setIsLoading);
+      startBehavior.loadYears();
     };
 
     initialize();
@@ -87,20 +57,11 @@ export default function StartPage(props: StartPageProps) {
   if (newYear && selectedYear !== undefined) {
     return (
       <NewYearPage
+        startBehavior={startBehavior}
         name={selectedName}
         year={selectedYear}
         names={names}
-        taxBehavior={taxBehavior}
         isLoading={isLoading}
-        setSelectedName={setSelectedName}
-        setIsLoading={setIsLoading}
-        setCurrentStep={setCurrentStep}
-        setError={setError}
-        setResponses={setResponses}
-        setLastSavedTime={setLastSavedTime}
-        setNewYear={setNewYear}
-        setNoDbConnection={setNoDbConnection}
-        setShowStartPage={setShowStartPage}
       />
     );
   }
@@ -111,40 +72,17 @@ export default function StartPage(props: StartPageProps) {
       <h1>File with clarity, step by step.</h1>
       {noDbConnection ? (
         <MissingDatabaseControls
-          taxBehavior={taxBehavior}
+          startBehavior={startBehavior}
           isLoading={isLoading}
-          setError={setError}
-          setIsLoading={setIsLoading}
-          setCurrentStep={setCurrentStep}
-          setResponses={setResponses}
-          setLastSavedTime={setLastSavedTime}
-          setSelectedName={setSelectedName}
-          setNewYear={setNewYear}
-          setNoDbConnection={setNoDbConnection}
-          setShowStartPage={setShowStartPage}
-          setYears={setYears}
+          error={error}
         />
       ) : (
         <YearSelectionControls
-          taxBehavior={taxBehavior}
+          startBehavior={startBehavior}
           isLoading={isLoading}
           year={selectedYear}
           names={names}
           years={years}
-          setYear={setSelectedYear}
-          setName={setSelectedName}
-          setNames={setNames}
-          setYears={setYears}
-          setIsLoading={setIsLoading}
-          setError={setError}
-          setContextMenu={setContextMenu}
-          setCurrentStep={setCurrentStep}
-          setResponses={setResponses}
-          setLastSavedTime={setLastSavedTime}
-          setNoDbConnection={setNoDbConnection}
-          setShowStartPage={setShowStartPage}
-          setNewYear={setNewYear}
-          setToastMessage={setToastMessage}
         />
       )}
     </div>

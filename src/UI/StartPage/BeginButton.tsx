@@ -1,9 +1,6 @@
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
 interface BeginButtonProps {
   readonly tempName?: string;
-  readonly year?: number;
-  readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean; 
   readonly onStart: () => Promise<void>;
 }
@@ -12,7 +9,7 @@ export default function BeginButton(props: BeginButtonProps) {
   const {
     tempName,
     isLoading,
-    onStart
+    onStart,
   } = props;
 
   return (

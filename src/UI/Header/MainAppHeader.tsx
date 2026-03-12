@@ -8,18 +8,9 @@ import StepTracker from "./StepTracker";
 interface HeaderProps {
   readonly currentStep: Steps | undefined;
   readonly isLoading: boolean;
-  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setCurrentStep: (step: Steps) => void;
   readonly taxBehavior: TaxBehavior;
   readonly responses: TaxResponse[];
-  readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  readonly setToastMessage: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
   readonly lastSavedTime: Date | undefined;
-  readonly setLastSavedTime: React.Dispatch<
-    React.SetStateAction<Date | undefined>
-  >;
   readonly year?: number;
   readonly name?: string;
   readonly noDbConnection: boolean;
@@ -29,14 +20,9 @@ export default function MainAppHeader(props: HeaderProps) {
   const {
     currentStep,
     isLoading,
-    setIsLoading,
-    setCurrentStep,
     taxBehavior,
     responses,
-    setError,
-    setToastMessage,
     lastSavedTime,
-    setLastSavedTime,
     year,
     name,
     noDbConnection,
@@ -52,11 +38,7 @@ export default function MainAppHeader(props: HeaderProps) {
             responses={responses}
             taxBehavior={taxBehavior}
             isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            setError={setError}
-            setToastMessage={setToastMessage}
             lastSavedTime={lastSavedTime}
-            setLastSavedTime={setLastSavedTime}
             year={year}
             name={name}
             noDbConnection={noDbConnection}
@@ -67,10 +49,7 @@ export default function MainAppHeader(props: HeaderProps) {
       <div className="panel">
         <div className="tabs-progress-wrapper">
           {currentStep ? (
-            <StepTracker
-              activeStep={currentStep}
-              setActiveStep={setCurrentStep}
-            />
+            <StepTracker taxBehavior={taxBehavior} activeStep={currentStep} />
           ) : (
             <p>Loading...</p>
           )}

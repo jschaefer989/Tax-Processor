@@ -2,66 +2,44 @@ import React, { useCallback } from "react";
 import ContextMenuOption, {
   ContextMenuIcon,
 } from "../../DataModel/ContextMenuOption";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type { ContextMenuProps } from "../General/ContextMenu";
+import type { StartBehavior } from "../../DataModel/StartBehavior";
 
 interface YearButtonProps {
   readonly year: number;
   readonly selectedYear: number | undefined;
-  readonly taxBehavior: TaxBehavior;
+  readonly startBehavior: StartBehavior;
   readonly isLoading: boolean;
-  readonly setSelectedYear: React.Dispatch<
-    React.SetStateAction<number | undefined>
-  >;
-  readonly setNames: React.Dispatch<React.SetStateAction<string[]>>;
-  readonly setYears: React.Dispatch<React.SetStateAction<number[]>>;
-  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  readonly setContextMenu: React.Dispatch<
-    React.SetStateAction<ContextMenuProps | undefined>
-  >;
-  readonly setToastMessage: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
 }
 
 export default function YearButton(props: YearButtonProps) {
-  const {
-    year,
-    selectedYear,
-    taxBehavior,
-    isLoading,
-    setSelectedYear,
-    setNames,
-    setYears,
-    setIsLoading,
-    setError,
-    setContextMenu,
-    setToastMessage,
-  } = props;
+  const { year, selectedYear, startBehavior, isLoading } = props;
 
   //#region useCallback
   const onClick = useCallback(async () => {
+    const { taxBehavior } = startBehavior;
     if (selectedYear === year) {
-      setSelectedYear(undefined);
+      taxBehavior.setYear(undefined);
     } else {
-      setIsLoading(true);
-      await taxBehavior.loadNames(year, setNames, setError, setIsLoading);
-      setSelectedYear(year);
-      setIsLoading(false);
+      taxBehavior.setIsLoading(true);
+      await startBehavior.loadNames(year);
+      taxBehavior.setYear(year);
+      taxBehavior.setIsLoading(false);
     }
   }, [year, selectedYear]);
 
   const onDeleteYear = useCallback(async () => {
+    const { taxBehavior } = startBehavior;
     const confirmed = window.confirm(
       "Are you sure you want to delete this year and all associated tax returns? This cannot be undone.",
     );
     if (confirmed) {
-      await taxBehavior.deleteYear(year, setIsLoading, setToastMessage);
-      setYears((prevYears) => prevYears.filter((y) => y !== year));
+      await startBehavior.deleteYear(year);
+      startBehavior.setYears((prevYears) =>
+        prevYears.filter((year) => year !== year),
+      );
       if (selectedYear === year) {
-        setSelectedYear(undefined);
-        setNames([]);
+        taxBehavior.setYear(undefined);
+        startBehavior.setNames([]);
       }
     }
   }, [year, selectedYear]);
@@ -69,7 +47,7 @@ export default function YearButton(props: YearButtonProps) {
   const onContextMenu = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
-      setContextMenu({
+      startBehavior.taxBehavior.setContextMenu({
         x: event.clientX,
         y: event.clientY,
         options: [

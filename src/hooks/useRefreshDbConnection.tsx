@@ -5,7 +5,6 @@ export function useRefreshDbConnection(
   showStartPage: boolean,
   noDbConnection: boolean,
   taxBehavior: TaxBehavior,
-  setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   useEffect(() => {
     if (showStartPage) {
@@ -17,7 +16,7 @@ export function useRefreshDbConnection(
     const refreshDbConnection = async () => {
       const connected = await taxBehavior.getDatabaseConnectionStatus();
       if (!isCancelled) {
-        setNoDbConnection(!connected);
+        taxBehavior.setNoDbConnection(!connected);
       }
     };
 

@@ -1,63 +1,34 @@
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
-import type { Steps } from "../../DataModel/TaxStep";
+import { useCallback } from "react";
+import type { StartBehavior } from "../../DataModel/StartBehavior";
 import BeginButton from "./BeginButton";
 import DatabaseConnectionForm from "./DatabaseConnectionForm";
+import { Steps } from "../../DataModel/TaxStep";
 
 interface MissingDatabaseControlsProps {
-  taxBehavior: TaxBehavior;
+  startBehavior: StartBehavior;
   isLoading: boolean;
-  setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>;
-  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
-  setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>;
-  setSelectedName: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
-  setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
-  setYears: React.Dispatch<React.SetStateAction<number[]>>;
+  readonly error: string | undefined;
 }
 
 export default function MissingDatabaseControls(
   props: MissingDatabaseControlsProps,
 ) {
-  const {
-    taxBehavior,
-    isLoading,
-    setError,
-    setIsLoading,
-    setCurrentStep,
-    setResponses,
-    setLastSavedTime,
-    setSelectedName,
-    setNewYear,
-    setNoDbConnection,
-    setShowStartPage,
-    setYears,
-  } = props;
+  const { startBehavior, isLoading, error } = props;
+
+  const onStart = useCallback(async () => {
+    startBehavior.taxBehavior.setError(undefined);
+    await startBehavior.taxBehavior.loadSteps();
+    startBehavior.taxBehavior.setCurrentStep(Steps.Income);
+    startBehavior.taxBehavior.setShowStartPage(false);
+  }, []);
 
   return (
     <>
-      <BeginButton
-        taxBehavior={taxBehavior}
-        isLoading={isLoading}
-        setError={setError}
-        setIsLoading={setIsLoading}
-        setCurrentStep={setCurrentStep}
-        setResponses={setResponses}
-        setLastSavedTime={setLastSavedTime}
-        setSelectedName={setSelectedName}
-        setNewYear={setNewYear}
-        setNoDbConnection={setNoDbConnection}
-        setShowStartPage={setShowStartPage}
-      />      
+      <BeginButton isLoading={isLoading} onStart={onStart} />
       <DatabaseConnectionForm
-        taxBehavior={taxBehavior}
-        setYears={setYears}
-        setNoDbConnection={setNoDbConnection}
+        startBehavior={startBehavior}
         isLoading={isLoading}
-        setIsLoading={setIsLoading}
+        error={error}
       />
     </>
   );

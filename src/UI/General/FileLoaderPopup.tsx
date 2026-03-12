@@ -1,20 +1,16 @@
 import React, { useCallback, useRef } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
 import "./FileLoaderPopup.css";
 
 interface FileLoaderPopupProps {
   taxBehavior: TaxBehavior;
   label: string;
   formType: string;
-  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
-  setError: (error: string | undefined) => void;
-  setIsLoading: (loading: boolean) => void;
   onClose: () => void;
 }
 
 export default function FileLoaderPopup(props: FileLoaderPopupProps) {
-  const { taxBehavior, label, formType, setResponses, setError, setIsLoading, onClose } = props;
+  const { taxBehavior, label, formType, onClose } = props;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // TODO: factor this out into generic popup component
@@ -22,16 +18,13 @@ export default function FileLoaderPopup(props: FileLoaderPopupProps) {
   const onSubmit = useCallback(async () => {
     const file = fileInputRef.current?.files?.[0];
     if (!file) {
-      setError("Please select a file.");
+      taxBehavior.setError("Please select a file.");
       return;
     }
 
     await taxBehavior.uploadTaxFile(
       file,
       formType,
-      setError,
-      setIsLoading,
-      setResponses,
     );
     
     onClose();

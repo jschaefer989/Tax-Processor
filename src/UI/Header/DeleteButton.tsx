@@ -7,13 +7,6 @@ interface DeleteButtonProps {
   readonly year: number;
   readonly name: string;
   readonly isLoading: boolean;
-  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setToastMessage: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
-  readonly setLastSavedTime: React.Dispatch<
-    React.SetStateAction<Date | undefined>
-  >;
 }
 
 export default function DeleteButton(props: DeleteButtonProps) {
@@ -23,9 +16,6 @@ export default function DeleteButton(props: DeleteButtonProps) {
     year,
     name,
     isLoading,
-    setIsLoading,
-    setToastMessage,
-    setLastSavedTime,
   } = props;
 
   //#region useCallback
@@ -34,8 +24,8 @@ export default function DeleteButton(props: DeleteButtonProps) {
       "Are you sure you want to delete all progress? This cannot be undone.",
     );
     if (confirmed) {
-      taxBehavior.deleteProgress(year, name, setIsLoading, setToastMessage);
-      setLastSavedTime(undefined);
+      taxBehavior.deleteProgress(year, name);
+      taxBehavior.setLastSavedTime(undefined);
     }
   }, [name, year]);
   //#endregion useCallback

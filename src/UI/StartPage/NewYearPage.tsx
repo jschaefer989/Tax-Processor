@@ -6,46 +6,23 @@ import HeaderTitle from "../Header/HeaderTitle";
 import BeginButton from "./BeginButton";
 import NameButton from "./NameButton";
 import NewTaxpayerField from "./NewTaxpayerField";
+import type { StartBehavior } from "../../DataModel/StartBehavior";
 
 interface NewYearPageProps {
+  readonly startBehavior: StartBehavior;
   readonly names: string[];
   readonly year: number;
   readonly name: string | undefined;
-  readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
-  readonly setSelectedName: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
-  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setCurrentStep: React.Dispatch<
-    React.SetStateAction<Steps | undefined>
-  >;
-  readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  readonly setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
-  readonly setLastSavedTime: React.Dispatch<
-    React.SetStateAction<Date | undefined>
-  >;
-  readonly setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function NewYearPage(props: NewYearPageProps) {
   const {
+    startBehavior,
     names,
     year,
-    taxBehavior,
     isLoading,
     name,
-    setSelectedName,
-    setIsLoading,
-    setCurrentStep,
-    setError,
-    setResponses,
-    setLastSavedTime,
-    setNewYear,
-    setNoDbConnection,
-    setShowStartPage,
   } = props;
 
   const [tempName, setTempName] = useState<string>("");
@@ -54,24 +31,18 @@ export default function NewYearPage(props: NewYearPageProps) {
     if (tempName?.trim() === "") {
       return;
     }
-    setError(undefined);    
-    await taxBehavior.loadSteps(setCurrentStep, setError, setIsLoading);
+    startBehavior.taxBehavior.setError(undefined);    
+    await startBehavior.taxBehavior.loadSteps();
     if (year && tempName) {
-      await taxBehavior.resumeProgress(
+      await startBehavior.taxBehavior.resumeProgress(
         year,
         tempName.trim(),
-        setCurrentStep,
-        setResponses,
-        setError,
-        setLastSavedTime,
-        setNoDbConnection,
-        setIsLoading
       );
     }
-    setSelectedName(tempName?.trim());
-    setNewYear(false);
-    setCurrentStep(Steps.Income);    
-    setShowStartPage(false);
+    startBehavior.taxBehavior.setName(tempName?.trim());
+    startBehavior.setNewYear(false);
+    startBehavior.taxBehavior.setCurrentStep(Steps.Income);    
+    startBehavior.taxBehavior.setShowStartPage(false);
   }, [tempName, year]);
 
   return (
@@ -82,24 +53,14 @@ export default function NewYearPage(props: NewYearPageProps) {
           key={name}
           name={name}
           year={year}
-          taxBehavior={taxBehavior}
+          startBehavior={startBehavior}
           isLoading={isLoading}
-          setSelectedName={setSelectedName}
-          setIsLoading={setIsLoading}
-          setCurrentStep={setCurrentStep}
-          setError={setError}
-          setResponses={setResponses}
-          setLastSavedTime={setLastSavedTime}
-          setNoDbConnection={setNoDbConnection}
-          setShowStartPage={setShowStartPage}
         />
       ))}
       <div className="new-taxpayer-form">
         <NewTaxpayerField setTempName={setTempName} onStart={onStart} />
         <BeginButton
           tempName={tempName}
-          year={year}
-          taxBehavior={taxBehavior}
           isLoading={isLoading}
           onStart={onStart}
         />

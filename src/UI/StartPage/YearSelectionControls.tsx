@@ -1,60 +1,21 @@
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
-import type { Steps } from "../../DataModel/TaxStep";
-import type { ContextMenuProps } from "../General/ContextMenu";
+import type { StartBehavior } from "../../DataModel/StartBehavior";
 import { ExpandContent } from "../General/ExpandContent";
 import NameButton from "./NameButton";
 import NewYearButton from "./NewYearButton";
 import YearButton from "./YearButton";
 
 interface YearSelectionControlsProps {
-  taxBehavior: TaxBehavior;
+  startBehavior: StartBehavior;
   isLoading: boolean;
   year: number | undefined;
   names: string[];
   years: number[];
-  setYear: React.Dispatch<React.SetStateAction<number | undefined>>;
-  setName: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setNames: React.Dispatch<React.SetStateAction<string[]>>;
-  setYears: React.Dispatch<React.SetStateAction<number[]>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setContextMenu: React.Dispatch<
-    React.SetStateAction<ContextMenuProps | undefined>
-  >;
-  setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>;
-  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
-  setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>;
-  setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>;
-  setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
-  setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 export default function YearSelectionControls(
   props: YearSelectionControlsProps,
 ) {
-  const {
-    taxBehavior,
-    isLoading,
-    year,
-    names,
-    years,
-    setYear,
-    setNames,
-    setYears,
-    setName,
-    setIsLoading,
-    setError,
-    setContextMenu,
-    setCurrentStep,
-    setResponses,
-    setLastSavedTime,
-    setNoDbConnection,
-    setShowStartPage,
-    setNewYear,
-    setToastMessage,
-  } = props;
+  const { startBehavior, isLoading, year, names, years } = props;
 
   return (
     <>
@@ -66,15 +27,8 @@ export default function YearSelectionControls(
               key={otherYear}
               year={otherYear}
               selectedYear={year}
-              taxBehavior={taxBehavior}
+              startBehavior={startBehavior}
               isLoading={isLoading}
-              setSelectedYear={setYear}
-              setNames={setNames}        
-              setYears={setYears}      
-              setIsLoading={setIsLoading}
-              setError={setError}
-              setContextMenu={setContextMenu}
-              setToastMessage={setToastMessage}
             />
           ))}
           <ExpandContent expanded={!!year}>
@@ -83,30 +37,14 @@ export default function YearSelectionControls(
                 key={name}
                 year={year}
                 name={name}
-                taxBehavior={taxBehavior}
+                startBehavior={startBehavior}
                 isLoading={isLoading}
-                setSelectedName={setName}
-                setIsLoading={setIsLoading}
-                setCurrentStep={setCurrentStep}
-                setError={setError}
-                setResponses={setResponses}
-                setLastSavedTime={setLastSavedTime}
-                setNoDbConnection={setNoDbConnection}
-                setShowStartPage={setShowStartPage}
               />
             ))}
           </ExpandContent>
         </div>
       )}
-      <NewYearButton
-        taxBehavior={taxBehavior}
-        setSelectedYear={setYear}
-        setIsLoading={setIsLoading}
-        setError={setError}
-        setNewYear={setNewYear}
-        setNames={setNames}
-        isLoading={isLoading}
-      />
+      <NewYearButton startBehavior={startBehavior} isLoading={isLoading} />
     </>
   );
 }

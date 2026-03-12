@@ -1,18 +1,14 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
 import type { TaxStep } from "../../DataModel/TaxStep";
 import UploadFileButton from "./UploadFileButton";
 
 interface FormFilesProps {
   taxBehavior: TaxBehavior;
   step: TaxStep;
-  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
-  setError: (error: string | undefined) => void;
-  setIsLoading: (loading: boolean) => void;
 }
 
 export default function FormFiles(props: FormFilesProps) {
-  const { taxBehavior, step, setResponses, setError, setIsLoading } = props;
+  const { taxBehavior, step } = props;
 
   return (
     <div className="form-files">
@@ -22,9 +18,6 @@ export default function FormFiles(props: FormFilesProps) {
           <UploadFileButton
             taxBehavior={taxBehavior}
             file={file}
-            setError={setError}
-            setResponses={setResponses}
-            setIsLoading={setIsLoading}
           />
         </div>
       ))}

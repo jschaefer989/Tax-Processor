@@ -1,14 +1,15 @@
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import { Steps } from "../../DataModel/TaxStep";
 
 // TODO: factor this out and make it more readable
 
 interface StepTrackerProps {
+  readonly taxBehavior: TaxBehavior;
   readonly activeStep: Steps;
-  readonly setActiveStep: (step: Steps) => void;
 }
 
 export default function StepTracker(props: StepTrackerProps) {
-  const { activeStep, setActiveStep } = props;
+  const { taxBehavior, activeStep } = props;
   const steps = Object.values(Steps);
   const activeIndex = steps.indexOf(activeStep);
 
@@ -26,7 +27,7 @@ export default function StepTracker(props: StepTrackerProps) {
                 className={`stepper-button ${
                   isCompleted ? "completed" : isActive ? "active" : "inactive"
                 }`}
-                onClick={() => setActiveStep(step)}
+                onClick={() => taxBehavior.setCurrentStep(step)}
               >
                 <div className="stepper-circle">
                   {isCompleted ? (

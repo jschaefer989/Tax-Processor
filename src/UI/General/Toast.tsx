@@ -1,23 +1,24 @@
 import { useEffect } from "react";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
 interface ToastProps {
   readonly toastMessage: string;
-  readonly setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly taxBehavior: TaxBehavior;
 }
 
 export default function Toast(props: ToastProps) {
-  const { toastMessage, setToastMessage } = props;
+  const { toastMessage, taxBehavior } = props;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setToastMessage(undefined);
+      taxBehavior.setToastMessage(undefined);
     }, 3000);
 
     return () => clearTimeout(timeout);
   }, [toastMessage]);
 
   return (
-    <div className="toast" onClick={() => setToastMessage(undefined)}>
+    <div className="toast" onClick={() => taxBehavior.setToastMessage(undefined)}>
       {toastMessage}
     </div>
   );

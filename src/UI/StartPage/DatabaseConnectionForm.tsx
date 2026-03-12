@@ -1,21 +1,18 @@
 import { useCallback, useState } from "react";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type { StartBehavior } from "../../DataModel/StartBehavior";
 import ExclamationMarkIcon from "../General/ExclamationMarkIcon";
 import ExpandArrowIcon from "../General/ExpandArrowIcon";
 
 interface DatabaseConnectionFormProps {
-  readonly taxBehavior: TaxBehavior;
-  readonly setYears: React.Dispatch<React.SetStateAction<number[]>>;
-  readonly setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly startBehavior: StartBehavior;
   readonly isLoading: boolean;
-  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly error: string | undefined;
 }
 
 export default function DatabaseConnectionForm(
   props: DatabaseConnectionFormProps,
 ) {
-  const { taxBehavior, setYears, setNoDbConnection, isLoading, setIsLoading } =
-    props;
+  const { startBehavior, isLoading, error } = props;
 
   // #region useState
   const [dbHost, setDbHost] = useState("localhost");
@@ -23,26 +20,22 @@ export default function DatabaseConnectionForm(
   const [dbName, setDbName] = useState("");
   const [dbUsername, setDbUsername] = useState("");
   const [dbPassword, setDbPassword] = useState("");
-  const [error, setError] = useState<string | undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
   // #endregion
 
   // #region useCallback
   const onConnectDatabase = useCallback(async () => {
     const parsedPort = Number.parseInt(dbPort, 10);
-    const isConnected = await taxBehavior.testDatabaseConnection(
+    const isConnected = await startBehavior.taxBehavior.testDatabaseConnection(
       dbHost.trim(),
       Number.isNaN(parsedPort) ? 5432 : parsedPort,
       dbName.trim(),
       dbUsername.trim(),
       dbPassword,
-      setNoDbConnection,
-      setError,
-      setIsLoading,
     );
 
     if (isConnected) {
-      taxBehavior.loadYears(setYears, setError, setIsLoading);
+      startBehavior.loadYears();
     }
   }, [dbHost, dbPort, dbName, dbUsername, dbPassword]);
 

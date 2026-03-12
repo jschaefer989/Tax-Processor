@@ -8,40 +8,16 @@ interface SaveButtonProps {
   responses: TaxResponse[];
   taxBehavior: TaxBehavior;
   isLoading: boolean;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>;
   year: number;
   name: string;
 }
 
 export default function SaveButton(props: SaveButtonProps) {
-  const {
-    currentStep,
-    responses,
-    taxBehavior,
-    isLoading,
-    setIsLoading,
-    setError,
-    setToastMessage,
-    setLastSavedTime,
-    year,
-    name,
-  } = props;
+  const { currentStep, responses, taxBehavior, isLoading, year, name } = props;
 
   //#region useCallback
   const handleSave = useCallback(async () => {
-    taxBehavior.saveProgress(
-      year,
-      name,
-      currentStep,
-      responses,
-      setError,
-      setIsLoading,
-      setToastMessage,
-      setLastSavedTime,
-    );
+    taxBehavior.saveProgress(year, name, currentStep, responses);
   }, [currentStep, name, responses, taxBehavior, year]);
   //#endregion useCallback
 

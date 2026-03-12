@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
@@ -11,15 +10,7 @@ interface HeaderButtonsProps {
   readonly responses: TaxResponse[];
   readonly taxBehavior: TaxBehavior;
   readonly isLoading: boolean;
-  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  readonly setToastMessage: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
   readonly lastSavedTime: Date | undefined;
-  readonly setLastSavedTime: React.Dispatch<
-    React.SetStateAction<Date | undefined>
-  >;
   readonly year?: number;
   readonly name?: string;
   readonly noDbConnection: boolean;
@@ -31,11 +22,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
     responses,
     taxBehavior,
     isLoading,
-    setIsLoading,
-    setError,
-    setToastMessage,
     lastSavedTime,
-    setLastSavedTime,
     year,
     name,
     noDbConnection,
@@ -52,7 +39,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
   }
 
   if (!year || !name) {
-    setError("Year or name is missing. Cannot save progress.");
+    taxBehavior.setError("Year or name is missing. Cannot save progress.");
     return null;
   }
 
@@ -66,10 +53,6 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
             responses={responses}
             taxBehavior={taxBehavior}
             isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            setError={setError}
-            setToastMessage={setToastMessage}
-            setLastSavedTime={setLastSavedTime}
             year={year}
             name={name}
           />
@@ -79,9 +62,6 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
             year={year}
             name={name}
             isLoading={isLoading}
-            setToastMessage={setToastMessage}
-            setLastSavedTime={setLastSavedTime}
-            setIsLoading={setIsLoading}
           />
         </div>
       ) : (

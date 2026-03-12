@@ -2,19 +2,20 @@ import { useCallback } from "react";
 import TaxResponse, { TaxFieldLabel, TaxForm } from "../../DataModel/TaxResponse";
 import type { TaxStep } from "../../DataModel/TaxStep";
 import EntryField from "./EntryField";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
 interface FormFieldsProps {
   step: TaxStep;
   responses: TaxResponse[];
-  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
+  taxBehavior: TaxBehavior;
 }
 
 export default function FormFields(props: FormFieldsProps) {
-  const { step, responses, setResponses } = props;
+  const { step, responses, taxBehavior } = props;
 
   //#region useCallback
   const handleResponseChange = useCallback((form: TaxForm, label: TaxFieldLabel, line: number, value: string) => {
-    setResponses((prev) => {
+    taxBehavior.setResponses((prev) => {
       const existingIndex = prev.findIndex((r) => r.form === form && r.label === label && r.line === line);
       if (existingIndex !== -1) {
         // Update existing response
@@ -26,7 +27,7 @@ export default function FormFields(props: FormFieldsProps) {
         return [...prev, new TaxResponse(form, label, line, value)];
       }
     });
-  }, [setResponses]);
+  }, [taxBehavior]);
   //#endregion useCallback
 
   return (

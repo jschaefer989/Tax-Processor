@@ -1,3 +1,4 @@
+import type { ContextMenuProps } from "../UI/General/ContextMenu";
 import TaxProgress from "./TaxProgress";
 import TaxResponse from "./TaxResponse";
 import { Steps, TaxStep } from "./TaxStep";
@@ -7,7 +8,57 @@ export class TaxBehavior {
   steps: TaxStep[];
   progress: TaxProgress | undefined = undefined;
 
-  constructor() {
+  //#region State
+  setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>> =
+    () => {};
+  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>> = () => {};
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+  setError: React.Dispatch<React.SetStateAction<string | undefined>> = () => {};
+  setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>> =
+    () => {};
+  setYear: React.Dispatch<React.SetStateAction<number | undefined>> = () => {};
+  setName: React.Dispatch<React.SetStateAction<string | undefined>> = () => {};
+  setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+  setShowStartPage: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+  setPanelExpanded: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+  setSidebarExpanded: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+  setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>> =
+    () => {};
+  setContextMenu: React.Dispatch<
+    React.SetStateAction<ContextMenuProps | undefined>
+  > = () => {};
+  //#endregion State
+
+  constructor(
+    setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>,
+    setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>,
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setError: React.Dispatch<React.SetStateAction<string | undefined>>,
+    setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>,
+    setYear: React.Dispatch<React.SetStateAction<number | undefined>>,
+    setName: React.Dispatch<React.SetStateAction<string | undefined>>,
+    setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
+    setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>,
+    setPanelExpanded: React.Dispatch<React.SetStateAction<boolean>>,
+    setSidebarExpanded: React.Dispatch<React.SetStateAction<boolean>>,
+    setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>,
+    setContextMenu: React.Dispatch<
+      React.SetStateAction<ContextMenuProps | undefined>
+    >,
+  ) {
+    this.setCurrentStep = setCurrentStep;
+    this.setResponses = setResponses;
+    this.setIsLoading = setIsLoading;
+    this.setError = setError;
+    this.setLastSavedTime = setLastSavedTime;
+    this.setYear = setYear;
+    this.setName = setName;
+    this.setNoDbConnection = setNoDbConnection;
+    this.setShowStartPage = setShowStartPage;
+    this.setPanelExpanded = setPanelExpanded;
+    this.setSidebarExpanded = setSidebarExpanded;
+    this.setToastMessage = setToastMessage;
+    this.setContextMenu = setContextMenu;
     this.steps = [];
   }
 
@@ -19,26 +70,24 @@ export class TaxBehavior {
     return this.steps.findIndex((s) => s.step === step);
   }
 
-  async checkDatabaseConnection(
-    setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  ): Promise<boolean> {
+  //#region API Calls
+  async checkDatabaseConnection(): Promise<boolean> {
     try {
-      setIsLoading(true);
+      this.setIsLoading(true);
       const response = await fetch("/api/health/db");
       if (!response.ok) {
-        setNoDbConnection(true);
+        this.setNoDbConnection(true);
         return false;
       }
 
       const data = (await response.json()) as { connected: boolean };
-      setNoDbConnection(!data.connected);
+      this.setNoDbConnection(!data.connected);
       return data.connected;
     } catch {
-      setNoDbConnection(true);
+      this.setNoDbConnection(true);
       return false;
     } finally {
-      setIsLoading(false);
+      this.setIsLoading(false);
     }
   }
 
@@ -62,12 +111,9 @@ export class TaxBehavior {
     database: string,
     username: string,
     password: string,
-    setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
-    setError: React.Dispatch<React.SetStateAction<string | undefined>>,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   ): Promise<boolean> {
     try {
-      setIsLoading(true);
+      this.setIsLoading(true);
       const response = await fetch("/api/health/db/test", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,104 +128,31 @@ export class TaxBehavior {
 
       if (!response.ok) {
         const data = (await response.json()) as { message?: string };
-        setNoDbConnection(true);
-        setError(
+        this.setNoDbConnection(true);
+        this.setError(
           data.message ??
             "Unable to connect to database: " + response.statusText,
         );
         return false;
       }
 
-      setNoDbConnection(false);
-      setError(undefined);
+      this.setNoDbConnection(false);
+      this.setError(undefined);
       return true;
     } catch (err) {
-      setNoDbConnection(true);
-      setError(
+      this.setNoDbConnection(true);
+      this.setError(
         err instanceof Error ? err.message : "Unable to connect to database.",
       );
       return false;
     } finally {
-      setIsLoading(false);
+      this.setIsLoading(false);
     }
   }
 
-  async loadYears(
-    setYears: (years: number[]) => void,
-    setError: (error: string | undefined) => void,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  ) {
+  async loadSteps() {
     try {
-      setIsLoading(true);
-      const response = await fetch("/api/progress/years");
-      if (!response.ok) {
-        throw new Error("Unable to load tax years.");
-      }
-      const data = (await response.json()) as number[];
-      setYears(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to load tax years.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async loadNames(
-    year: number,
-    setNames: React.Dispatch<React.SetStateAction<string[]>>,
-    setError: (error: string | undefined) => void,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  ) {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/progress/${year}/names`);
-      if (!response.ok) {
-        throw new Error("Unable to load saved progress names.");
-      }
-      const data = (await response.json()) as string[];
-      setNames(data);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to load saved progress names.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async loadAllNames(
-    setNames: React.Dispatch<React.SetStateAction<string[]>>,
-    setError: (error: string | undefined) => void,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  ) {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/progress/names`);
-      if (!response.ok) {
-        throw new Error("Unable to load all names.");
-      }
-      const data = (await response.json()) as string[];
-      setNames(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to load all names.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async loadSteps(
-    setCurrentStep: (step: Steps) => void,
-    setError: (error: string | undefined) => void,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  ) {
-    try {
-      setIsLoading(true);
+      this.setIsLoading(true);
       const response = await fetch("/api/steps");
       if (!response.ok) {
         throw new Error("Unable to load tax steps.");
@@ -188,34 +161,27 @@ export class TaxBehavior {
       this.steps = data.steps;
 
       if (this.steps.length > 0) {
-        setCurrentStep(this.steps[0].step);
+        this.setCurrentStep(this.steps[0].step);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      this.setError(
+        err instanceof Error ? err.message : "Something went wrong.",
+      );
     } finally {
-      setIsLoading(false);
+      this.setIsLoading(false);
     }
   }
 
-  async resumeProgress(
-    year: number,
-    name: string,
-    setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>,
-    setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>,
-    setError: React.Dispatch<React.SetStateAction<string | undefined>>,
-    setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>,
-    setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  ) {
+  async resumeProgress(year: number, name: string) {
     if (this.steps.length === 0) {
       return;
     }
     try {
-      setIsLoading(true);
+      this.setIsLoading(true);
       const response = await fetch(`/api/progress/${year}/${name}`);
       if (!response.ok) {
         if (response.status === 500) {
-          setNoDbConnection(true);
+          this.setNoDbConnection(true);
           return;
         }
         if (response.status === 404) {
@@ -227,20 +193,20 @@ export class TaxBehavior {
       if (saved.year !== year) {
         return;
       }
-      setNoDbConnection(false);
-      setCurrentStep(saved.currentStep as Steps);
-      setResponses(
+      this.setNoDbConnection(false);
+      this.setCurrentStep(saved.currentStep as Steps);
+      this.setResponses(
         saved.responses.map(
           (r) => new TaxResponse(r.form, r.label, r.line, r.value),
         ),
       );
-      setLastSavedTime(new Date(saved.updatedAt));
+      this.setLastSavedTime(new Date(saved.updatedAt));
     } catch (err) {
-      setError(
+      this.setError(
         err instanceof Error ? err.message : "Unable to load saved progress.",
       );
     } finally {
-      setIsLoading(false);
+      this.setIsLoading(false);
     }
   }
 
@@ -249,17 +215,13 @@ export class TaxBehavior {
     name: string,
     currentStep: Steps | undefined,
     responses: TaxResponse[],
-    setError: (error: string | undefined) => void,
-    setIsLoading: (saving: boolean) => void,
-    setToastMessage: (message: string | undefined) => void,
-    setLastSavedTime: (time: Date | undefined) => void,
   ) {
     if (!currentStep) {
       return;
     }
 
     try {
-      setIsLoading(true);
+      this.setIsLoading(true);
       const payload: Partial<TaxProgress> = {
         year,
         name,
@@ -276,49 +238,43 @@ export class TaxBehavior {
       }
       const saved = (await response.json()) as TaxProgress;
       const savedTime = new Date(saved.updatedAt);
-      setLastSavedTime(savedTime);
-      setToastMessage(`Saved at ${savedTime.toLocaleTimeString()}`);
+      this.setLastSavedTime(savedTime);
+      this.setToastMessage(`Saved at ${savedTime.toLocaleTimeString()}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to save progress.");
+      this.setError(
+        err instanceof Error ? err.message : "Unable to save progress.",
+      );
     } finally {
-      setIsLoading(false);
+      this.setIsLoading(false);
     }
   }
 
-  async deleteProgress(
-    year: number,
-    name: string,
-    setIsLoading: (loading: boolean) => void,
-    setToastMessage: (message: string | undefined) => void,
-  ) {
+  async deleteProgress(year: number, name: string) {
     try {
       if (!this.progress) {
         return;
       }
-      setIsLoading(true);
+      this.setIsLoading(true);
       const response = await fetch(`/api/progress/${year}/${name}`, {
         method: "DELETE",
       });
       if (!response.ok) {
         throw new Error(response.statusText);
       }
-      setToastMessage("Progress deleted.");
+      this.setToastMessage("Progress deleted.");
     } catch (err) {
-      setToastMessage("Failed to delete progress: " + (err instanceof Error ? err.message : "Unknown error"));
+      this.setToastMessage(
+        "Failed to delete progress: " +
+          (err instanceof Error ? err.message : "Unknown error"),
+      );
     } finally {
-      setIsLoading(false);
+      this.setIsLoading(false);
     }
   }
 
-  async uploadTaxFile(
-    file: File,
-    formType: string,
-    setError: (error: string | undefined) => void,
-    setIsLoading: (loading: boolean) => void,
-    setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>,
-  ) {
+  async uploadTaxFile(file: File, formType: string) {
     try {
-      setIsLoading(true);
+      this.setIsLoading(true);
       const formData = new FormData();
       formData.append("file", file);
       formData.append("form", formType);
@@ -359,32 +315,14 @@ export class TaxBehavior {
             item.value,
           ),
       );
-      setResponses(responses);
+      this.setResponses(responses);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to upload file.");
+      this.setError(
+        err instanceof Error ? err.message : "Unable to upload file.",
+      );
     } finally {
-      setIsLoading(false);
+      this.setIsLoading(false);
     }
   }
-
-  async deleteYear(
-    year: number,
-    setIsLoading: (loading: boolean) => void,
-    setToastMessage: (message: string | undefined) => void,
-  ) {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/start/${year}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-      setToastMessage("Year deleted.");
-    } catch (err) {
-      setToastMessage("Failed to delete year: " + (err instanceof Error ? err.message : "Unknown error"));
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  //#endregion API Calls
 }

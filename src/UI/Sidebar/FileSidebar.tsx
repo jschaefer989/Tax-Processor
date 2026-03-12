@@ -7,7 +7,6 @@ import Form8949Page2 from "./Form8949Page2";
 interface FileSidebarProps {
   readonly responses: TaxResponse[];
   readonly isExpanded: boolean;
-  readonly setIsExpanded: (expanded: boolean) => void;
 }
 
 export default function FileSidebar(props: FileSidebarProps) {

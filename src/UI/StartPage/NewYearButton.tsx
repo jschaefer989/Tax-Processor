@@ -1,33 +1,21 @@
 import { useCallback } from "react";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type { StartBehavior } from "../../DataModel/StartBehavior";
 
 interface NewYearButtonProps {
-  readonly taxBehavior: TaxBehavior;
-  readonly setNames: React.Dispatch<React.SetStateAction<string[]>>;
-  readonly setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  readonly setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  readonly setSelectedYear: React.Dispatch<
-    React.SetStateAction<number | undefined>
-  >;
-  readonly setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly startBehavior: StartBehavior;
   readonly isLoading: boolean;
 }
 
 export default function NewYearButton(props: NewYearButtonProps) {
   const {
-    taxBehavior,
-    setNames,
-    setError,
-    setIsLoading,
-    setSelectedYear,
-    setNewYear,
+    startBehavior,
     isLoading,
   } = props;
 
   const onStartNewYear = useCallback(async () => {
-    await taxBehavior.loadAllNames(setNames, setError, setIsLoading);
-    setSelectedYear(new Date().getFullYear() - 1);
-    setNewYear(true);
+    await startBehavior.loadAllNames();
+    startBehavior.taxBehavior.setYear(new Date().getFullYear() - 1);
+    startBehavior.setNewYear(true);
   }, []);
 
   return (

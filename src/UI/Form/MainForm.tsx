@@ -14,10 +14,6 @@ interface MainFormProps {
   isLoading: boolean;
   error: string | undefined;
   taxBehavior: TaxBehavior;
-  setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>;
-  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
-  setError: (error: string | undefined) => void;
-  setIsLoading: (loading: boolean) => void;
 }
 export default function MainForm(props: MainFormProps) {
   const {
@@ -26,10 +22,6 @@ export default function MainForm(props: MainFormProps) {
     isLoading,
     error,
     taxBehavior,
-    setCurrentStep,
-    setResponses,
-    setError,
-    setIsLoading,
   } = props;
 
   //#useMemo
@@ -60,28 +52,23 @@ export default function MainForm(props: MainFormProps) {
       <FormFields
         step={step}
         responses={responses}
-        setResponses={setResponses}
+        taxBehavior={taxBehavior}
       />
 
       <FormFiles
         taxBehavior={taxBehavior}
-        step={step}        
-        setResponses={setResponses}
-        setError={setError}
-        setIsLoading={setIsLoading}
+        step={step}       
       />
 
       <div className="panel__actions">
         <BackButton
           taxBehavior={taxBehavior}
           currentStep={currentStep}
-          setCurrentStep={setCurrentStep}
           isLoading={isLoading}
         />
         <NextButton
           taxBehavior={taxBehavior}
           currentStep={currentStep}
-          setCurrentStep={setCurrentStep}
           isLoading={isLoading}
         />
       </div>

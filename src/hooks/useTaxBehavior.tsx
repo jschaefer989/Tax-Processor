@@ -1,0 +1,96 @@
+import { useMemo, useState } from "react";
+import { TaxBehavior } from "../DataModel/TaxBehavior";
+import type TaxResponse from "../DataModel/TaxResponse";
+import type { Steps } from "../DataModel/TaxStep";
+import { useContextMenu } from "./useContextMenu";
+import type { ContextMenuProps } from "../UI/General/ContextMenu";
+
+interface UseTaxBehaviorResult {
+  taxBehavior: TaxBehavior;
+  currentStep: Steps | undefined;
+  responses: TaxResponse[];
+  isLoading: boolean;
+  error: string | undefined;
+  lastSavedTime: Date | undefined;
+  toastMessage: string | undefined;
+  year: number | undefined;
+  name: string | undefined;
+  noDbConnection: boolean;
+  showStartPage: boolean;
+  panelExpanded: boolean;
+  sidebarExpanded: boolean;
+  contextMenu: ContextMenuProps | undefined;
+  onWhitespaceClick: (event: React.MouseEvent<HTMLDivElement>) => void;
+}
+
+export function useTaxBehavior(): UseTaxBehaviorResult {
+  const [currentStep, setCurrentStep] = useState<Steps | undefined>(undefined);
+  const [responses, setResponses] = useState<TaxResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [lastSavedTime, setLastSavedTime] = useState<Date | undefined>(
+    undefined,
+  );
+  const [toastMessage, setToastMessage] = useState<string | undefined>(
+    undefined,
+  );
+  const [year, setYear] = useState<number | undefined>(undefined);
+  const [name, setName] = useState<string | undefined>(undefined);
+  const [noDbConnection, setNoDbConnection] = useState<boolean>(false);
+  const [showStartPage, setShowStartPage] = useState(true);
+  const [panelExpanded, setPanelExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+
+  const { contextMenu, setContextMenu, onWhitespaceClick } = useContextMenu();
+
+  const taxBehavior = useMemo(
+    () =>
+      new TaxBehavior(
+        setCurrentStep,
+        setResponses,
+        setIsLoading,
+        setError,
+        setLastSavedTime,
+        setYear,
+        setName,
+        setNoDbConnection,
+        setShowStartPage,
+        setPanelExpanded,
+        setSidebarExpanded,
+        setToastMessage,
+        setContextMenu,
+      ),
+    [
+      setCurrentStep,
+      setResponses,
+      setIsLoading,
+      setError,
+      setLastSavedTime,
+      setYear,
+      setName,
+      setNoDbConnection,
+      setShowStartPage,
+      setPanelExpanded,
+      setSidebarExpanded,
+      setToastMessage,
+    ],
+  );
+
+  return {
+    taxBehavior,
+    currentStep,
+    responses,
+    isLoading,
+    error,
+    lastSavedTime,
+    toastMessage,
+    year,
+    name,
+    noDbConnection,
+    showStartPage,
+    panelExpanded,
+    sidebarExpanded,
+    contextMenu,
+    onWhitespaceClick,
+  };
+}

@@ -7,13 +7,10 @@ import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 interface UploadFileButtonProps {
   taxBehavior: TaxBehavior;
   file: TaxFile;
-  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
-  setError: (error: string | undefined) => void;
-  setIsLoading: (loading: boolean) => void;
 }
 
 export default function UploadFileButton(props: UploadFileButtonProps) {
-  const { taxBehavior, file, setResponses, setError, setIsLoading } = props;
+  const { taxBehavior, file} = props;
 
   const [showFileLoader, setShowFileLoader] = useState(false);
 
@@ -35,9 +32,6 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
           taxBehavior={taxBehavior}
           label={file.label}
           formType={file.fromForm}
-          setError={setError}
-          setIsLoading={setIsLoading}
-          setResponses={setResponses}
           onClose={onClose}
         />
       )}
