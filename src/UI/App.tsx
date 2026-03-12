@@ -2,16 +2,16 @@ import { useMemo, useState } from "react";
 import { TaxBehavior } from "../DataModel/TaxBehavior";
 import TaxResponse from "../DataModel/TaxResponse";
 import { Steps } from "../DataModel/TaxStep";
+import { useContextMenu } from "../hooks/useContextMenu";
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
+import { FeatureRequest } from "./Footer/FeatureRequest";
 import MainForm from "./Form/MainForm";
-import type { ContextMenuProps } from "./General/ContextMenu";
 import ContextMenu from "./General/ContextMenu";
 import { ExpandButton, ExpandDirection } from "./General/ExpandButton";
 import Toast from "./General/Toast";
 import MainAppHeader from "./Header/MainAppHeader";
 import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
-import { FeatureRequest } from "./Footer/FeatureRequest";
 
 export default function App() {
   const taxBehavior = useMemo(() => new TaxBehavior(), []);
@@ -31,9 +31,6 @@ export default function App() {
   const [name, setName] = useState<string | undefined>(undefined);
   const [noDbConnection, setNoDbConnection] = useState<boolean>(false);
   const [showStartPage, setShowStartPage] = useState(true);
-  const [contextMenu, setContextMenu] = useState<ContextMenuProps | undefined>(
-    undefined,
-  );
   const [panelExpanded, setPanelExpanded] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   //#endregion useState
@@ -45,8 +42,10 @@ export default function App() {
     setNoDbConnection,
   );
 
+  const { contextMenu, setContextMenu, onWhitespaceClick } = useContextMenu();
+
   return (
-    <div className="app">
+    <div className="app" onClick={onWhitespaceClick}>
       {toastMessage && <Toast toastMessage={toastMessage} />}
       {contextMenu && <ContextMenu {...contextMenu} />}
       {showStartPage ? (
@@ -69,21 +68,23 @@ export default function App() {
         />
       ) : (
         <>
-          <MainAppHeader
-            currentStep={currentStep}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            setCurrentStep={setCurrentStep}
-            taxBehavior={taxBehavior}
-            responses={responses}
-            setError={setError}
-            setToastMessage={setToastMessage}
-            lastSavedTime={lastSavedTime}
-            setLastSavedTime={setLastSavedTime}
-            year={year}
-            name={name}
-            noDbConnection={noDbConnection}
-          />
+          <header>
+            <MainAppHeader
+              currentStep={currentStep}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+              setCurrentStep={setCurrentStep}
+              taxBehavior={taxBehavior}
+              responses={responses}
+              setError={setError}
+              setToastMessage={setToastMessage}
+              lastSavedTime={lastSavedTime}
+              setLastSavedTime={setLastSavedTime}
+              year={year}
+              name={name}
+              noDbConnection={noDbConnection}
+            />
+          </header>
 
           <main
             className={`layout ${!sidebarExpanded ? "sidebar-collapsed" : ""} ${!panelExpanded ? "main-collapsed" : ""}`}
@@ -123,13 +124,13 @@ export default function App() {
               />
             )}
 
-            <div className="sidebar-column">
+            <section className="sidebar-column">
               <FileSidebar
                 responses={responses}
                 isExpanded={sidebarExpanded}
                 setIsExpanded={setSidebarExpanded}
               />
-            </div>
+            </section>
           </main>
 
           <footer>

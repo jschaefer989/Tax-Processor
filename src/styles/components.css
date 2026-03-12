@@ -15,11 +15,15 @@
 }
 
 .context-menu {
+  position: absolute;
+  z-index: 1200;
   background: var(--panel);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
   overflow: hidden;
   min-width: 160px;
+  max-width: 240px;
+  animation: fadeIn 150ms ease;
 }
 
 .context-menu-option {

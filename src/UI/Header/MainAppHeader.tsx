@@ -43,7 +43,7 @@ export default function MainAppHeader(props: HeaderProps) {
   } = props;
 
   return (
-    <header>
+    <>
       <div className="header-top">
         <HeaderTitle year={year?.toString()} name={name} />
         <div className="data-buttons">
@@ -76,6 +76,6 @@ export default function MainAppHeader(props: HeaderProps) {
           )}
         </div>
       </div>
-    </header>
+    </>
   );
 }
