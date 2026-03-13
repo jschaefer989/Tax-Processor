@@ -53,7 +53,7 @@ button:disabled {
   transform: translateX(4px);
 }
 
-.new-taxpayer-form-button {
+.begin-button {
   width: fit-content;
   margin-top: 1rem;
   background: var(--accent-strong);
@@ -64,6 +64,10 @@ button:disabled {
 
 .name-button {
   margin-top: 0.5rem;
+  width: fit-content;
+  word-break: break-word;
+  white-space: normal;
+  text-align: center;
 }
 
 .add-name-button {

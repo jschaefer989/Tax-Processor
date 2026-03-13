@@ -32,19 +32,7 @@ select:focus {
   border-color: transparent;
 }
 
-.new-taxpayer-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-width: 400px;
-  margin: 1rem auto 0;
-  padding: 2.5rem;
-  background: var(--panel);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.new-taxpayer-form .field {
+.db-connection-form .field {
   margin: 0;
   gap: 0.75rem;
 }
@@ -53,6 +41,15 @@ select:focus {
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 250ms ease, transform 250ms ease;
+    display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 400px;
+  margin: 1rem auto 0;
+  padding: 2.5rem;
+  background: var(--panel);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .db-connection-form.visible {

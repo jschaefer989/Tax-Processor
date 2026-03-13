@@ -33,16 +33,18 @@ export default function YearSelectionControls(
             />
           ))}
           <ExpandContent expanded={!!year}>
-            {names?.map((name) => (
-              <NameButton
-                key={name}
-                year={year}
-                name={name}
-                startBehavior={startBehavior}
-                isLoading={isLoading}
-              />
-            ))}
-            <AddNameButton startBehavior={startBehavior} isLoading={isLoading} />
+            <div className="names-list">
+              {names?.map((name) => (
+                <NameButton
+                  key={name}
+                  year={year}
+                  name={name}
+                  startBehavior={startBehavior}
+                  isLoading={isLoading}
+                />
+              ))}
+              <AddNameButton startBehavior={startBehavior} isLoading={isLoading} />
+            </div>
           </ExpandContent>
         </div>
       )}

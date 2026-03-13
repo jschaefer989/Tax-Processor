@@ -23,7 +23,7 @@ export function AddNameButton(props: AddNameButtonProps) {
         isLoading ? "Server is busy. Please wait..." : "Add a new taxpayer for this year"
       }
     >
-      + Add year
+      + Add
     </button>
   );
 }

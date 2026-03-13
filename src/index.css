@@ -12,6 +12,7 @@
 @import './styles/pages.css';
 @import './styles/utilities.css';
 @import './styles/footer.css';
+@import './styles/Popup.css';
 
 :root {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;

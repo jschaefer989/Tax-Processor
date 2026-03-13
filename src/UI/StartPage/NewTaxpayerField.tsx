@@ -20,7 +20,6 @@ export default function NewTaxpayerField(props: NewTaxpayerFieldProps) {
 
   return (
     <label className="field">
-      <span>New taxpayer</span>
       <input
         id="new-name-input"
         type="text"

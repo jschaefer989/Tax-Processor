@@ -63,7 +63,7 @@ export default function DatabaseConnectionForm(
         className={`db-connection-panel ${showForm ? "visible" : ""}`}
       >
         <div
-          className={`new-taxpayer-form db-connection-form ${showForm ? "visible" : ""}`}
+          className={`db-connection-form ${showForm ? "visible" : ""}`}
         >
           <label className="field">
             <span>Host</span>

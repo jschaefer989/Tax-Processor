@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import { useStartBehavior } from "../../hooks/useStartBehavior";
 import MissingDatabaseControls from "./MissingDatabaseControls";
-import NewYearPage from "./NewYearPage";
+import NewTaxpayerPopup from "./NewTaxpayerPopup";
 import YearSelectionControls from "./YearSelectionControls";
 
 interface StartPageProps {
@@ -56,13 +56,7 @@ export default function StartPage(props: StartPageProps) {
 
   if (newYear && selectedYear !== undefined) {
     return (
-      <NewYearPage
-        startBehavior={startBehavior}
-        name={selectedName}
-        year={selectedYear}
-        names={names}
-        isLoading={isLoading}
-      />
+      <NewTaxpayerPopup startBehavior={startBehavior} year={selectedYear} />
     );
   }
 
