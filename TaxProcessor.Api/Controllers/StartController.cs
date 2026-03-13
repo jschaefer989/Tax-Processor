@@ -15,10 +15,10 @@ public class StartController : ControllerBase
         _db = context;
     }
 
-    [HttpDelete("{year}")]
-    public async Task<ActionResult> ClearProgress(int year)
+    [HttpDelete("year/{year}")]
+    public async Task<ActionResult> DeleteYear(int year)
     {
-        try 
+        try
         {
             var names = await _db.TaxProgress
                 .Where(progress => progress.Year == year)
@@ -32,6 +32,30 @@ public class StartController : ControllerBase
                 {
                     _db.TaxProgress.Remove(entity);
                 }
+            }
+
+            await _db.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Error deleting year {year}: {ex.Message}" });
+        }
+
+        return Ok(new { message = "Year deleted successfully." });
+    }
+
+    [HttpDelete("name/{year}/{name}")]
+    public async Task<ActionResult> DeleteName(int year, string name)
+    {
+        try
+        {
+            var entity = await _db.TaxProgress
+                .Where(progress => progress.Year == year && progress.Name == name)
+                .FirstOrDefaultAsync();
+
+            if (entity != null)
+            {
+                _db.TaxProgress.Remove(entity);
             }
 
             await _db.SaveChangesAsync();

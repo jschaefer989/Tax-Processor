@@ -83,7 +83,7 @@ export class StartBehavior {
   ) {
     try {
       this.taxBehavior.setIsLoading(true);
-      const response = await fetch(`/api/start/${year}`, {
+      const response = await fetch(`/api/start/year/${encodeURIComponent(year)}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -93,6 +93,26 @@ export class StartBehavior {
     } catch (err) {
       this.taxBehavior.setToastMessage(
         "Failed to delete year: " +
+          (err instanceof Error ? err.message : "Unknown error"),
+      );
+    } finally {
+      this.taxBehavior.setIsLoading(false);
+    }
+  }
+
+  async deleteName(year: number, name: string) {
+    try {
+        this.taxBehavior.setIsLoading(true);
+        const response = await fetch(`/api/start/name/${encodeURIComponent(year)}/${encodeURIComponent(name)}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        this.taxBehavior.setToastMessage("Taxpayer deleted.");
+    } catch (err) {
+      this.taxBehavior.setToastMessage(
+        "Failed to delete taxpayer: " +
           (err instanceof Error ? err.message : "Unknown error"),
       );
     } finally {

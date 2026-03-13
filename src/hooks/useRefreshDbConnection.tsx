@@ -7,10 +7,6 @@ export function useRefreshDbConnection(
   taxBehavior: TaxBehavior,
 ) {
   useEffect(() => {
-    if (showStartPage) {
-      return;
-    }
-
     let isCancelled = false;
 
     const refreshDbConnection = async () => {
