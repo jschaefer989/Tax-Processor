@@ -1,8 +1,7 @@
 import type TaxResponse from "../../DataModel/TaxResponse";
-import { TaxFieldLabel, TaxForm } from "../../DataModel/TaxResponse";
+import { TaxForm } from "../../DataModel/TaxResponse";
 import Form1040 from "./Form1040";
-import Form8949Page1 from "./Form8949Page1";
-import Form8949Page2 from "./Form8949Page2";
+import Form8949 from "./Form8949";
 
 interface FileSidebarProps {
   readonly responses: TaxResponse[];
@@ -17,15 +16,11 @@ export default function FileSidebar(props: FileSidebarProps) {
   );
 
   const form8949Page1Responses = responses.filter(
-    (response) =>
-      response.form === TaxForm.Form8949Page1 &&
-      response.label !== TaxFieldLabel.formCode,
+    (response) => response.form === TaxForm.Form8949Page1,
   );
 
   const form8949Page2Responses = responses.filter(
-    (response) =>
-      response.form === TaxForm.Form8949Page2 &&
-      response.label !== TaxFieldLabel.formCode,
+    (response) => response.form === TaxForm.Form8949Page2,
   );
 
   return (
@@ -44,8 +39,8 @@ export default function FileSidebar(props: FileSidebarProps) {
                 <i>Tax form data will appear here.</i>
               )}
             <Form1040 responses={form1040Responses} />
-            <Form8949Page1 responses={form8949Page1Responses} />
-            <Form8949Page2 responses={form8949Page2Responses} />
+            <Form8949 title="Form 8949 - Page 1" responses={form8949Page1Responses} />
+            <Form8949 title="Form 8949 - Page 2" responses={form8949Page2Responses} />
           </div>
         </div>
       </div>
