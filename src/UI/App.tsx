@@ -1,6 +1,7 @@
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import { useTaxBehavior } from "../hooks/useTaxBehavior";
 import { MainAppFooter } from "./Footer/MainAppFooter";
+import { DuplicateDataPopup } from "./Form/DuplicateDataPopup";
 import MainForm from "./Form/MainForm";
 import ContextMenu from "./General/ContextMenu";
 import { ExpandButton, ExpandDirection } from "./General/ExpandButton";
@@ -26,13 +27,10 @@ export default function App() {
     sidebarExpanded,
     contextMenu,
     onWhitespaceClick,
+    duplicateResponses,
   } = useTaxBehavior();
 
-  useRefreshDbConnection(
-    showStartPage,
-    noDbConnection,
-    taxBehavior,
-  );
+  useRefreshDbConnection(showStartPage, noDbConnection, taxBehavior);
 
   return (
     <div className="app" onClick={onWhitespaceClick}>
@@ -40,6 +38,12 @@ export default function App() {
         <Toast toastMessage={toastMessage} taxBehavior={taxBehavior} />
       )}
       {contextMenu && <ContextMenu {...contextMenu} />}
+      {duplicateResponses && (
+        <DuplicateDataPopup
+          taxBehavior={taxBehavior}
+          duplicateResponses={duplicateResponses}
+        />
+      )}
       {showStartPage ? (
         <StartPage
           taxBehavior={taxBehavior}
@@ -99,10 +103,7 @@ export default function App() {
             )}
 
             <section className="sidebar-column">
-              <FileSidebar
-                responses={responses}
-                isExpanded={sidebarExpanded}
-              />
+              <FileSidebar responses={responses} isExpanded={sidebarExpanded} />
             </section>
           </main>
 

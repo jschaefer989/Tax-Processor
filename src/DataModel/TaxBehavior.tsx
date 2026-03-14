@@ -1,4 +1,5 @@
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
+import { DuplicateResponse } from "./DuplicateResponse";
 import TaxProgress from "./TaxProgress";
 import TaxResponse from "./TaxResponse";
 import { Steps, TaxStep } from "./TaxStep";
@@ -27,6 +28,8 @@ export class TaxBehavior {
   setContextMenu: React.Dispatch<
     React.SetStateAction<ContextMenuProps | undefined>
   > = () => {};
+  setDuplicateResponses: React.Dispatch<React.SetStateAction<DuplicateResponse[] | undefined>> =
+    () => {};
   //#endregion State
 
   constructor(
@@ -45,6 +48,7 @@ export class TaxBehavior {
     setContextMenu: React.Dispatch<
       React.SetStateAction<ContextMenuProps | undefined>
     >,
+    setDuplicateResponses: React.Dispatch<React.SetStateAction<DuplicateResponse[] | undefined>>,
   ) {
     this.setCurrentStep = setCurrentStep;
     this.setResponses = setResponses;
@@ -59,6 +63,7 @@ export class TaxBehavior {
     this.setSidebarExpanded = setSidebarExpanded;
     this.setToastMessage = setToastMessage;
     this.setContextMenu = setContextMenu;
+    this.setDuplicateResponses = setDuplicateResponses;
     this.steps = [];
   }
 
@@ -315,34 +320,16 @@ export class TaxBehavior {
             item.value,
           ),
       );
-      // Figure out if there is data for the same form, label and line already and if so, replace it, otherwise add to existing responses
       this.setResponses((prevResponses) => {
         const updatedResponses = [...prevResponses];
+        const duplicates = this.getDuplicateResponses(responses, prevResponses);
+        if (duplicates.length > 0) {
+          this.setDuplicateResponses(duplicates);
+          return prevResponses;
+        }        
+        // Add the new responses if there were no duplicates
         for (const response of responses) {
-          const index = updatedResponses.findIndex(
-            (r) =>
-              r.form === response.form &&
-              r.label === response.label &&
-              r.line === response.line,
-          );
-          if (index !== -1) {
-            const confirmed = window.confirm(
-              "Data was already found for form " +
-                response.form +
-                ", field " +
-                response.label +
-                ", line " +
-                response.line +
-                ". Do you want to replace it?",
-            );
-            if (confirmed) {
-              updatedResponses[index] = response;
-            } else {
-              updatedResponses.push(response);
-            }
-          } else {
-            updatedResponses.push(response);
-          }
+          updatedResponses.push(response);
         }
         return updatedResponses;
       });
@@ -355,4 +342,31 @@ export class TaxBehavior {
     }
   }
   //#endregion API Calls
+
+  getDuplicateResponses(
+    responses: TaxResponse[],
+    updatedResponses: TaxResponse[],
+  ): DuplicateResponse[] {
+    const duplicates: DuplicateResponse[] = [];
+    for (const response of responses) {
+      const index = updatedResponses.findIndex(
+        (updatedResponse) =>
+          updatedResponse.form === response.form &&
+          updatedResponse.label === response.label &&
+          updatedResponse.line === response.line,
+      );
+      if (index !== -1) {
+        duplicates.push(
+          new DuplicateResponse(
+            response.form,
+            response.label,
+            response.line,
+            response.value,
+            updatedResponses[index].value,
+          ),
+        );
+      }
+    }
+    return duplicates;
+  }
 }

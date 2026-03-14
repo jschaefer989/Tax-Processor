@@ -4,6 +4,7 @@ import type TaxResponse from "../DataModel/TaxResponse";
 import type { Steps } from "../DataModel/TaxStep";
 import { useContextMenu } from "./useContextMenu";
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
+import type { DuplicateResponse } from "../DataModel/DuplicateResponse";
 
 interface UseTaxBehaviorResult {
   taxBehavior: TaxBehavior;
@@ -21,6 +22,7 @@ interface UseTaxBehaviorResult {
   sidebarExpanded: boolean;
   contextMenu: ContextMenuProps | undefined;
   onWhitespaceClick: (event: React.MouseEvent<HTMLDivElement>) => void;
+  duplicateResponses: DuplicateResponse[] | undefined;
 }
 
 export function useTaxBehavior(): UseTaxBehaviorResult {
@@ -40,6 +42,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
   const [showStartPage, setShowStartPage] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [duplicateResponses, setDuplicateResponses] = useState<DuplicateResponse[] | undefined>(undefined);
 
   const { contextMenu, setContextMenu, onWhitespaceClick } = useContextMenu();
 
@@ -59,6 +62,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
         setSidebarExpanded,
         setToastMessage,
         setContextMenu,
+        setDuplicateResponses,
       ),
     [
       setCurrentStep,
@@ -73,6 +77,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
       setPanelExpanded,
       setSidebarExpanded,
       setToastMessage,
+      setDuplicateResponses,
     ],
   );
 
@@ -92,5 +97,6 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
     sidebarExpanded,
     contextMenu,
     onWhitespaceClick,
+    duplicateResponses,
   };
 }
