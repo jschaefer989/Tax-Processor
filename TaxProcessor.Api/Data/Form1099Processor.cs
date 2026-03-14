@@ -104,6 +104,7 @@ public class Form1099Processor : FileProcessor
                 Value = line.Total,
             });
         }
+        // Qualified dividends
         if (line.Box == "1b")
         {
             Responses.Add(new TaxResponse

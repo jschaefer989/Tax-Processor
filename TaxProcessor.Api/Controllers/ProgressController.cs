@@ -47,7 +47,7 @@ public class ProgressController : ControllerBase
     }
 
 
-    [HttpGet("{year}/{name}")]
+    [HttpGet("get/{year}/{name}")]
     public async Task<ActionResult<TaxProgress>> GetProgress(int year, string name)
     {
         var entity = await GetTaxProgressEntity(year, name);
@@ -106,7 +106,7 @@ public class ProgressController : ControllerBase
         });
     }
 
-    [HttpDelete("{year}/{name}")]
+    [HttpDelete("delete/{year}/{name}")]
     public async Task<ActionResult> ClearProgress(int year, string name)
     {
         var entity = await _db.TaxProgress.FindAsync(year, name);

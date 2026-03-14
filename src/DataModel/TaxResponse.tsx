@@ -20,6 +20,20 @@ export enum TaxFieldLabel {
   formCode = "formCode",
 }
 
+export const form1040LabelOrder = new Map<TaxFieldLabel, number>([
+  [TaxFieldLabel.oneA, 1],
+  [TaxFieldLabel.oneB, 2],
+  [TaxFieldLabel.oneC, 3],
+  [TaxFieldLabel.oneD, 4],
+  [TaxFieldLabel.oneE, 5],
+  [TaxFieldLabel.oneF, 6],
+  [TaxFieldLabel.oneG, 7],
+  [TaxFieldLabel.twoA, 8],
+  [TaxFieldLabel.twoB, 9],
+  [TaxFieldLabel.threeA, 10],
+  [TaxFieldLabel.threeB, 11],
+]);
+
 export default class TaxResponse {
   form: TaxForm;
   label: TaxFieldLabel;
@@ -80,5 +94,13 @@ export default class TaxResponse {
       default:
         return this.form;
     }
+  }
+
+  static sortByLabel(responses: TaxResponse[]): TaxResponse[] {
+    return [...responses].sort((a, b) => {
+      const aOrder = form1040LabelOrder.get(a.label) ?? Number.MAX_SAFE_INTEGER;
+      const bOrder = form1040LabelOrder.get(b.label) ?? Number.MAX_SAFE_INTEGER;
+      return aOrder - bOrder;
+    });
   }
 }

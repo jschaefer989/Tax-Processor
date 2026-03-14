@@ -178,7 +178,7 @@ export class TaxBehavior {
     }
     try {
       this.setIsLoading(true);
-      const response = await fetch(`/api/progress/${year}/${name}`);
+      const response = await fetch(`/api/progress/get/${year}/${name}`);
       if (!response.ok) {
         if (response.status === 500) {
           this.setNoDbConnection(true);
@@ -255,7 +255,7 @@ export class TaxBehavior {
         return;
       }
       this.setIsLoading(true);
-      const response = await fetch(`/api/progress/${year}/${name}`, {
+      const response = await fetch(`/api/progress/delete/${year}/${name}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -315,7 +315,37 @@ export class TaxBehavior {
             item.value,
           ),
       );
-      this.setResponses(responses);
+      // Figure out if there is data for the same form, label and line already and if so, replace it, otherwise add to existing responses
+      this.setResponses((prevResponses) => {
+        const updatedResponses = [...prevResponses];
+        for (const response of responses) {
+          const index = updatedResponses.findIndex(
+            (r) =>
+              r.form === response.form &&
+              r.label === response.label &&
+              r.line === response.line,
+          );
+          if (index !== -1) {
+            const confirmed = window.confirm(
+              "Data was already found for form " +
+                response.form +
+                ", field " +
+                response.label +
+                ", line " +
+                response.line +
+                ". Do you want to replace it?",
+            );
+            if (confirmed) {
+              updatedResponses[index] = response;
+            } else {
+              updatedResponses.push(response);
+            }
+          } else {
+            updatedResponses.push(response);
+          }
+        }
+        return updatedResponses;
+      });
     } catch (err) {
       this.setError(
         err instanceof Error ? err.message : "Unable to upload file.",

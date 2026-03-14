@@ -26,11 +26,18 @@ export function ExpandContent(props: ExpandContentProps) {
   }
 
   useEffect(() => {
-    if (contentInnerRef.current && contentSize === "none") {
-      const size = `${getContentSize()}px`;
-      setContentSize(size);
+    if (!expanded || !contentInnerRef.current) {
+      return;
     }
-  }, [children, isVertical]);
+
+    const size = `${getContentSize()}px`;
+    setContentSize(size);
+
+    // Release the max-size lock so future content changes are not clipped.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setContentSize("none"));
+    });
+  }, [children, expanded, isVertical]);
 
   useEffect(() => {
     if (prevExpanded.current === expanded || !contentRef.current) return;
@@ -52,6 +59,11 @@ export function ExpandContent(props: ExpandContentProps) {
     <div
       ref={contentRef}
       className={className}
+      onTransitionEnd={() => {
+        if (expanded) {
+          setContentSize("none");
+        }
+      }}
       style={{
         overflow: "hidden",
         ...(isVertical

@@ -29,6 +29,14 @@ export default function Form8949(props: Form8949Props) {
     }
   }
 
+  // Sort the responses in responsesByLine by label
+  for (const [line, respArr] of responsesByLine.entries()) {
+    responsesByLine.set(
+      line,
+      TaxResponse.sortByLabel(respArr),
+    );
+  }
+
   for (const response of responses) {
     if (response.label === TaxFieldLabel.formCode) {
       const formCode = response.value;

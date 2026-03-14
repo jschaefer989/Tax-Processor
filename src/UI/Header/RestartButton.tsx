@@ -9,7 +9,7 @@ interface DeleteButtonProps {
   readonly isLoading: boolean;
 }
 
-export default function DeleteButton(props: DeleteButtonProps) {
+export default function RestartButton(props: DeleteButtonProps) {
   const {
     taxBehavior,
     lastSavedTime,

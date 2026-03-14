@@ -1,7 +1,7 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
-import DeleteButton from "./DeleteButton";
+import RestartButton from "./RestartButton";
 import LastSavedText from "./LastSavedText";
 import SaveButton from "./SaveButton";
 import { ReturnButton } from "./ReturnButton";
@@ -57,7 +57,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
             year={year}
             name={name}
           />
-          <DeleteButton
+          <RestartButton
             taxBehavior={taxBehavior}
             lastSavedTime={lastSavedTime}
             year={year}
