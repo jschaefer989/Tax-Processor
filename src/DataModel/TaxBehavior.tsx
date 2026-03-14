@@ -8,6 +8,9 @@ export class TaxBehavior {
   /** Static steps and associated fields loaded from the database for the user to populate */
   steps: TaxStep[];
   progress: TaxProgress | undefined = undefined;
+  /** Incoming responses from a file upload that are held until the duplicate popup is confirmed or cancelled */
+  pendingFileResponses: TaxResponse[] = [];
+
 
   //#region State
   setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>> =
@@ -73,6 +76,18 @@ export class TaxBehavior {
 
   getStepIndex(step: Steps): number {
     return this.steps.findIndex((s) => s.step === step);
+  }
+
+  getResponse(form: string, label: string, line: number): TaxResponse | undefined {
+    return this.progress?.responses.find(
+      (r) => r.form === form && r.label === label && r.line === line,
+    );
+  }
+
+  getResponsesForLine(form: string, line: number): TaxResponse[] {
+    return this.progress?.responses.filter(
+      (r) => r.form === form && r.line === line,
+    ) ?? [];
   }
 
   //#region API Calls
@@ -311,7 +326,7 @@ export class TaxBehavior {
         line: number;
         value: string;
       }>;
-      const responses = data.map(
+      const incomingResponses = data.map(
         (item) =>
           new TaxResponse(
             item.form as never,
@@ -320,18 +335,14 @@ export class TaxBehavior {
             item.value,
           ),
       );
-      this.setResponses((prevResponses) => {
-        const updatedResponses = [...prevResponses];
-        const duplicates = this.getDuplicateResponses(responses, prevResponses);
+      this.setResponses((existingResponses) => {
+        const duplicates = this.getDuplicateResponses(incomingResponses, existingResponses);
         if (duplicates.length > 0) {
+          this.pendingFileResponses = incomingResponses;
           this.setDuplicateResponses(duplicates);
-          return prevResponses;
-        }        
-        // Add the new responses if there were no duplicates
-        for (const response of responses) {
-          updatedResponses.push(response);
+          return existingResponses;
         }
-        return updatedResponses;
+        return [...existingResponses, ...incomingResponses];
       });
     } catch (err) {
       this.setError(
@@ -344,29 +355,57 @@ export class TaxBehavior {
   //#endregion API Calls
 
   getDuplicateResponses(
-    responses: TaxResponse[],
-    updatedResponses: TaxResponse[],
-  ): DuplicateResponse[] {
+    incomingResponses: TaxResponse[],
+    existingResponses: TaxResponse[],
+  ): DuplicateResponse[]  {
     const duplicates: DuplicateResponse[] = [];
-    for (const response of responses) {
-      const index = updatedResponses.findIndex(
-        (updatedResponse) =>
-          updatedResponse.form === response.form &&
-          updatedResponse.label === response.label &&
-          updatedResponse.line === response.line,
+    for (const incoming of incomingResponses) {
+      const existing = existingResponses.find(
+        (r) =>
+          r.form === incoming.form &&
+          r.label === incoming.label &&
+          r.line === incoming.line,
       );
-      if (index !== -1) {
+      if (existing) {
         duplicates.push(
           new DuplicateResponse(
-            response.form,
-            response.label,
-            response.line,
-            response.value,
-            updatedResponses[index].value,
+            incoming.form,
+            incoming.label,
+            incoming.line,
+            existing.value,  // current value
+            incoming.value,  // new value (from file)
           ),
         );
       }
     }
     return duplicates;
+  }
+
+  confirmPendingFileResponses() {
+    const pending = this.pendingFileResponses;
+    this.pendingFileResponses = [];
+    this.setDuplicateResponses(undefined);
+    this.setResponses((prevResponses) => {
+      const existingResponses = [...prevResponses];
+      for (const newResponse of pending) {
+        const existingIndex = existingResponses.findIndex(
+          (existingResponse) =>
+            existingResponse.form === newResponse.form &&
+            existingResponse.label === newResponse.label &&
+            existingResponse.line === newResponse.line,
+        );
+        if (existingIndex !== -1) {
+          existingResponses[existingIndex].value = newResponse.value;
+        } else {
+          existingResponses.push(newResponse);
+        }
+      }
+      return existingResponses;
+    });
+  }
+
+  cancelPendingFileResponses() {
+    this.pendingFileResponses = [];
+    this.setDuplicateResponses(undefined);
   }
 }

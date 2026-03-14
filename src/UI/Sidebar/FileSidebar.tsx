@@ -4,14 +4,16 @@ import { TaxForm } from "../../DataModel/TaxResponse";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import Form1040 from "./Form1040";
 import Form8949 from "./Form8949";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
 interface FileSidebarProps {
+  taxBehavior: TaxBehavior;
   readonly responses: TaxResponse[];
   readonly isExpanded: boolean;
 }
 
 export default function FileSidebar(props: FileSidebarProps) {
-  const { responses, isExpanded } = props;
+  const { taxBehavior, responses, isExpanded } = props;
 
   const [allSectionsExpanded, setAllSectionsExpanded] = useState(true);
 
@@ -55,13 +57,19 @@ export default function FileSidebar(props: FileSidebarProps) {
               form8949Page2Responses.length === 0 && (
                 <i>Tax form data will appear here.</i>
               )}
-            <Form1040 responses={form1040Responses} isExpandedOverride={allSectionsExpanded} />
+            <Form1040
+              taxBehavior={taxBehavior}
+              responses={form1040Responses}
+              isExpandedOverride={allSectionsExpanded}
+            />
             <Form8949
+              taxBehavior={taxBehavior}
               title="Form 8949 - Page 1"
               responses={form8949Page1Responses}
               isExpandedOverride={allSectionsExpanded}
             />
             <Form8949
+              taxBehavior={taxBehavior}
               title="Form 8949 - Page 2"
               responses={form8949Page2Responses}
               isExpandedOverride={allSectionsExpanded}

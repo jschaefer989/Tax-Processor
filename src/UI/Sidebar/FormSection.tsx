@@ -3,14 +3,16 @@ import type TaxResponse from "../../DataModel/TaxResponse";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
 import FormValueField from "./FormValueField";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
 interface FormSectionProps {
+  taxBehavior: TaxBehavior;
   title?: string;
   responses: TaxResponse[];
 }
 
 export default function FormSection(props: FormSectionProps) {
-  const { title, responses } = props;
+  const { taxBehavior, title, responses } = props;
 
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -21,7 +23,7 @@ export default function FormSection(props: FormSectionProps) {
       fields.push(<hr />);
       line = response.line;
     }
-    fields.push(<FormValueField response={response} />);
+    fields.push(<FormValueField taxBehavior={taxBehavior} response={response} />);
   }
 
   return (

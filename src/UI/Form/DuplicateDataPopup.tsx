@@ -12,27 +12,12 @@ export function DuplicateDataPopup(props: DuplicateDataPopupProps) {
   const { taxBehavior, duplicateResponses } = props;
 
   const onClose = useCallback(() => {
-    taxBehavior.setDuplicateResponses(undefined);
-  }, []);
+    taxBehavior.cancelPendingFileResponses();
+  }, [taxBehavior]);
 
   const onSubmit = useCallback(() => {
-    taxBehavior.setResponses((prevResponses) => {
-      const updatedResponses = [...prevResponses];
-      for (const duplicate of duplicateResponses) {
-        const index = updatedResponses.findIndex(
-          (response) =>
-            response.form === duplicate.form &&
-            response.label === duplicate.label &&
-            response.line === duplicate.line,
-        );
-        if (index !== -1) {
-          updatedResponses[index].value = duplicate.newValue;
-        }
-      }
-      return updatedResponses;
-    });
-    onClose();
-  }, [duplicateResponses]);
+    taxBehavior.confirmPendingFileResponses();
+  }, [taxBehavior]);
 
   return (
     <Popup
@@ -63,7 +48,9 @@ export function DuplicateDataPopup(props: DuplicateDataPopupProps) {
               <div className="duplicate-value">
                 <span className="duplicate-value-label">New</span>
                 <span className="duplicate-value-text is-new">
-                  {response.newValue.trim() === "" ? "(empty)" : response.newValue}
+                  {response.newValue.trim() === ""
+                    ? "(empty)"
+                    : response.newValue}
                 </span>
               </div>
             </div>

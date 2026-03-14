@@ -1,15 +1,17 @@
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import TaxResponse, { TaxFieldLabel } from "../../DataModel/TaxResponse";
 import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
 interface Form8949Props {
+  taxBehavior: TaxBehavior;
   title: string;
   responses: TaxResponse[];
   isExpandedOverride?: boolean;
 }
 
 export default function Form8949(props: Form8949Props) {
-  const { title, responses, isExpandedOverride } = props;
+  const { taxBehavior, title, responses, isExpandedOverride } = props;
 
   if (responses.length === 0) {
     return null;
@@ -32,10 +34,7 @@ export default function Form8949(props: Form8949Props) {
 
   // Sort the responses in responsesByLine by label
   for (const [line, respArr] of responsesByLine.entries()) {
-    responsesByLine.set(
-      line,
-      TaxResponse.sortByLabel(respArr),
-    );
+    responsesByLine.set(line, TaxResponse.sortByLabel(respArr));
   }
 
   for (const response of responses) {
@@ -67,9 +66,10 @@ export default function Form8949(props: Form8949Props) {
     return (
       <FormHeader title={title} isExpandedOverride={isExpandedOverride}>
         <FormSection
+          taxBehavior={taxBehavior}
           responses={responses.filter(
             (response) => response.label !== TaxFieldLabel.formCode,
-          )}          
+          )}
         />
       </FormHeader>
     );
@@ -85,6 +85,7 @@ export default function Form8949(props: Form8949Props) {
             isExpandedOverride={isExpandedOverride}
           >
             <FormSection
+              taxBehavior={taxBehavior}
               responses={responsesForCode.filter(
                 (response) => response.label !== TaxFieldLabel.formCode,
               )}

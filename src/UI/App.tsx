@@ -103,7 +103,11 @@ export default function App() {
             )}
 
             <section className="sidebar-column">
-              <FileSidebar responses={responses} isExpanded={sidebarExpanded} />
+              <FileSidebar
+                taxBehavior={taxBehavior}
+                responses={responses}
+                isExpanded={sidebarExpanded}
+              />
             </section>
           </main>
 
