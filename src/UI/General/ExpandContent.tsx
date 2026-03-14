@@ -14,6 +14,7 @@ export function ExpandContent(props: ExpandContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const contentInnerRef = useRef<HTMLDivElement>(null);
   const [contentSize, setContentSize] = useState<string>(expanded ? "none" : "0px");
+  const hasMounted = useRef(false);
   const prevExpanded = useRef(expanded);
 
   const isVertical = direction === ExpandDirection.Down || direction === ExpandDirection.Up;
@@ -26,20 +27,24 @@ export function ExpandContent(props: ExpandContentProps) {
   }
 
   useEffect(() => {
-    if (!expanded || !contentInnerRef.current) {
+    if (!hasMounted.current || !expanded || !contentInnerRef.current) {
       return;
     }
 
-    const size = `${getContentSize()}px`;
-    setContentSize(size);
+    if (contentSize === "none") {
+      return;
+    }
 
-    // Release the max-size lock so future content changes are not clipped.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => setContentSize("none"));
-    });
-  }, [children, expanded, isVertical]);
+    setContentSize(`${getContentSize()}px`);
+  }, [children, contentSize, expanded, isVertical]);
 
   useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      prevExpanded.current = expanded;
+      return;
+    }
+
     if (prevExpanded.current === expanded || !contentRef.current) return;
     prevExpanded.current = expanded;
 
@@ -51,7 +56,10 @@ export function ExpandContent(props: ExpandContentProps) {
         requestAnimationFrame(() => setContentSize("0px"));
       });
     } else {
-      setContentSize(`${current}px`);
+      setContentSize("0px");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setContentSize(`${getContentSize()}px`));
+      });
     }
   }, [expanded, isVertical]);
 
@@ -59,7 +67,16 @@ export function ExpandContent(props: ExpandContentProps) {
     <div
       ref={contentRef}
       className={className}
-      onTransitionEnd={() => {
+      onTransitionEnd={(event) => {
+        if (event.target !== event.currentTarget) {
+          return;
+        }
+
+        const sizeProperty = isVertical ? "max-height" : "max-width";
+        if (event.propertyName !== sizeProperty) {
+          return;
+        }
+
         if (expanded) {
           setContentSize("none");
         }

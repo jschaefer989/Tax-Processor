@@ -23,16 +23,21 @@ export default function YearSelectionControls(
       <p className="subtitle">Pick a tax year to begin.</p>
       {years && years.length > 0 && (
         <div className="years-container">
-          {years.map((otherYear) => (
-            <YearButton
-              key={otherYear}
-              year={otherYear}
-              selectedYear={year}
-              startBehavior={startBehavior}
-              isLoading={isLoading}
-            />
-          ))}
-          <ExpandContent expanded={!!year}>
+          <div className="years-list">
+            {years.map((otherYear) => (
+              <YearButton
+                key={otherYear}
+                year={otherYear}
+                selectedYear={year}
+                startBehavior={startBehavior}
+                isLoading={isLoading}
+              />
+            ))}
+          </div>
+          <ExpandContent
+            expanded={!!year}
+            className={`names-expand-content${year ? " names-expand-content--open" : ""}`}
+          >
             <div className="names-list">
               {names?.map((name) => (
                 <NameButton

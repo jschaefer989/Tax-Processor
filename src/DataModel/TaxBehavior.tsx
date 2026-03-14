@@ -178,7 +178,7 @@ export class TaxBehavior {
     }
     try {
       this.setIsLoading(true);
-      const response = await fetch(`/api/progress/get/${year}/${name}`);
+      const response = await fetch(`/api/progress/${year}/${name}`);
       if (!response.ok) {
         if (response.status === 500) {
           this.setNoDbConnection(true);
@@ -255,7 +255,7 @@ export class TaxBehavior {
         return;
       }
       this.setIsLoading(true);
-      const response = await fetch(`/api/progress/delete/${year}/${name}`, {
+      const response = await fetch(`/api/progress/${year}/${name}`, {
         method: "DELETE",
       });
       if (!response.ok) {
