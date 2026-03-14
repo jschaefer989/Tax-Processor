@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
 
 interface FormHeaderProps {
   title: string;
   children?: React.ReactNode;
+  isExpandedOverride?: boolean;
 }
 
 export function FormHeader(props: FormHeaderProps) {
-  const { title, children } = props;
+  const { title, children, isExpandedOverride } = props;
 
   const [isExpanded, setIsExpanded] = useState(true);
+
+  useEffect(() =>{
+    setIsExpanded(isExpandedOverride ?? true);
+  }, [isExpandedOverride]);
 
   return (
     <div className="sidebar-card">

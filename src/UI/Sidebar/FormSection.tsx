@@ -1,8 +1,8 @@
 import { useState, type JSX } from "react";
 import type TaxResponse from "../../DataModel/TaxResponse";
-import FormValueField from "./FormValueField";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
+import FormValueField from "./FormValueField";
 
 interface FormSectionProps {
   title?: string;
@@ -40,9 +40,7 @@ export default function FormSection(props: FormSectionProps) {
           />
         )}
       </div>
-      <ExpandContent expanded={isExpanded}>
-        {fields}
-      </ExpandContent>
+      <ExpandContent expanded={isExpanded}>{fields}</ExpandContent>
     </div>
   );
 }

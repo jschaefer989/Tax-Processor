@@ -5,10 +5,11 @@ import FormSection from "./FormSection";
 interface Form8949Props {
   title: string;
   responses: TaxResponse[];
+  isExpandedOverride?: boolean;
 }
 
 export default function Form8949(props: Form8949Props) {
-  const { title, responses } = props;
+  const { title, responses, isExpandedOverride } = props;
 
   if (responses.length === 0) {
     return null;
@@ -64,11 +65,11 @@ export default function Form8949(props: Form8949Props) {
 
   if (responsesByFormCode.size === 0) {
     return (
-      <FormHeader title={title}>
+      <FormHeader title={title} isExpandedOverride={isExpandedOverride}>
         <FormSection
           responses={responses.filter(
             (response) => response.label !== TaxFieldLabel.formCode,
-          )}
+          )}          
         />
       </FormHeader>
     );
@@ -81,6 +82,7 @@ export default function Form8949(props: Form8949Props) {
           <FormHeader
             key={formCode}
             title={`${title}, Code ${formCode}`}
+            isExpandedOverride={isExpandedOverride}
           >
             <FormSection
               responses={responsesForCode.filter(

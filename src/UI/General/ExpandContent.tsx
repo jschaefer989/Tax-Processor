@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { ExpandDirection } from "./ExpandButton";
 
 interface ExpandContentProps {
@@ -9,22 +9,41 @@ interface ExpandContentProps {
 }
 
 export function ExpandContent(props: ExpandContentProps) {
-  const { expanded, children, direction = ExpandDirection.Down, className } = props;
+  const {
+    expanded,
+    children,
+    direction = ExpandDirection.Down,
+    className,
+  } = props;
 
   const contentRef = useRef<HTMLDivElement>(null);
   const contentInnerRef = useRef<HTMLDivElement>(null);
-  const [contentSize, setContentSize] = useState<string>(expanded ? "none" : "0px");
+  const [contentSize, setContentSize] = useState<string>(
+    expanded ? "none" : "0px",
+  );
   const hasMounted = useRef(false);
   const prevExpanded = useRef(expanded);
 
-  const isVertical = direction === ExpandDirection.Down || direction === ExpandDirection.Up;
+  const isVertical =
+    direction === ExpandDirection.Down || direction === ExpandDirection.Up;
 
-  function getContentSize(): number {
-    if (!contentInnerRef.current) return 0;
-    return isVertical
-      ? contentInnerRef.current.scrollHeight
-      : contentInnerRef.current.scrollWidth;
-  }
+  const onTransitionEnd = useCallback(
+    (event: React.TransitionEvent<HTMLDivElement>) => {
+      if (event.target !== event.currentTarget) {
+        return;
+      }
+
+      const sizeProperty = isVertical ? "max-height" : "max-width";
+      if (event.propertyName !== sizeProperty) {
+        return;
+      }
+
+      if (expanded) {
+        setContentSize("none");
+      }
+    },
+    [expanded, isVertical],
+  );
 
   useEffect(() => {
     if (!hasMounted.current || !expanded || !contentInnerRef.current) {
@@ -35,7 +54,7 @@ export function ExpandContent(props: ExpandContentProps) {
       return;
     }
 
-    setContentSize(`${getContentSize()}px`);
+    setContentSize(`${getContentSize(contentInnerRef, isVertical)}px`);
   }, [children, contentSize, expanded, isVertical]);
 
   useEffect(() => {
@@ -45,10 +64,12 @@ export function ExpandContent(props: ExpandContentProps) {
       return;
     }
 
-    if (prevExpanded.current === expanded || !contentRef.current) return;
+    if (prevExpanded.current === expanded || !contentRef.current) {
+      return;
+    }
     prevExpanded.current = expanded;
 
-    const current = getContentSize();
+    const current = getContentSize(contentInnerRef, isVertical);
 
     if (!expanded) {
       setContentSize(`${current}px`);
@@ -58,7 +79,9 @@ export function ExpandContent(props: ExpandContentProps) {
     } else {
       setContentSize("0px");
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => setContentSize(`${getContentSize()}px`));
+        requestAnimationFrame(() =>
+          setContentSize(`${getContentSize(contentInnerRef, isVertical)}px`),
+        );
       });
     }
   }, [expanded, isVertical]);
@@ -67,20 +90,7 @@ export function ExpandContent(props: ExpandContentProps) {
     <div
       ref={contentRef}
       className={className}
-      onTransitionEnd={(event) => {
-        if (event.target !== event.currentTarget) {
-          return;
-        }
-
-        const sizeProperty = isVertical ? "max-height" : "max-width";
-        if (event.propertyName !== sizeProperty) {
-          return;
-        }
-
-        if (expanded) {
-          setContentSize("none");
-        }
-      }}
+      onTransitionEnd={onTransitionEnd}
       style={{
         overflow: "hidden",
         ...(isVertical
@@ -97,3 +107,14 @@ export function ExpandContent(props: ExpandContentProps) {
   );
 }
 
+function getContentSize(
+  contentInnerRef: React.RefObject<HTMLDivElement | null>,
+  isVertical: boolean,
+): number {
+  if (!contentInnerRef.current) {
+    return 0;
+  }
+  return isVertical
+    ? contentInnerRef.current.scrollHeight
+    : contentInnerRef.current.scrollWidth;
+}
