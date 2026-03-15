@@ -1,9 +1,12 @@
-import { useState, type JSX } from "react";
+import { useCallback, useState, type JSX } from "react";
+import ContextMenuOption, {
+  ContextMenuIcon,
+} from "../../DataModel/ContextMenuOption";
+import { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
-import FormValueField from "./FormValueField";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import FormLine from "./FormLine";
 
 interface FormSectionProps {
   taxBehavior: TaxBehavior;
@@ -16,18 +19,63 @@ export default function FormSection(props: FormSectionProps) {
 
   const [isExpanded, setIsExpanded] = useState(true);
 
-  const fields: JSX.Element[] = [];
-  let line = 0;
-  for (const response of responses) {
-    if (response.line !== line) {
-      fields.push(<hr />);
-      line = response.line;
+  const onDeleteSection = useCallback(() => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete all the data for this form? This cannot be undone.",
+    );
+    if (confirmed) {
+      taxBehavior.setResponses((prevResponses) => {
+        return prevResponses.filter(
+          (currentResponse) =>
+            !responses.some(
+              (response) =>
+                response.form === currentResponse.form &&
+                response.line === currentResponse.line,
+            ),
+        );
+      });
+      taxBehavior.setContextMenu(undefined);
     }
-    fields.push(<FormValueField taxBehavior={taxBehavior} response={response} />);
-  }
+  }, [taxBehavior]);
+
+  const onContextMenuTitle = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      taxBehavior.setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        options: [
+          new ContextMenuOption(
+            "Delete " + (title ?? "section"), 
+            onDeleteSection,
+            ContextMenuIcon.Delete,
+          ),
+        ],
+      });
+    },
+    [onDeleteSection],
+  );
+
+  const lines: JSX.Element[] = [];
+  TaxBehavior.getResponsesByLine(responses).forEach(
+    (responsesForLine, line) => {
+      lines.push(
+        <FormLine
+          key={line}
+          taxBehavior={taxBehavior}
+          form={responsesForLine[0].form}
+          responses={responsesForLine}
+        />,
+      );
+    },
+  );
 
   return (
-    <div className="sidebar-card sidebar-card--nested">
+    <div
+      className="sidebar-card sidebar-card--nested"
+      onContextMenu={onContextMenuTitle}
+    >
       <div
         className={`sidebar-section-header${isExpanded ? " sidebar-section-header--expanded" : ""}`}
       >
@@ -42,7 +90,7 @@ export default function FormSection(props: FormSectionProps) {
           />
         )}
       </div>
-      <ExpandContent expanded={isExpanded}>{fields}</ExpandContent>
+      <ExpandContent expanded={isExpanded}>{lines}</ExpandContent>
     </div>
   );
 }

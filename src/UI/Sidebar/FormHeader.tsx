@@ -1,24 +1,76 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
+import ContextMenuOption, {
+  ContextMenuIcon,
+} from "../../DataModel/ContextMenuOption";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type { TaxForm } from "../../DataModel/TaxResponse";
 
 interface FormHeaderProps {
+  taxBehavior: TaxBehavior;
   title: string;
+  form: TaxForm;
+  additionalIdentifier?: string; // Used to distinguish multiple sections of the same form, e.g. Form8949 page 1 vs page 2.
   children?: React.ReactNode;
   isExpandedOverride?: boolean;
 }
 
 export function FormHeader(props: FormHeaderProps) {
-  const { title, children, isExpandedOverride } = props;
+  const {
+    taxBehavior,
+    title,
+    form,
+    additionalIdentifier,
+    children,
+    isExpandedOverride,
+  } = props;
 
   const [isExpanded, setIsExpanded] = useState(true);
 
-  useEffect(() =>{
+  const onDeleteForm = useCallback(() => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete all the data for this form? This cannot be undone.",
+    );
+    if (confirmed) {
+      taxBehavior.setResponses((prevResponses) => {
+        return prevResponses.filter(
+          (currentResponse) =>
+            !(
+              currentResponse.form === form &&
+              currentResponse.additionalIdentifier === additionalIdentifier
+            ),
+        );
+      });
+      taxBehavior.setContextMenu(undefined);
+    }
+  }, [taxBehavior, form, additionalIdentifier]);
+
+  const onContextMenuTitle = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      taxBehavior.setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        options: [
+          new ContextMenuOption(
+            "Delete " + title,
+            onDeleteForm,
+            ContextMenuIcon.Delete,
+          ),
+        ],
+      });
+    },
+    [onDeleteForm, title],
+  );
+
+  useEffect(() => {
     setIsExpanded(isExpandedOverride ?? true);
   }, [isExpandedOverride]);
 
   return (
-    <div className="sidebar-card">
+    <div className="sidebar-card" onContextMenu={onContextMenuTitle}>
       <div
         className={`sidebar-section-header${isExpanded ? " sidebar-section-header--expanded" : ""}`}
       >
@@ -31,9 +83,7 @@ export function FormHeader(props: FormHeaderProps) {
           inline={true}
         />
       </div>
-      <ExpandContent expanded={isExpanded}>
-        {children}
-      </ExpandContent>
+      <ExpandContent expanded={isExpanded}>{children}</ExpandContent>
     </div>
   );
 }

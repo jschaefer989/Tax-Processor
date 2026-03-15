@@ -11,7 +11,6 @@ export class TaxBehavior {
   /** Incoming responses from a file upload that are held until the duplicate popup is confirmed or cancelled */
   pendingFileResponses: TaxResponse[] = [];
 
-
   //#region State
   setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>> =
     () => {};
@@ -31,8 +30,9 @@ export class TaxBehavior {
   setContextMenu: React.Dispatch<
     React.SetStateAction<ContextMenuProps | undefined>
   > = () => {};
-  setDuplicateResponses: React.Dispatch<React.SetStateAction<DuplicateResponse[] | undefined>> =
-    () => {};
+  setDuplicateResponses: React.Dispatch<
+    React.SetStateAction<DuplicateResponse[] | undefined>
+  > = () => {};
   //#endregion State
 
   constructor(
@@ -51,7 +51,9 @@ export class TaxBehavior {
     setContextMenu: React.Dispatch<
       React.SetStateAction<ContextMenuProps | undefined>
     >,
-    setDuplicateResponses: React.Dispatch<React.SetStateAction<DuplicateResponse[] | undefined>>,
+    setDuplicateResponses: React.Dispatch<
+      React.SetStateAction<DuplicateResponse[] | undefined>
+    >,
   ) {
     this.setCurrentStep = setCurrentStep;
     this.setResponses = setResponses;
@@ -78,16 +80,22 @@ export class TaxBehavior {
     return this.steps.findIndex((s) => s.step === step);
   }
 
-  getResponse(form: string, label: string, line: number): TaxResponse | undefined {
+  getResponse(
+    form: string,
+    label: string,
+    line: number,
+  ): TaxResponse | undefined {
     return this.progress?.responses.find(
       (r) => r.form === form && r.label === label && r.line === line,
     );
   }
 
   getResponsesForLine(form: string, line: number): TaxResponse[] {
-    return this.progress?.responses.filter(
-      (r) => r.form === form && r.line === line,
-    ) ?? [];
+    return (
+      this.progress?.responses.filter(
+        (r) => r.form === form && r.line === line,
+      ) ?? []
+    );
   }
 
   //#region API Calls
@@ -271,9 +279,6 @@ export class TaxBehavior {
 
   async deleteProgress(year: number, name: string) {
     try {
-      if (!this.progress) {
-        return;
-      }
       this.setIsLoading(true);
       const response = await fetch(`/api/progress/${year}/${name}`, {
         method: "DELETE",
@@ -336,7 +341,10 @@ export class TaxBehavior {
           ),
       );
       this.setResponses((existingResponses) => {
-        const duplicates = this.getDuplicateResponses(incomingResponses, existingResponses);
+        const duplicates = this.getDuplicateResponses(
+          incomingResponses,
+          existingResponses,
+        );
         if (duplicates.length > 0) {
           this.pendingFileResponses = incomingResponses;
           this.setDuplicateResponses(duplicates);
@@ -357,7 +365,7 @@ export class TaxBehavior {
   getDuplicateResponses(
     incomingResponses: TaxResponse[],
     existingResponses: TaxResponse[],
-  ): DuplicateResponse[]  {
+  ): DuplicateResponse[] {
     const duplicates: DuplicateResponse[] = [];
     for (const incoming of incomingResponses) {
       const existing = existingResponses.find(
@@ -372,8 +380,8 @@ export class TaxBehavior {
             incoming.form,
             incoming.label,
             incoming.line,
-            existing.value,  // current value
-            incoming.value,  // new value (from file)
+            existing.value, // current value
+            incoming.value, // new value (from file)
           ),
         );
       }
@@ -407,5 +415,31 @@ export class TaxBehavior {
   cancelPendingFileResponses() {
     this.pendingFileResponses = [];
     this.setDuplicateResponses(undefined);
+  }
+
+  static getResponsesByLine(
+    responses: TaxResponse[],
+  ): Map<number, TaxResponse[]> {
+    const responsesByLine = new Map<number, TaxResponse[]>();
+
+    for (const response of responses) {
+      if (responsesByLine.has(response.line)) {
+        const existingResponse = responsesByLine.get(response.line);
+        if (!existingResponse) {
+          throw new Error(
+            `Expected existing response for line ${response.line}`,
+          );
+        }
+        responsesByLine.set(response.line, [...existingResponse, response]);
+      } else {
+        responsesByLine.set(response.line, [response]);
+      }
+    }
+
+    // Sort the responses in responsesByLine by label
+    for (const [line, respArr] of responsesByLine.entries()) {
+      responsesByLine.set(line, TaxResponse.sortByLabel(respArr));
+    }
+    return responsesByLine;
   }
 }

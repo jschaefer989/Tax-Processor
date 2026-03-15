@@ -52,6 +52,11 @@
   font-size: 0.95rem;
   border-radius: 10px;
   padding: 0.32rem 0.45rem;
+  transition: background 140ms ease;
+}
+
+.sidebar-card--nested .form-value-field:hover {
+  background: rgba(105, 158, 223, 0.12);
 }
 
 .sidebar-card--nested .form-value-field + .form-value-field {
@@ -60,6 +65,10 @@
 
 .sidebar-card--nested .form-value-field:nth-child(odd) {
   background: rgba(255, 255, 255, 0.025);
+}
+
+.sidebar-card--nested .form-value-field:nth-child(odd):hover {
+  background: rgba(105, 158, 223, 0.12);
 }
 
 .form-value-label {

@@ -7,8 +7,8 @@ public class Form1099Processor : FileProcessor
 {
     private bool IsHeader = false;
     private ReadableForm? CurrentForm = null;
-    private int ShortLine = 0;
-    private int LongLine = 0;
+    private int ShortLine = 1;
+    private int LongLine = 1;
 
     private readonly List<TaxResponse> Responses = [];
     private static readonly Dictionary<ReadableForm, string[]> expectedHeaders = new()
@@ -100,7 +100,7 @@ public class Form1099Processor : FileProcessor
             {
                 Form = TaxForm.Form1040,
                 Label = TaxFieldLabel.threeB,
-                Line = 1,
+                Line = 0,
                 Value = line.Total,
             });
         }
@@ -111,7 +111,7 @@ public class Form1099Processor : FileProcessor
             {
                 Form = TaxForm.Form1040,
                 Label = TaxFieldLabel.threeA,
-                Line = 1,
+                Line = 0,
                 Value = line.Amount,
             });
         }
@@ -125,7 +125,7 @@ public class Form1099Processor : FileProcessor
             {
                 Form = TaxForm.Form1040,
                 Label = TaxFieldLabel.twoB,
-                Line = 1,
+                Line = 0,
                 Value = line.Total,
             });
         }
@@ -135,7 +135,7 @@ public class Form1099Processor : FileProcessor
             {
                 Form = TaxForm.Form1040,
                 Label = TaxFieldLabel.twoA,
-                Line = 1,
+                Line = 0,
                 Value = line.Total,
             });
         }

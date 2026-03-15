@@ -12,35 +12,44 @@ interface FormValueFieldProps {
 
 export default function FormValueField(props: FormValueFieldProps) {
   const { response, taxBehavior } = props;
-  const { form, line } = response;
 
-  const onDeleteLine = useCallback(async () => {
+  const onDeleteField = useCallback(() => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete the data for this line on this form? This cannot be undone.",
+      "Are you sure you want to delete this row? This cannot be undone.",
     );
     if (confirmed) {
       taxBehavior.setResponses((prevResponses) => {
         return prevResponses.filter(
           (currentResponse) =>
-            !(currentResponse.form === form && currentResponse.line === line),
+            !(
+              response.form === currentResponse.form &&
+              response.line === currentResponse.line &&
+              response.label === currentResponse.label &&
+              response.value === currentResponse.value
+            ),
         );
       });
       taxBehavior.setContextMenu(undefined);
     }
-  }, [form, line, taxBehavior]);
+  }, [taxBehavior]);
 
   const onContextMenu = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
+      event.stopPropagation();
       taxBehavior.setContextMenu({
         x: event.clientX,
         y: event.clientY,
         options: [
-          new ContextMenuOption("Delete", onDeleteLine, ContextMenuIcon.Delete),
+          new ContextMenuOption(
+            "Delete row",
+            onDeleteField,
+            ContextMenuIcon.Delete,
+          ),
         ],
       });
     },
-    [onDeleteLine],
+    [onDeleteField],
   );
 
   if (response.value.trim() === "") {

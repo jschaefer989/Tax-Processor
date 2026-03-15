@@ -1,10 +1,9 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
-import RestartButton from "./RestartButton";
 import LastSavedText from "./LastSavedText";
-import SaveButton from "./SaveButton";
 import { ReturnButton } from "./ReturnButton";
+import SaveButton from "./SaveButton";
 
 interface HeaderButtonsProps {
   readonly currentStep: Steps | undefined;
@@ -56,13 +55,6 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
             isLoading={isLoading}
             year={year}
             name={name}
-          />
-          <RestartButton
-            taxBehavior={taxBehavior}
-            lastSavedTime={lastSavedTime}
-            year={year}
-            name={name}
-            isLoading={isLoading}
           />
           <ReturnButton isLoading={isLoading} />
         </div>

@@ -5,15 +5,26 @@ import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import Form1040 from "./Form1040";
 import Form8949 from "./Form8949";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import RestartButton from "../Header/RestartButton";
 
 interface FileSidebarProps {
-  taxBehavior: TaxBehavior;
+  readonly taxBehavior: TaxBehavior;
   readonly responses: TaxResponse[];
   readonly isExpanded: boolean;
+  readonly year: number;
+  readonly name: string;
+  readonly isLoading: boolean;
 }
 
 export default function FileSidebar(props: FileSidebarProps) {
-  const { taxBehavior, responses, isExpanded } = props;
+  const {
+    taxBehavior,
+    responses,
+    isExpanded,
+    year,
+    name,
+    isLoading,
+  } = props;
 
   const [allSectionsExpanded, setAllSectionsExpanded] = useState(true);
 
@@ -38,6 +49,13 @@ export default function FileSidebar(props: FileSidebarProps) {
           <div>
             <div className="sidebar-title-row">
               <h2 style={{ marginTop: 0 }}>Tax form data</h2>
+              <RestartButton
+                taxBehavior={taxBehavior}
+                responses={responses}
+                year={year}
+                name={name}
+                isLoading={isLoading}
+              />
               <ExpandButton
                 expanded={allSectionsExpanded}
                 setExpanded={setAllSectionsExpanded}
@@ -65,12 +83,14 @@ export default function FileSidebar(props: FileSidebarProps) {
             <Form8949
               taxBehavior={taxBehavior}
               title="Form 8949 - Page 1"
+              form={TaxForm.Form8949Page1}
               responses={form8949Page1Responses}
               isExpandedOverride={allSectionsExpanded}
             />
             <Form8949
               taxBehavior={taxBehavior}
               title="Form 8949 - Page 2"
+              form={TaxForm.Form8949Page2}
               responses={form8949Page2Responses}
               isExpandedOverride={allSectionsExpanded}
             />

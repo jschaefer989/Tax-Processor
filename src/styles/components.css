@@ -15,7 +15,7 @@
 }
 
 .context-menu {
-  position: absolute;
+  position: fixed;
   z-index: 1200;
   background: var(--panel);
   border-radius: 12px;

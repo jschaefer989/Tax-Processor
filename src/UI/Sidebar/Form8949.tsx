@@ -1,42 +1,29 @@
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import TaxResponse, { TaxFieldLabel } from "../../DataModel/TaxResponse";
+import { TaxBehavior } from "../../DataModel/TaxBehavior";
+import TaxResponse, {
+  TaxFieldLabel,
+  TaxForm,
+} from "../../DataModel/TaxResponse";
 import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
 interface Form8949Props {
   taxBehavior: TaxBehavior;
   title: string;
+  form: TaxForm;
   responses: TaxResponse[];
   isExpandedOverride?: boolean;
 }
 
 export default function Form8949(props: Form8949Props) {
-  const { taxBehavior, title, responses, isExpandedOverride } = props;
+  const { taxBehavior, title, form, responses, isExpandedOverride } = props;
 
   if (responses.length === 0) {
     return null;
   }
 
   const responsesByFormCode = new Map<string, TaxResponse[]>();
-  const responsesByLine = new Map<number, TaxResponse[]>();
-
-  for (const response of responses) {
-    if (responsesByLine.has(response.line)) {
-      const existingResponse = responsesByLine.get(response.line);
-      if (!existingResponse) {
-        throw new Error(`Expected existing response for line ${response.line}`);
-      }
-      responsesByLine.set(response.line, [...existingResponse, response]);
-    } else {
-      responsesByLine.set(response.line, [response]);
-    }
-  }
-
-  // Sort the responses in responsesByLine by label
-  for (const [line, respArr] of responsesByLine.entries()) {
-    responsesByLine.set(line, TaxResponse.sortByLabel(respArr));
-  }
-
+  const responsesByLine = TaxBehavior.getResponsesByLine(responses);
+  
   for (const response of responses) {
     if (response.label === TaxFieldLabel.formCode) {
       const formCode = response.value;
@@ -64,7 +51,12 @@ export default function Form8949(props: Form8949Props) {
 
   if (responsesByFormCode.size === 0) {
     return (
-      <FormHeader title={title} isExpandedOverride={isExpandedOverride}>
+      <FormHeader
+        taxBehavior={taxBehavior}
+        form={form}
+        title={title}
+        isExpandedOverride={isExpandedOverride}
+      >
         <FormSection
           taxBehavior={taxBehavior}
           responses={responses.filter(
@@ -80,6 +72,8 @@ export default function Form8949(props: Form8949Props) {
       {Array.from(responsesByFormCode.entries()).map(
         ([formCode, responsesForCode]) => (
           <FormHeader
+            taxBehavior={taxBehavior}
+            form={form}
             key={formCode}
             title={`${title}, Code ${formCode}`}
             isExpandedOverride={isExpandedOverride}

@@ -107,6 +107,9 @@ export default function App() {
                 taxBehavior={taxBehavior}
                 responses={responses}
                 isExpanded={sidebarExpanded}
+                year={year ?? new Date().getFullYear()}
+                name={name ?? "Unnamed"}
+                isLoading={isLoading}
               />
             </section>
           </main>

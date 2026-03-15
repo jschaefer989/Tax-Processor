@@ -141,6 +141,16 @@
   padding: 1.5rem;
   border: 1px solid rgba(130, 170, 220, 0.2);
   box-shadow: var(--shadow);
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.sidebar-card:hover:not(:has(.sidebar-card:hover)):not(:has(.form-line:hover)):not(:has(.form-line--boxed:hover)):not(:has(.form-value-field:hover)) {
+  background: linear-gradient(
+    180deg,
+    rgba(28, 48, 76, 0.96),
+    rgba(22, 40, 65, 0.94)
+  );
+  border-color: rgba(130, 170, 220, 0.38);
 }
 
 .sidebar-card + .sidebar-card {
@@ -179,6 +189,25 @@
 
 .sidebar-section-header--expanded {
   margin-bottom: 0.5rem;
+}
+
+.form-line {
+  border-radius: 10px;
+  padding: 0.25rem 0.3rem;
+  transition: background 150ms ease;
+}
+
+.form-line--boxed {
+  border: 1px solid rgba(130, 170, 220, 0.18);
+  border-radius: 10px;
+  padding: 0.4rem 0.6rem;
+  margin-top: 0.35rem;
+  background: rgba(130, 170, 220, 0.03);
+}
+
+.form-line:hover:not(:has(.form-value-field:hover)),
+.form-line--boxed:hover:not(:has(.form-value-field:hover)) {
+  background: rgba(130, 170, 220, 0.09);
 }
 
 .sidebar-card ul {

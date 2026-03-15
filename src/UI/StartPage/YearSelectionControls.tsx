@@ -53,7 +53,7 @@ export default function YearSelectionControls(
           </ExpandContent>
         </div>
       )}
-      <NewYearButton startBehavior={startBehavior} isLoading={isLoading} />
+      <NewYearButton startBehavior={startBehavior} isLoading={isLoading} years={years} />
     </>
   );
 }

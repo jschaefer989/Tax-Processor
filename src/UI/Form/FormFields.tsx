@@ -36,7 +36,7 @@ export default function FormFields(props: FormFieldsProps) {
         <label key={field.taxFieldLabel} className="field">
           <span>{field.label}</span>
           <EntryField
-            line={1}
+            line={0}
             field={field}
             responses={responses}
             onResponseChange={handleResponseChange}

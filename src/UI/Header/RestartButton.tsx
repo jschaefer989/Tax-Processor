@@ -1,9 +1,11 @@
 import { useCallback } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import { Steps } from "../../DataModel/TaxStep";
+import type TaxResponse from "../../DataModel/TaxResponse";
 
 interface DeleteButtonProps {
   readonly taxBehavior: TaxBehavior;
-  readonly lastSavedTime: Date | undefined;
+  readonly responses: TaxResponse[];
   readonly year: number;
   readonly name: string;
   readonly isLoading: boolean;
@@ -12,33 +14,32 @@ interface DeleteButtonProps {
 export default function RestartButton(props: DeleteButtonProps) {
   const {
     taxBehavior,
-    lastSavedTime,
+    responses,
     year,
     name,
     isLoading,
   } = props;
 
-  //#region useCallback
-  const handleDelete = useCallback(async () => {
+  const handleRestart = useCallback(async () => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete all progress? This cannot be undone.",
+      "Are you sure you want to delete all responses and restart?",
     );
     if (confirmed) {
-      taxBehavior.deleteProgress(year, name);
+      taxBehavior.setResponses([]);
+      taxBehavior.setCurrentStep(Steps.Income);
       taxBehavior.setLastSavedTime(undefined);
     }
   }, [name, year]);
-  //#endregion useCallback
 
   return (
     <button
       className="ghost"
-      onClick={handleDelete}
-      disabled={isLoading || !lastSavedTime}
+      onClick={handleRestart}
+      disabled={isLoading || responses.length === 0}
       title={
         isLoading
           ? "Server is busy. Please wait..."
-          : "Delete all progress for this year and name."
+          : "Delete all responses and restart from the beginning."
       }
     >
       Restart
