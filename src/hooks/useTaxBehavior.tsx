@@ -11,7 +11,6 @@ interface UseTaxBehaviorResult {
   currentStep: Steps | undefined;
   responses: TaxResponse[];
   isLoading: boolean;
-  error: string | undefined;
   lastSavedTime: Date | undefined;
   toastMessage: string | undefined;
   year: number | undefined;
@@ -29,7 +28,6 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
   const [currentStep, setCurrentStep] = useState<Steps | undefined>(undefined);
   const [responses, setResponses] = useState<TaxResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
   const [lastSavedTime, setLastSavedTime] = useState<Date | undefined>(
     undefined,
   );
@@ -52,7 +50,6 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
         setCurrentStep,
         setResponses,
         setIsLoading,
-        setError,
         setLastSavedTime,
         setYear,
         setName,
@@ -68,7 +65,6 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
       setCurrentStep,
       setResponses,
       setIsLoading,
-      setError,
       setLastSavedTime,
       setYear,
       setName,
@@ -86,7 +82,6 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
     currentStep,
     responses,
     isLoading,
-    error,
     lastSavedTime,
     toastMessage,
     year,

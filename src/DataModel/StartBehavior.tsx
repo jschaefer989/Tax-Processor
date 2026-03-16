@@ -28,8 +28,9 @@ export class StartBehavior {
       }
       const data = (await response.json()) as number[];
       this.setYears(data);
+      this.taxBehavior.setToastMessage(undefined);
     } catch (err) {
-      this.taxBehavior.setError(
+      this.taxBehavior.setToastMessage(
         err instanceof Error ? err.message : "Unable to load tax years.",
       );
     } finally {
@@ -48,8 +49,9 @@ export class StartBehavior {
       }
       const data = (await response.json()) as string[];
       this.setNames(data);
+      this.taxBehavior.setToastMessage(undefined);
     } catch (err) {
-      this.taxBehavior.setError(
+      this.taxBehavior.setToastMessage(
         err instanceof Error
           ? err.message
           : "Unable to load saved progress names.",
@@ -69,8 +71,9 @@ export class StartBehavior {
       }
       const data = (await response.json()) as string[];
       this.setNames(data);
+      this.taxBehavior.setToastMessage(undefined);
     } catch (err) {
-      this.taxBehavior.setError(
+      this.taxBehavior.setToastMessage(
         err instanceof Error ? err.message : "Unable to load all names.",
       );
     } finally {

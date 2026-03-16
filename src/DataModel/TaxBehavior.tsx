@@ -1,7 +1,11 @@
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
 import { DuplicateResponse } from "./DuplicateResponse";
 import TaxProgress from "./TaxProgress";
-import TaxResponse from "./TaxResponse";
+import TaxResponse, {
+  AdditionalIdentifierLabel,
+  TaxFieldLabel,
+  TaxForm,
+} from "./TaxResponse";
 import { Steps, TaxStep } from "./TaxStep";
 
 export class TaxBehavior {
@@ -16,7 +20,6 @@ export class TaxBehavior {
     () => {};
   setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>> = () => {};
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  setError: React.Dispatch<React.SetStateAction<string | undefined>> = () => {};
   setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>> =
     () => {};
   setYear: React.Dispatch<React.SetStateAction<number | undefined>> = () => {};
@@ -39,7 +42,6 @@ export class TaxBehavior {
     setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>,
     setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setError: React.Dispatch<React.SetStateAction<string | undefined>>,
     setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>,
     setYear: React.Dispatch<React.SetStateAction<number | undefined>>,
     setName: React.Dispatch<React.SetStateAction<string | undefined>>,
@@ -58,7 +60,6 @@ export class TaxBehavior {
     this.setCurrentStep = setCurrentStep;
     this.setResponses = setResponses;
     this.setIsLoading = setIsLoading;
-    this.setError = setError;
     this.setLastSavedTime = setLastSavedTime;
     this.setYear = setYear;
     this.setName = setName;
@@ -133,6 +134,12 @@ export class TaxBehavior {
     }
   }
 
+  async refreshDbConnectionState(): Promise<boolean> {
+    const connected = await this.getDatabaseConnectionStatus();
+    this.setNoDbConnection(!connected);
+    return connected;
+  }
+
   async testDatabaseConnection(
     host: string,
     port: number,
@@ -157,7 +164,7 @@ export class TaxBehavior {
       if (!response.ok) {
         const data = (await response.json()) as { message?: string };
         this.setNoDbConnection(true);
-        this.setError(
+        this.setToastMessage(
           data.message ??
             "Unable to connect to database: " + response.statusText,
         );
@@ -165,11 +172,11 @@ export class TaxBehavior {
       }
 
       this.setNoDbConnection(false);
-      this.setError(undefined);
+      this.setToastMessage(undefined);
       return true;
     } catch (err) {
       this.setNoDbConnection(true);
-      this.setError(
+      this.setToastMessage(
         err instanceof Error ? err.message : "Unable to connect to database.",
       );
       return false;
@@ -178,7 +185,7 @@ export class TaxBehavior {
     }
   }
 
-  async loadSteps() {
+  async loadSteps(): Promise<boolean> {
     try {
       this.setIsLoading(true);
       const response = await fetch("/api/steps");
@@ -191,48 +198,62 @@ export class TaxBehavior {
       if (this.steps.length > 0) {
         this.setCurrentStep(this.steps[0].step);
       }
+      this.setNoDbConnection(false);
+      this.setToastMessage(undefined);
+      return true;
     } catch (err) {
-      this.setError(
+      await this.refreshDbConnectionState();
+      this.setToastMessage(
         err instanceof Error ? err.message : "Something went wrong.",
       );
+      return false;
     } finally {
       this.setIsLoading(false);
     }
   }
 
-  async resumeProgress(year: number, name: string) {
+  async resumeProgress(year: number, name: string): Promise<boolean> {
     if (this.steps.length === 0) {
-      return;
+      return false;
     }
     try {
       this.setIsLoading(true);
       const response = await fetch(`/api/progress/${year}/${name}`);
       if (!response.ok) {
-        if (response.status === 500) {
-          this.setNoDbConnection(true);
-          return;
-        }
         if (response.status === 404) {
-          return;
+          this.setNoDbConnection(false);
+          this.setToastMessage(undefined);
+          return true;
         }
         throw new Error("Unable to load saved progress.");
       }
       const saved = (await response.json()) as TaxProgress;
       if (saved.year !== year) {
-        return;
+        return false;
       }
       this.setNoDbConnection(false);
       this.setCurrentStep(saved.currentStep as Steps);
       this.setResponses(
         saved.responses.map(
-          (r) => new TaxResponse(r.form, r.label, r.line, r.value),
+          (response) =>
+            new TaxResponse(
+              response.form,
+              response.label,
+              response.line,
+              response.value,
+              response.additionalIdentifiers,
+            ),
         ),
       );
       this.setLastSavedTime(new Date(saved.updatedAt));
+      this.setToastMessage(undefined);
+      return true;
     } catch (err) {
-      this.setError(
+      await this.refreshDbConnectionState();
+      this.setToastMessage(
         err instanceof Error ? err.message : "Unable to load saved progress.",
       );
+      return false;
     } finally {
       this.setIsLoading(false);
     }
@@ -269,7 +290,7 @@ export class TaxBehavior {
       this.setLastSavedTime(savedTime);
       this.setToastMessage(`Saved at ${savedTime.toLocaleTimeString()}`);
     } catch (err) {
-      this.setError(
+      this.setToastMessage(
         err instanceof Error ? err.message : "Unable to save progress.",
       );
     } finally {
@@ -325,19 +346,21 @@ export class TaxBehavior {
         throw new Error("Server returned an empty response.");
       }
 
-      const data = JSON.parse(responseText) as Array<{
-        form: string;
-        label: string;
-        line: number;
-        value: string;
-      }>;
+      const data = JSON.parse(responseText) as TaxResponse[];
       const incomingResponses = data.map(
         (item) =>
           new TaxResponse(
-            item.form as never,
-            item.label as never,
+            item.form,
+            item.label,
             item.line,
             item.value,
+            item.additionalIdentifiers
+              ? new Map(
+                  Object.entries(item.additionalIdentifiers) as Array<
+                    [AdditionalIdentifierLabel, string]
+                  >,
+                )
+              : undefined,
           ),
       );
       this.setResponses((existingResponses) => {
@@ -353,7 +376,7 @@ export class TaxBehavior {
         return [...existingResponses, ...incomingResponses];
       });
     } catch (err) {
-      this.setError(
+      this.setToastMessage(
         err instanceof Error ? err.message : "Unable to upload file.",
       );
     } finally {

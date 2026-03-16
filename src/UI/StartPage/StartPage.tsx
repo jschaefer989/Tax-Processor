@@ -11,26 +11,20 @@ interface StartPageProps {
   readonly selectedName: string | undefined;
   readonly isLoading: boolean;
   readonly noDbConnection: boolean;
-  readonly error: string | undefined;
 }
 
 export default function StartPage(props: StartPageProps) {
-  const {
-    taxBehavior,
-    selectedYear,
-    selectedName,
-    isLoading,
-    noDbConnection,
-    error,
-  } = props;
+  const { taxBehavior, selectedYear, isLoading, noDbConnection } = props;
 
   const { years, names, newYear, startBehavior } =
     useStartBehavior(taxBehavior);
 
+  // On initial load, check if we have a database connection and load the years if so
   useEffect(() => {
-    if (selectedYear) {
+    if (selectedYear !== undefined) {
       return;
     }
+
     let isCancelled = false;
 
     const initialize = async () => {
@@ -44,7 +38,7 @@ export default function StartPage(props: StartPageProps) {
         return;
       }
 
-      startBehavior.loadYears();
+      await startBehavior.loadYears();
     };
 
     initialize();
@@ -52,7 +46,18 @@ export default function StartPage(props: StartPageProps) {
     return () => {
       isCancelled = true;
     };
-  }, [selectedYear]);
+  }, [selectedYear, startBehavior, taxBehavior]);
+
+  // Reload the years whenever the selected year changes back to undefined
+  // (e.g. after deleting a progress), or if we establish a database connection
+  // after previously not having one
+  useEffect(() => {
+    if (selectedYear !== undefined || noDbConnection) {
+      return;
+    }
+
+    startBehavior.loadYears();
+  }, [selectedYear, noDbConnection, startBehavior]);
 
   if (newYear && selectedYear !== undefined) {
     return (
@@ -68,7 +73,6 @@ export default function StartPage(props: StartPageProps) {
         <MissingDatabaseControls
           startBehavior={startBehavior}
           isLoading={isLoading}
-          error={error}
         />
       ) : (
         <YearSelectionControls

@@ -16,23 +16,35 @@ export default function NewTaxpayerPopup(props: NewYearPageProps) {
 
   const onClose = useCallback(() => {
     startBehavior.setNewYear(false);
-  }, [startBehavior]);
+    if (year) {
+      startBehavior.loadNames(year);
+    }
+  }, [startBehavior, year]);
 
   const onSubmit = useCallback(async () => {
     if (tempName?.trim() === "") {
       return;
+    }    
+    const stepsLoaded = await startBehavior.taxBehavior.loadSteps();
+    if (!stepsLoaded) {
+      return;
     }
-    startBehavior.taxBehavior.setError(undefined);
-    await startBehavior.taxBehavior.loadSteps();
+
     if (year && tempName) {
-      await startBehavior.taxBehavior.resumeProgress(year, tempName.trim());
+      const progressLoaded = await startBehavior.taxBehavior.resumeProgress(
+        year,
+        tempName.trim(),
+      );
+      if (!progressLoaded) {
+        return;
+      }
     }
     startBehavior.taxBehavior.setName(tempName?.trim());
     startBehavior.taxBehavior.setCurrentStep(Steps.Income);
     startBehavior.taxBehavior.setShowStartPage(false);
 
     onClose();
-  }, [tempName, year, onClose]);
+  }, [tempName, year, onClose, startBehavior]);
 
   return (
     <Popup

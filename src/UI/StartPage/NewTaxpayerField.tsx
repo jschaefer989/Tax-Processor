@@ -26,6 +26,7 @@ export default function NewTaxpayerField(props: NewTaxpayerFieldProps) {
         placeholder="Enter taxpayer name"
         onChange={onChange}
         onKeyUp={onKeyUp}
+        autoFocus
       />
     </label>
   );

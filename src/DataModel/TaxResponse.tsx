@@ -17,39 +17,31 @@ export enum TaxFieldLabel {
   twoB = "twoB",
   threeA = "threeA",
   threeB = "threeB",
-  formCode = "formCode",
 }
 
-export const form1040LabelOrder = new Map<TaxFieldLabel, number>([
-  [TaxFieldLabel.oneA, 1],
-  [TaxFieldLabel.oneB, 2],
-  [TaxFieldLabel.oneC, 3],
-  [TaxFieldLabel.oneD, 4],
-  [TaxFieldLabel.oneE, 5],
-  [TaxFieldLabel.oneF, 6],
-  [TaxFieldLabel.oneG, 7],
-  [TaxFieldLabel.twoA, 8],
-  [TaxFieldLabel.twoB, 9],
-  [TaxFieldLabel.threeA, 10],
-  [TaxFieldLabel.threeB, 11],
-]);
+export enum AdditionalIdentifierLabel {  
+  formCode = "formCode",
+}
 
 export default class TaxResponse {
   form: TaxForm;
   label: TaxFieldLabel;
   line: number;
   value: string;
+  additionalIdentifiers?: Map<AdditionalIdentifierLabel, string>; 
 
   constructor(
     form: TaxForm,
     label: TaxFieldLabel,
     line: number,
     value: string,
+    additionalIdentifiers?: Map<AdditionalIdentifierLabel, string>,
   ) {
     this.form = form;
     this.label = label;
     this.line = line;
     this.value = value;
+    this.additionalIdentifiers = additionalIdentifiers;
   }
 
   getUserFriendlyLabel(): string {
@@ -96,10 +88,39 @@ export default class TaxResponse {
     }
   }
 
+  getFormLabelOrder(): number {
+    switch (this.label) {
+      case TaxFieldLabel.oneA:
+        return 1;
+      case TaxFieldLabel.oneB:
+        return 2;
+      case TaxFieldLabel.oneC:
+        return 3;
+      case TaxFieldLabel.oneD:
+        return 4;
+      case TaxFieldLabel.oneE:
+        return 5;
+      case TaxFieldLabel.oneF:
+        return 6;
+      case TaxFieldLabel.oneG:
+        return 7;
+      case TaxFieldLabel.twoA:
+        return 8;
+      case TaxFieldLabel.twoB:
+        return 9;
+      case TaxFieldLabel.threeA:
+        return 10;
+      case TaxFieldLabel.threeB:
+        return 11;
+      default:
+        return Number.MAX_SAFE_INTEGER;
+    }
+  }
+
   static sortByLabel(responses: TaxResponse[]): TaxResponse[] {
     return [...responses].sort((a, b) => {
-      const aOrder = form1040LabelOrder.get(a.label) ?? Number.MAX_SAFE_INTEGER;
-      const bOrder = form1040LabelOrder.get(b.label) ?? Number.MAX_SAFE_INTEGER;
+      const aOrder = a.getFormLabelOrder();
+      const bOrder = b.getFormLabelOrder();
       return aOrder - bOrder;
     });
   }

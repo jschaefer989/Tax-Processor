@@ -23,11 +23,35 @@ public class TaxProgressEntity
             .Select(r => new TaxResponse
             {
                 Form = Enum.Parse<TaxForm>(r.Form),
-                Label = Enum.Parse<TaxFieldLabel>(r.Label),
+                Label = ParseTaxFieldLabel(r.Label),
                 Line = r.Line,
                 Value = r.Value
             })
             .ToArray();
+    }
+
+    private static TaxFieldLabel ParseTaxFieldLabel(string label)
+    {
+        if (Enum.TryParse<TaxFieldLabel>(label, ignoreCase: true, out var parsedLabel))
+        {
+            return parsedLabel;
+        }
+
+        return label switch
+        {
+            "1a" => TaxFieldLabel.oneA,
+            "1b" => TaxFieldLabel.oneB,
+            "1c" => TaxFieldLabel.oneC,
+            "1d" => TaxFieldLabel.oneD,
+            "1e" => TaxFieldLabel.oneE,
+            "1f" => TaxFieldLabel.oneF,
+            "1g" => TaxFieldLabel.oneG,
+            "2a" => TaxFieldLabel.twoA,
+            "2b" => TaxFieldLabel.twoB,
+            "3a" => TaxFieldLabel.threeA,
+            "3b" => TaxFieldLabel.threeB,
+            _ => throw new ArgumentException($"Requested value '{label}' was not found.")
+        };
     }
 
     public void UpdateResponses(IEnumerable<TaxResponse?>? responses, int year, string name)

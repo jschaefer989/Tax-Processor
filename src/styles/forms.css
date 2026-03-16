@@ -121,3 +121,7 @@ select:focus {
 .db-connection-panel.visible {
   max-height: 1000px;
 }
+
+.db-connection-form.visible > button.disabled {
+  opacity: 0.6;
+}

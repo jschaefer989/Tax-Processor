@@ -5,13 +5,16 @@ import ContextMenuOption, {
   ContextMenuIcon,
 } from "../../DataModel/ContextMenuOption";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type { TaxForm } from "../../DataModel/TaxResponse";
+import {
+  AdditionalIdentifierLabel,
+  TaxForm,
+} from "../../DataModel/TaxResponse";
 
 interface FormHeaderProps {
   taxBehavior: TaxBehavior;
   title: string;
   form: TaxForm;
-  additionalIdentifier?: string; // Used to distinguish multiple sections of the same form, e.g. Form8949 page 1 vs page 2.
+  additionalIdentifiers?: Map<AdditionalIdentifierLabel, string>; // Used to distinguish multiple sections of the same form, e.g. Form8949 page 1 vs page 2.
   children?: React.ReactNode;
   isExpandedOverride?: boolean;
 }
@@ -21,7 +24,7 @@ export function FormHeader(props: FormHeaderProps) {
     taxBehavior,
     title,
     form,
-    additionalIdentifier,
+    additionalIdentifiers,
     children,
     isExpandedOverride,
   } = props;
@@ -38,13 +41,16 @@ export function FormHeader(props: FormHeaderProps) {
           (currentResponse) =>
             !(
               currentResponse.form === form &&
-              currentResponse.additionalIdentifier === additionalIdentifier
+              currentResponse.additionalIdentifiers?.get(
+                AdditionalIdentifierLabel.formCode,
+              ) ===
+                additionalIdentifiers?.get(AdditionalIdentifierLabel.formCode)
             ),
         );
       });
       taxBehavior.setContextMenu(undefined);
     }
-  }, [taxBehavior, form, additionalIdentifier]);
+  }, [taxBehavior, form, additionalIdentifiers]);
 
   const onContextMenuTitle = useCallback(
     (event: React.MouseEvent) => {

@@ -14,6 +14,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [showFileLoader, setShowFileLoader] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const onClick = useCallback(() => {
     setShowFileLoader(true);
@@ -26,7 +27,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
   const onSubmit = useCallback(async () => {
     const userFile = fileInputRef.current?.files?.[0];
     if (!userFile) {
-      taxBehavior.setError("Please select a file.");
+      setError("Please select a file.");
       return;
     }
 
@@ -48,6 +49,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
         >
           <div className="file-input-group">
             <label htmlFor="file-input">Select file:</label>
+            {error && <p className="panel__error">{error}</p>}
             <input
               ref={fileInputRef}
               id="file-input"

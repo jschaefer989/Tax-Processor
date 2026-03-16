@@ -62,6 +62,10 @@ public enum TaxFieldLabel
 
     [JsonPropertyName("3b")]
     threeB,
+}
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum AdditionalIdentifierLabel
+{
     [JsonPropertyName("formCode")]
     formCode
 }
@@ -78,4 +82,7 @@ public class TaxResponse
 
     [JsonPropertyName("value")]
     public string? Value { get; set; }
+
+    [JsonPropertyName("additionalIdentifiers")]
+    public Dictionary<AdditionalIdentifierLabel, string>? AdditionalIdentifiers { get; set; }
 }

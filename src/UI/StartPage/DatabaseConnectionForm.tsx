@@ -6,13 +6,12 @@ import ExpandArrowIcon from "../General/ExpandArrowIcon";
 interface DatabaseConnectionFormProps {
   readonly startBehavior: StartBehavior;
   readonly isLoading: boolean;
-  readonly error: string | undefined;
 }
 
 export default function DatabaseConnectionForm(
   props: DatabaseConnectionFormProps,
 ) {
-  const { startBehavior, isLoading, error } = props;
+  const { startBehavior, isLoading } = props;
 
   // #region useState
   const [dbHost, setDbHost] = useState("localhost");
@@ -42,7 +41,23 @@ export default function DatabaseConnectionForm(
   const toggleFormVisibility = useCallback(() => {
     setShowForm((prev) => !prev);
   }, []);
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        onConnectDatabase();
+      }
+    },
+    [onConnectDatabase],
+  );
   // #endregion
+
+  const isDisabled =
+    isLoading ||
+    dbHost.trim() === "" ||
+    dbName.trim() === "" ||
+    dbUsername.trim() === "";
 
   return (
     <>
@@ -57,14 +72,11 @@ export default function DatabaseConnectionForm(
         No database connection. Enter database details to test a connection.{" "}
         <ExpandArrowIcon className="expansion-arrow" />
       </button>
-      {error && <p className="error">{error}</p>}
       <div
         id="db-connection-form"
         className={`db-connection-panel ${showForm ? "visible" : ""}`}
       >
-        <div
-          className={`db-connection-form ${showForm ? "visible" : ""}`}
-        >
+        <div className={`db-connection-form ${showForm ? "visible" : ""}`}>
           <label className="field">
             <span>Host</span>
             <input
@@ -72,6 +84,7 @@ export default function DatabaseConnectionForm(
               value={dbHost}
               onChange={(event) => setDbHost(event.target.value)}
               placeholder="localhost"
+              onKeyDown={handleKeyDown}
             />
           </label>
           <label className="field">
@@ -90,6 +103,7 @@ export default function DatabaseConnectionForm(
               value={dbName}
               onChange={(event) => setDbName(event.target.value)}
               placeholder="taxprocessor"
+              onKeyDown={handleKeyDown}
             />
           </label>
           <label className="field">
@@ -99,6 +113,7 @@ export default function DatabaseConnectionForm(
               value={dbUsername}
               onChange={(event) => setDbUsername(event.target.value)}
               placeholder="postgres"
+              onKeyDown={handleKeyDown}
             />
           </label>
           <label className="field">
@@ -108,22 +123,21 @@ export default function DatabaseConnectionForm(
               value={dbPassword}
               onChange={(event) => setDbPassword(event.target.value)}
               placeholder="••••••••"
+              onKeyDown={handleKeyDown}
             />
           </label>
           <button
             style={{ marginTop: "0.75rem" }}
+            className={isDisabled ? "disabled" : "button"}
             type="button"
             onClick={onConnectDatabase}
-            disabled={
-              isLoading ||
-              dbHost.trim() === "" ||
-              dbName.trim() === "" ||
-              dbUsername.trim() === ""
-            }
+            disabled={isDisabled}
             title={
               isLoading
                 ? "Server is busy. Please wait..."
-                : "Attempt to connect to the database with provided credentials"
+                : isDisabled
+                  ? "Please fill in all required fields to enable the connect button"
+                  : "Attempt to connect to the database with provided credentials"
             }
           >
             Connect database

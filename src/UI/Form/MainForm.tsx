@@ -9,18 +9,16 @@ import NextButton from "./NextButton";
 import FormFiles from "./FormFiles";
 
 interface MainFormProps {
-  currentStep: Steps | undefined;
-  responses: TaxResponse[];
-  isLoading: boolean;
-  error: string | undefined;
-  taxBehavior: TaxBehavior;
+  readonly currentStep: Steps | undefined;
+  readonly responses: TaxResponse[];
+  readonly isLoading: boolean;
+  readonly taxBehavior: TaxBehavior;
 }
 export default function MainForm(props: MainFormProps) {
   const {
     currentStep,
     responses,
     isLoading,
-    error,
     taxBehavior,
   } = props;
 
@@ -35,10 +33,6 @@ export default function MainForm(props: MainFormProps) {
 
   if (isLoading) {
     return <div className="panel__loading">Loading your tax steps...</div>;
-  }
-
-  if (error) {
-    return <div className="panel__error">{error}</div>;
   }
 
   if (!currentStep || !step) {

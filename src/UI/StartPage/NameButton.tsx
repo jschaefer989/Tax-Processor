@@ -16,13 +16,21 @@ export default function NameButton(props: NameButtonProps) {
 
   const onClick = useCallback(async () => {
     const { taxBehavior } = startBehavior;
-    await taxBehavior.loadSteps();
-    if (year) {
-      await taxBehavior.resumeProgress(year, name);
+    const stepsLoaded = await taxBehavior.loadSteps();
+    if (!stepsLoaded) {
+      return;
     }
+
+    if (year) {
+      const progressLoaded = await taxBehavior.resumeProgress(year, name);
+      if (!progressLoaded) {
+        return;
+      }
+    }
+
     taxBehavior.setName(name);
     taxBehavior.setShowStartPage(false);
-  }, [name, year]);
+  }, [name, year, startBehavior]);
 
   const onDeleteName = useCallback(async () => {
     if (year === undefined) {

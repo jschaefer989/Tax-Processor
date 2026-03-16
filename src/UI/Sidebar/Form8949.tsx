@@ -1,5 +1,6 @@
 import { TaxBehavior } from "../../DataModel/TaxBehavior";
 import TaxResponse, {
+  AdditionalIdentifierLabel,
   TaxFieldLabel,
   TaxForm,
 } from "../../DataModel/TaxResponse";
@@ -23,30 +24,16 @@ export default function Form8949(props: Form8949Props) {
 
   const responsesByFormCode = new Map<string, TaxResponse[]>();
   const responsesByLine = TaxBehavior.getResponsesByLine(responses);
-  
-  for (const response of responses) {
-    if (response.label === TaxFieldLabel.formCode) {
-      const formCode = response.value;
-      const responsesForLine = responsesByLine.get(response.line);
-      if (!responsesForLine) {
-        throw new Error(`Expected responses for line ${response.line}`);
-      }
 
-      if (responsesByFormCode.has(formCode)) {
-        const existingResponse = responsesByFormCode.get(formCode);
-        if (!existingResponse) {
-          throw new Error(
-            `Expected existing response for form code ${formCode}`,
-          );
-        }
-        responsesByFormCode.set(formCode, [
-          ...existingResponse,
-          ...responsesForLine,
-        ]);
-      } else {
-        responsesByFormCode.set(formCode, [...responsesForLine]);
-      }
+  for (const responsesForLine of responsesByLine.values()) {
+    const formCode = getFormCode(responsesForLine);
+
+    if (!formCode) {
+      continue;
     }
+
+    const existingResponse = responsesByFormCode.get(formCode) ?? [];
+    responsesByFormCode.set(formCode, [...existingResponse, ...responsesForLine]);
   }
 
   if (responsesByFormCode.size === 0) {
@@ -57,12 +44,7 @@ export default function Form8949(props: Form8949Props) {
         title={title}
         isExpandedOverride={isExpandedOverride}
       >
-        <FormSection
-          taxBehavior={taxBehavior}
-          responses={responses.filter(
-            (response) => response.label !== TaxFieldLabel.formCode,
-          )}
-        />
+        <FormSection taxBehavior={taxBehavior} responses={responses} />
       </FormHeader>
     );
   }
@@ -77,16 +59,23 @@ export default function Form8949(props: Form8949Props) {
             key={formCode}
             title={`${title}, Code ${formCode}`}
             isExpandedOverride={isExpandedOverride}
+            additionalIdentifiers={
+              new Map([[AdditionalIdentifierLabel.formCode, formCode]])
+            }
           >
             <FormSection
               taxBehavior={taxBehavior}
-              responses={responsesForCode.filter(
-                (response) => response.label !== TaxFieldLabel.formCode,
-              )}
+              responses={responsesForCode}
             />
           </FormHeader>
         ),
       )}
     </>
+  );
+}
+
+function getFormCode(responsesForLine: TaxResponse[]): string | undefined {
+  return responsesForLine[0]?.additionalIdentifiers?.get(
+    AdditionalIdentifierLabel.formCode,
   );
 }

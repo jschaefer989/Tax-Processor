@@ -57,7 +57,7 @@ export default function FormLine(props: FormLineProps) {
   return (
     <div
       className={`form-line${isBoxed ? " form-line--boxed" : ""}`}
-      onContextMenu={isBoxed ? undefined : onContextMenu}
+      onContextMenu={!isBoxed ? undefined : onContextMenu}
     >
       {isBoxed && <p>{line}</p>}
       {responses.map((response, index) => (

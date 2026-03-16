@@ -147,12 +147,15 @@ public class Form1099Processor : FileProcessor
         var form = Get1099BTaxForm(term);
         var lineNumber = IncrementLine(form);
 
+        Dictionary<AdditionalIdentifierLabel, string> additionalIdentifiers = GetAdditionalIdentifiers(line);
+
         Responses.Add(new TaxResponse
         {
             Form = form,
             Label = TaxFieldLabel.oneA,
             Line = lineNumber,
             Value = line.Description,
+            AdditionalIdentifiers = additionalIdentifiers,
         });
         Responses.Add(new TaxResponse
         {
@@ -160,6 +163,7 @@ public class Form1099Processor : FileProcessor
             Label = TaxFieldLabel.oneB,
             Line = lineNumber,
             Value = line.DateAcquired,
+            AdditionalIdentifiers = additionalIdentifiers,
         });
         Responses.Add(new TaxResponse
         {
@@ -167,6 +171,7 @@ public class Form1099Processor : FileProcessor
             Label = TaxFieldLabel.oneC,
             Line = lineNumber,
             Value = line.DateSold,
+            AdditionalIdentifiers = additionalIdentifiers,
         });
         Responses.Add(new TaxResponse
         {
@@ -174,6 +179,7 @@ public class Form1099Processor : FileProcessor
             Label = TaxFieldLabel.oneD,
             Line = lineNumber,
             Value = line.Proceeds,
+            AdditionalIdentifiers = additionalIdentifiers,
         });
         Responses.Add(new TaxResponse
         {
@@ -181,6 +187,7 @@ public class Form1099Processor : FileProcessor
             Label = TaxFieldLabel.oneE,
             Line = lineNumber,
             Value = line.CostBasis,
+            AdditionalIdentifiers = additionalIdentifiers,
         });
         Responses.Add(new TaxResponse
         {
@@ -188,6 +195,7 @@ public class Form1099Processor : FileProcessor
             Label = TaxFieldLabel.oneF,
             Line = lineNumber,
             Value = line.MarketDiscount,
+            AdditionalIdentifiers = additionalIdentifiers,
         });
         Responses.Add(new TaxResponse
         {
@@ -195,13 +203,7 @@ public class Form1099Processor : FileProcessor
             Label = TaxFieldLabel.oneG,
             Line = lineNumber,
             Value = line.WashSaleLossDisallowed,
-        });
-        Responses.Add(new TaxResponse
-        {
-            Form = form,
-            Label = TaxFieldLabel.formCode,
-            Line = lineNumber,
-            Value = line.FormCode,
+            AdditionalIdentifiers = additionalIdentifiers,
         });
     }
 
@@ -235,6 +237,14 @@ public class Form1099Processor : FileProcessor
         {
             throw new InvalidOperationException($"Invalid form for line increment: {form}");
         }
+    }
+
+    private static Dictionary<AdditionalIdentifierLabel, string> GetAdditionalIdentifiers(Form1099BLine line)
+    {
+        return new Dictionary<AdditionalIdentifierLabel, string>
+        {
+            { AdditionalIdentifierLabel.formCode, line.FormCode }
+        };
     }
 
     private class Form1099DIVLine

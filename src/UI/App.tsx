@@ -16,7 +16,6 @@ export default function App() {
     currentStep,
     responses,
     isLoading,
-    error,
     lastSavedTime,
     toastMessage,
     year,
@@ -51,7 +50,6 @@ export default function App() {
           selectedName={name}
           isLoading={isLoading}
           noDbConnection={noDbConnection}
-          error={error}
         />
       ) : (
         <>
@@ -76,7 +74,6 @@ export default function App() {
                 currentStep={currentStep}
                 responses={responses}
                 isLoading={isLoading}
-                error={error}
                 taxBehavior={taxBehavior}
               />
             </section>
