@@ -4,6 +4,7 @@ import ContextMenuOption, {
 } from "../../DataModel/ContextMenuOption";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import { FormValue } from "./FormValue";
 
 interface FormValueFieldProps {
   taxBehavior: TaxBehavior;
@@ -61,7 +62,7 @@ export default function FormValueField(props: FormValueFieldProps) {
       <span className="form-value-label">
         {response.getUserFriendlyLabel()}
       </span>
-      <span className="form-value">{response.value}</span>
+      <FormValue taxBehavior={taxBehavior} response={response} />
     </div>
   );
 }

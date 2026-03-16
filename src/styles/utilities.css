@@ -82,6 +82,14 @@
   font-weight: 500;
   text-align: right;
   max-width: 75%;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-radius 150ms ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.form-value:hover {
+  background-color: rgba(250, 200, 80, 0.15);
 }
 
 .snapshot {
