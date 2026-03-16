@@ -1,23 +1,25 @@
 import { useMemo, useCallback, useEffect, useRef } from "react";
 import type TaxField from "../../DataModel/TaxField";
-import type TaxResponse from "../../DataModel/TaxResponse";
-import type { TaxForm, TaxFieldLabel } from "../../DataModel/TaxResponse";
+import TaxResponse from "../../DataModel/TaxResponse";
+import { type TaxForm, type TaxFieldLabel } from "../../DataModel/TaxResponse";
+import { TaxFieldType } from "../../DataModel/TaxField";
+import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type { TaxStep } from "../../DataModel/TaxStep";
 
 interface EntryFieldComponentProps {
   field: TaxField;
   line: number;
   responses: TaxResponse[];
-  onResponseChange: (
-    form: TaxForm,
-    label: TaxFieldLabel,
-    line: number,
-    value: string,
-  ) => void;
+  taxBehavior: TaxBehavior;
+  step: TaxStep;
+  form: TaxForm;
+  label: TaxFieldLabel;
 }
 
 export default function EntryField(props: EntryFieldComponentProps) {
-  const { field, line, responses, onResponseChange } = props;
+  const { field, line, responses, taxBehavior, step, form, label } = props;
   const lastHandledValueRef = useRef("");
+  const normalizedType = String(field.type).toLowerCase();
 
   //#region useMemo
   const matchingValue = useMemo(
@@ -36,9 +38,20 @@ export default function EntryField(props: EntryFieldComponentProps) {
   const handleResponseChange = useCallback(
     (value: string) => {
       lastHandledValueRef.current = value;
-      onResponseChange(field.form, field.taxFieldLabel, line, value);
+      taxBehavior.setResponses((prev) => {
+      const existingIndex = prev.findIndex((response) => response.form === form && response.label === label && response.line === line);
+      if (existingIndex !== -1) {
+        // Update existing response
+        const updated = [...prev];
+        updated[existingIndex] = new TaxResponse(form, label, line, value, undefined, step.step as string);
+        return updated;
+      } else {
+        // Add new response
+        return [...prev, new TaxResponse(form, label, line, value, undefined, step.step as string)];
+      }
+    });
     },
-    [field.form, field.taxFieldLabel, line, onResponseChange],
+    [field.form, field.taxFieldLabel, line, taxBehavior, step.step, form, label],
   );
   //#endregion useCallback
 
@@ -53,7 +66,7 @@ export default function EntryField(props: EntryFieldComponentProps) {
     }
   }, [matchingValue]);
 
-  if (field.type === "select") {
+  if (normalizedType === TaxFieldType.Select) {
     return (
       <select
         id={field.taxFieldLabel}
@@ -71,16 +84,16 @@ export default function EntryField(props: EntryFieldComponentProps) {
   }
 
   const inputType =
-    field.type === "currency" || field.type === "number"
+    normalizedType === TaxFieldType.Currency || normalizedType === TaxFieldType.Number
       ? "number"
-      : field.type;
+      : normalizedType;
   return (
     <input
       id={field.taxFieldLabel}
       type={inputType}
-      inputMode={field.type === "currency" ? "decimal" : undefined}
-      step={field.type === "currency" ? "0.01" : undefined}
-      placeholder={field.type === "currency" ? "0.00" : undefined}
+      inputMode={normalizedType === TaxFieldType.Currency ? "decimal" : undefined}
+      step={normalizedType === TaxFieldType.Currency ? "0.01" : undefined}
+      placeholder={normalizedType === TaxFieldType.Currency ? "0.00" : undefined}
       value={matchingValue ?? ""}
       onChange={(event) => handleResponseChange(event.target.value)}
     />

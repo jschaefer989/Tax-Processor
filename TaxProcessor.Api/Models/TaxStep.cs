@@ -1,6 +1,20 @@
 using System.Text.Json.Serialization;
 
 namespace TaxProcessor.Api.Models;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum Steps
+{
+    [JsonPropertyName("income")]
+    Income,
+    [JsonPropertyName("taxAndCredits")]
+    TaxAndCredits,
+    [JsonPropertyName("paymentsAndRefundableCredits")]
+    PaymentsAndRefundableCredits,
+    [JsonPropertyName("refundOwe")]
+    RefundOwe,
+}
+
 public class TaxStep
 {
     [JsonPropertyName("step")]
@@ -13,8 +27,20 @@ public class TaxStep
     public string Description { get; set; } = null!;
 
     [JsonPropertyName("fields")]
-    public List<TaxField> Fields { get; set; } = new();
+    public List<TaxField> Fields { get; set; } = [];
 
     [JsonPropertyName("files")]
-    public List<TaxFile> Files { get; set; } = new();
+    public List<TaxFile> Files { get; set; } = [];
+
+    static public string GetStepValue(Steps step)
+    {
+        return step switch
+        {
+            Steps.Income => "income",
+            Steps.TaxAndCredits => "taxAndCredits",
+            Steps.PaymentsAndRefundableCredits => "paymentsAndRefundableCredits",
+            Steps.RefundOwe => "refundOwe",
+            _ => throw new ArgumentOutOfRangeException(nameof(step), step, null),
+        };
+    }
 }

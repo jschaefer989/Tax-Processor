@@ -1,8 +1,8 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import TaxResponse, {
-  TaxFieldLabel,
   TaxForm,
 } from "../../DataModel/TaxResponse";
+import { Steps } from "../../DataModel/TaxStep";
 import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
@@ -19,9 +19,28 @@ export default function Form1040(props: Form1040Props) {
     return null;
   }
 
-  const incomeResponses = getForm1040IncomeResponses(responses);
+  const incomeResponses = responses.filter(
+    (response) => hasSubsection(response, Steps.Income),
+  );
 
-  if (incomeResponses.length === 0) {
+  const taxAndCreditsResponses = responses.filter(
+    (response) => hasSubsection(response, Steps.TaxAndCredits),
+  );
+
+  const paymentsAndRefundableCreditsResponses = responses.filter(
+    (response) => hasSubsection(response, Steps.PaymentsAndRefundableCredits),
+  );
+
+  const refundOrOweResponses = responses.filter(
+    (response) => hasSubsection(response, Steps.RefundOwe),
+  );
+
+  if (
+    incomeResponses.length === 0 &&
+    taxAndCreditsResponses.length === 0 &&
+    paymentsAndRefundableCreditsResponses.length === 0 &&
+    refundOrOweResponses.length === 0
+  ) {
     return null;
   }
 
@@ -39,22 +58,33 @@ export default function Form1040(props: Form1040Props) {
           responses={TaxResponse.sortByLabel(incomeResponses)}
         />
       )}
+      {taxAndCreditsResponses.length > 0 && (
+        <FormSection
+          taxBehavior={taxBehavior}
+          title="Tax and Credits"
+          responses={TaxResponse.sortByLabel(taxAndCreditsResponses)}
+        />
+      )}
+      {paymentsAndRefundableCreditsResponses.length > 0 && (
+        <FormSection
+          taxBehavior={taxBehavior}
+          title="Payments and Refundable Credits"
+          responses={TaxResponse.sortByLabel(
+            paymentsAndRefundableCreditsResponses,
+          )}
+        />
+      )}
+      {refundOrOweResponses.length > 0 && (
+        <FormSection
+          taxBehavior={taxBehavior}
+          title="Refund or Amount Owed"
+          responses={TaxResponse.sortByLabel(refundOrOweResponses)}
+        />
+      )}
     </FormHeader>
   );
 }
 
-function getForm1040IncomeResponses(responses: TaxResponse[]) {
-  const incomeResponses: TaxResponse[] = [];
-  for (const response of responses) {
-    switch (response.label) {
-      case TaxFieldLabel.oneA:
-      case TaxFieldLabel.twoA:
-      case TaxFieldLabel.twoB:
-      case TaxFieldLabel.threeA:
-      case TaxFieldLabel.threeB:
-        incomeResponses.push(response);
-        break;
-    }
+  function hasSubsection(response: TaxResponse, step: Steps) {
+    return response.getSubsection() === step.toLowerCase();
   }
-  return incomeResponses;
-}

@@ -15,12 +15,7 @@ interface MainFormProps {
   readonly taxBehavior: TaxBehavior;
 }
 export default function MainForm(props: MainFormProps) {
-  const {
-    currentStep,
-    responses,
-    isLoading,
-    taxBehavior,
-  } = props;
+  const { currentStep, responses, isLoading, taxBehavior } = props;
 
   //#useMemo
   const step = useMemo(() => {
@@ -43,16 +38,17 @@ export default function MainForm(props: MainFormProps) {
     <>
       <FormHeader step={step} />
 
-      <FormFields
-        step={step}
-        responses={responses}
-        taxBehavior={taxBehavior}
-      />
+      {step.fields && step.fields.length > 0 && (
+        <FormFields
+          step={step}
+          responses={responses}
+          taxBehavior={taxBehavior}
+        />
+      )}
 
-      <FormFiles
-        taxBehavior={taxBehavior}
-        step={step}       
-      />
+      {step.files && step.files.length > 0 && (
+        <FormFiles taxBehavior={taxBehavior} step={step} />
+      )}
 
       <div className="panel__actions">
         <BackButton

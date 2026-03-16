@@ -8,6 +8,12 @@ export enum Steps {
   RefundOwe = "refundOwe",
 }
 
+export enum StandardDeductionOption {
+    single = "single",
+    marriedFilingJointly = "marriedFilingJointly",
+    headOfHousehold = "headOfHousehold",
+}
+
 export class TaxStep {
   step: Steps;
   title: string;
@@ -28,4 +34,5 @@ export class TaxStep {
     this.fields = fields;
     this.files = files;
   }
+
 }

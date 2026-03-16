@@ -97,23 +97,25 @@ public class Form1099Processor : FileProcessor
         if (line.Box == "1a")
         {
             Responses.Add(new TaxResponse
-            {
-                Form = TaxForm.Form1040,
-                Label = TaxFieldLabel.threeB,
-                Line = 0,
-                Value = line.Total,
-            });
+            (
+                form: TaxForm.Form1040,
+                label: TaxFieldLabel.threeB,
+                line: 0,
+                value: line.Total,
+                subsection: TaxStep.GetStepValue(Steps.Income)
+            ));
         }
         // Qualified dividends
         if (line.Box == "1b")
         {
             Responses.Add(new TaxResponse
-            {
-                Form = TaxForm.Form1040,
-                Label = TaxFieldLabel.threeA,
-                Line = 0,
-                Value = line.Amount,
-            });
+            (
+                form: TaxForm.Form1040,
+                label: TaxFieldLabel.threeA,
+                line: 0,
+                value: line.Amount,
+                subsection: TaxStep.GetStepValue(Steps.Income)
+            ));
         }
     }
 
@@ -122,22 +124,24 @@ public class Form1099Processor : FileProcessor
         if (line.Box == "1")
         {
             Responses.Add(new TaxResponse
-            {
-                Form = TaxForm.Form1040,
-                Label = TaxFieldLabel.twoB,
-                Line = 0,
-                Value = line.Total,
-            });
+            (
+                form: TaxForm.Form1040,
+                label: TaxFieldLabel.twoB,
+                line: 0,
+                value: line.Total,
+                subsection: TaxStep.GetStepValue(Steps.Income)
+            ));
         }
         else if (line.Box == "2")
         {
             Responses.Add(new TaxResponse
-            {
-                Form = TaxForm.Form1040,
-                Label = TaxFieldLabel.twoA,
-                Line = 0,
-                Value = line.Total,
-            });
+            (
+                form: TaxForm.Form1040,
+                label: TaxFieldLabel.twoA,
+                line: 0,
+                value: line.Total,
+                subsection: TaxStep.GetStepValue(Steps.Income)
+            ));
         }
     }
 
@@ -147,64 +151,62 @@ public class Form1099Processor : FileProcessor
         var form = Get1099BTaxForm(term);
         var lineNumber = IncrementLine(form);
 
-        Dictionary<AdditionalIdentifierLabel, string> additionalIdentifiers = GetAdditionalIdentifiers(line);
-
         Responses.Add(new TaxResponse
-        {
-            Form = form,
-            Label = TaxFieldLabel.oneA,
-            Line = lineNumber,
-            Value = line.Description,
-            AdditionalIdentifiers = additionalIdentifiers,
-        });
+        (
+            form: form,
+            label: TaxFieldLabel.oneA,
+            line: lineNumber,
+            value: line.Description,
+            formCode: line.FormCode
+        ));
         Responses.Add(new TaxResponse
-        {
-            Form = form,
-            Label = TaxFieldLabel.oneB,
-            Line = lineNumber,
-            Value = line.DateAcquired,
-            AdditionalIdentifiers = additionalIdentifiers,
-        });
+        (
+            form: form,
+            label: TaxFieldLabel.oneB,
+            line: lineNumber,
+            value: line.DateAcquired,
+            formCode: line.FormCode
+        ));
         Responses.Add(new TaxResponse
-        {
-            Form = form,
-            Label = TaxFieldLabel.oneC,
-            Line = lineNumber,
-            Value = line.DateSold,
-            AdditionalIdentifiers = additionalIdentifiers,
-        });
+        (
+            form: form,
+            label: TaxFieldLabel.oneC,
+            line: lineNumber,
+            value: line.DateSold,
+            formCode: line.FormCode
+        ));
         Responses.Add(new TaxResponse
-        {
-            Form = form,
-            Label = TaxFieldLabel.oneD,
-            Line = lineNumber,
-            Value = line.Proceeds,
-            AdditionalIdentifiers = additionalIdentifiers,
-        });
+        (
+            form: form,
+            label: TaxFieldLabel.oneD,
+            line: lineNumber,
+            value: line.Proceeds,
+            formCode: line.FormCode
+        ));
         Responses.Add(new TaxResponse
-        {
-            Form = form,
-            Label = TaxFieldLabel.oneE,
-            Line = lineNumber,
-            Value = line.CostBasis,
-            AdditionalIdentifiers = additionalIdentifiers,
-        });
+        (
+            form: form,
+            label: TaxFieldLabel.oneE,
+            line: lineNumber,
+            value: line.CostBasis,
+            formCode: line.FormCode
+        ));
         Responses.Add(new TaxResponse
-        {
-            Form = form,
-            Label = TaxFieldLabel.oneF,
-            Line = lineNumber,
-            Value = line.MarketDiscount,
-            AdditionalIdentifiers = additionalIdentifiers,
-        });
+        (
+            form: form,
+            label: TaxFieldLabel.oneF,
+            line: lineNumber,
+            value: line.MarketDiscount,
+            formCode: line.FormCode
+        ));
         Responses.Add(new TaxResponse
-        {
-            Form = form,
-            Label = TaxFieldLabel.oneG,
-            Line = lineNumber,
-            Value = line.WashSaleLossDisallowed,
-            AdditionalIdentifiers = additionalIdentifiers,
-        });
+        (
+            form: form,
+            label: TaxFieldLabel.oneG,
+            line: lineNumber,
+            value: line.WashSaleLossDisallowed,
+            formCode: line.FormCode
+        ));
     }
 
     private static TaxForm Get1099BTaxForm(string term)
@@ -237,14 +239,6 @@ public class Form1099Processor : FileProcessor
         {
             throw new InvalidOperationException($"Invalid form for line increment: {form}");
         }
-    }
-
-    private static Dictionary<AdditionalIdentifierLabel, string> GetAdditionalIdentifiers(Form1099BLine line)
-    {
-        return new Dictionary<AdditionalIdentifierLabel, string>
-        {
-            { AdditionalIdentifierLabel.formCode, line.FormCode }
-        };
     }
 
     private class Form1099DIVLine

@@ -17,6 +17,9 @@ public class TaxResponseEntity
 
     public string? Value { get; set; }
 
+    public string? FormCode {get; set; }
+    public string? Subsection { get; set;}
+
     // Foreign key relationship
     public TaxProgressEntity? TaxProgress { get; set; }
 }

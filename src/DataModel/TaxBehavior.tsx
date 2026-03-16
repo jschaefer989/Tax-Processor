@@ -1,12 +1,13 @@
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
 import { DuplicateResponse } from "./DuplicateResponse";
 import TaxProgress from "./TaxProgress";
-import TaxResponse, {
-  AdditionalIdentifierLabel,
-  TaxFieldLabel,
-  TaxForm,
-} from "./TaxResponse";
-import { Steps, TaxStep } from "./TaxStep";
+import TaxResponse from "./TaxResponse";
+import { StandardDeductionOption, Steps, TaxStep } from "./TaxStep";
+
+interface StepResponse {
+  steps: TaxStep[];
+  standardDeductions: Record<StandardDeductionOption, number>;
+}
 
 export class TaxBehavior {
   /** Static steps and associated fields loaded from the database for the user to populate */
@@ -192,7 +193,7 @@ export class TaxBehavior {
       if (!response.ok) {
         throw new Error("Unable to load tax steps.");
       }
-      const data = (await response.json()) as { steps: TaxStep[] };
+      const data = (await response.json()) as StepResponse;
       this.steps = data.steps;
 
       if (this.steps.length > 0) {
@@ -241,7 +242,8 @@ export class TaxBehavior {
               response.label,
               response.line,
               response.value,
-              response.additionalIdentifiers,
+              response.formCode,
+              response.subsection,
             ),
         ),
       );
@@ -354,13 +356,8 @@ export class TaxBehavior {
             item.label,
             item.line,
             item.value,
-            item.additionalIdentifiers
-              ? new Map(
-                  Object.entries(item.additionalIdentifiers) as Array<
-                    [AdditionalIdentifierLabel, string]
-                  >,
-                )
-              : undefined,
+            item.formCode,
+            item.subsection,
           ),
       );
       this.setResponses((existingResponses) => {

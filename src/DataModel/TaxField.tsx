@@ -1,6 +1,6 @@
 import type { TaxFieldLabel, TaxForm } from "./TaxResponse";
 
-enum TaxFieldType {
+export enum TaxFieldType {
   Text = "text",
   Number = "number",
   Currency = "currency",

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace TaxProcessor.Api.Models;
@@ -62,20 +63,25 @@ public enum TaxFieldLabel
 
     [JsonPropertyName("3b")]
     threeB,
+    [JsonPropertyName("2e")]
+    twoE,
 }
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AdditionalIdentifierLabel
 {
     [JsonPropertyName("formCode")]
-    formCode
+    formCode,
+    [JsonPropertyName("subsection")]
+    subsection
 }
+
 public class TaxResponse
 {
     [JsonPropertyName("form")]
-    public required TaxForm Form { get; set; }
+    public TaxForm Form { get; set; }
 
     [JsonPropertyName("label")]
-    public required TaxFieldLabel Label { get; set; }
+    public TaxFieldLabel Label { get; set; }
 
     [JsonPropertyName("line")]
     public int Line { get; set; }
@@ -83,6 +89,30 @@ public class TaxResponse
     [JsonPropertyName("value")]
     public string? Value { get; set; }
 
-    [JsonPropertyName("additionalIdentifiers")]
-    public Dictionary<AdditionalIdentifierLabel, string>? AdditionalIdentifiers { get; set; }
+    [JsonPropertyName("formCode")]
+    public string? FormCode { get; set; }
+
+    [JsonPropertyName("subsection")]
+    public string? Subsection { get; set; }
+
+    public TaxResponse()
+    {
+    }
+
+    [SetsRequiredMembers]
+    public TaxResponse(
+        TaxForm form,
+        TaxFieldLabel label,
+        int line,
+        string? value,
+        string? formCode = null,
+        string? subsection = null)
+    {
+        Form = form;
+        Label = label;
+        Line = line;
+        Value = value;
+        FormCode = formCode;
+        Subsection = subsection;
+    }
 }

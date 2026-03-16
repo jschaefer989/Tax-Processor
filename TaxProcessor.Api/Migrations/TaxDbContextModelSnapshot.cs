@@ -51,6 +51,12 @@ namespace TaxProcessor.Api.Migrations
                     builder.Property<string>("Form")
                         .HasColumnType("text");
 
+                    builder.Property<string>("FormCode")
+                        .HasColumnType("text");
+
+                    builder.Property<string>("Subsection")
+                        .HasColumnType("text");
+
                     builder.Property<string>("Label")
                         .HasColumnType("text");
 

@@ -30,15 +30,6 @@ export default function NewTaxpayerPopup(props: NewYearPageProps) {
       return;
     }
 
-    if (year && tempName) {
-      const progressLoaded = await startBehavior.taxBehavior.resumeProgress(
-        year,
-        tempName.trim(),
-      );
-      if (!progressLoaded) {
-        return;
-      }
-    }
     startBehavior.taxBehavior.setName(tempName?.trim());
     startBehavior.taxBehavior.setCurrentStep(Steps.Income);
     startBehavior.taxBehavior.setShowStartPage(false);

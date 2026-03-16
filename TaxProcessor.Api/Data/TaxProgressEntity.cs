@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using TaxProcessor.Api.Models;
 
@@ -19,15 +18,16 @@ public class TaxProgressEntity
 
     public TaxResponse[] GetResponses()
     {
-        return Responses
-            .Select(r => new TaxResponse
-            {
-                Form = Enum.Parse<TaxForm>(r.Form),
-                Label = ParseTaxFieldLabel(r.Label),
-                Line = r.Line,
-                Value = r.Value
-            })
-            .ToArray();
+        return [.. Responses
+            .Select(response => new TaxResponse
+            (
+                form: Enum.Parse<TaxForm>(response.Form),
+                label: ParseTaxFieldLabel(response.Label),
+                line: response.Line,
+                value: response.Value,
+                formCode: response.FormCode,
+                subsection: response.Subsection
+            ))];
     }
 
     private static TaxFieldLabel ParseTaxFieldLabel(string label)
@@ -74,7 +74,9 @@ public class TaxProgressEntity
                 Form = response.Form.ToString(),
                 Label = response.Label.ToString(),
                 Line = response.Line,
-                Value = response.Value
+                Value = response.Value,
+                FormCode = response.FormCode,
+                Subsection = response.Subsection
             });
         }
     }

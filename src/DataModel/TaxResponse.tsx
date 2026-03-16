@@ -17,10 +17,7 @@ export enum TaxFieldLabel {
   twoB = "twoB",
   threeA = "threeA",
   threeB = "threeB",
-}
-
-export enum AdditionalIdentifierLabel {  
-  formCode = "formCode",
+  twoE = "twoE",
 }
 
 export default class TaxResponse {
@@ -28,20 +25,23 @@ export default class TaxResponse {
   label: TaxFieldLabel;
   line: number;
   value: string;
-  additionalIdentifiers?: Map<AdditionalIdentifierLabel, string>; 
+  formCode?: string;
+  subsection?: string;
 
   constructor(
     form: TaxForm,
     label: TaxFieldLabel,
     line: number,
     value: string,
-    additionalIdentifiers?: Map<AdditionalIdentifierLabel, string>,
+    formCode?: string,
+    subsection?: string,
   ) {
     this.form = form;
     this.label = label;
     this.line = line;
     this.value = value;
-    this.additionalIdentifiers = additionalIdentifiers;
+    this.formCode = formCode;
+    this.subsection = subsection;
   }
 
   getUserFriendlyLabel(): string {
@@ -68,6 +68,8 @@ export default class TaxResponse {
         return "3a";
       case TaxFieldLabel.threeB:
         return "3b";
+      case TaxFieldLabel.twoE:
+        return "2e";
       default:
         return this.label;
     }
@@ -112,9 +114,15 @@ export default class TaxResponse {
         return 10;
       case TaxFieldLabel.threeB:
         return 11;
+      case TaxFieldLabel.twoE:
+        return 12;
       default:
         return Number.MAX_SAFE_INTEGER;
     }
+  }
+
+  getSubsection(): string | undefined {
+    return this.subsection?.trim().toLowerCase();
   }
 
   static sortByLabel(responses: TaxResponse[]): TaxResponse[] {

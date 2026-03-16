@@ -1,9 +1,5 @@
 import { TaxBehavior } from "../../DataModel/TaxBehavior";
-import TaxResponse, {
-  AdditionalIdentifierLabel,
-  TaxFieldLabel,
-  TaxForm,
-} from "../../DataModel/TaxResponse";
+import TaxResponse, { TaxForm } from "../../DataModel/TaxResponse";
 import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
@@ -26,14 +22,17 @@ export default function Form8949(props: Form8949Props) {
   const responsesByLine = TaxBehavior.getResponsesByLine(responses);
 
   for (const responsesForLine of responsesByLine.values()) {
-    const formCode = getFormCode(responsesForLine);
+    const formCode = responsesForLine[0]?.formCode;
 
     if (!formCode) {
       continue;
     }
 
     const existingResponse = responsesByFormCode.get(formCode) ?? [];
-    responsesByFormCode.set(formCode, [...existingResponse, ...responsesForLine]);
+    responsesByFormCode.set(formCode, [
+      ...existingResponse,
+      ...responsesForLine,
+    ]);
   }
 
   if (responsesByFormCode.size === 0) {
@@ -59,9 +58,7 @@ export default function Form8949(props: Form8949Props) {
             key={formCode}
             title={`${title}, Code ${formCode}`}
             isExpandedOverride={isExpandedOverride}
-            additionalIdentifiers={
-              new Map([[AdditionalIdentifierLabel.formCode, formCode]])
-            }
+            formCode={formCode}
           >
             <FormSection
               taxBehavior={taxBehavior}
@@ -71,11 +68,5 @@ export default function Form8949(props: Form8949Props) {
         ),
       )}
     </>
-  );
-}
-
-function getFormCode(responsesForLine: TaxResponse[]): string | undefined {
-  return responsesForLine[0]?.additionalIdentifiers?.get(
-    AdditionalIdentifierLabel.formCode,
   );
 }

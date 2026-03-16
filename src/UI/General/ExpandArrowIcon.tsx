@@ -24,11 +24,11 @@ export default function ExpandArrowIcon(props: ExpandArrowIconProps) {
       height={size ?? "1em"}
       style={{ display: "inline-block", transform: orientation ? `rotate(${getRotation(orientation)}deg)` : undefined }}
     >
-      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g
         id="SVGRepo_tracerCarrier"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       ></g>
       <g id="SVGRepo_iconCarrier">
         <path d="m2.43 4.8-2.43 2.422 12 11.978 12-11.978-2.43-2.422-9.57 9.547z"></path>

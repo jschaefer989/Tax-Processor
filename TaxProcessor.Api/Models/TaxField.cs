@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 
 namespace TaxProcessor.Api.Models;
+
 public class TaxField
 {
     [JsonPropertyName("form")]
@@ -20,4 +21,6 @@ public class TaxField
 
     [JsonPropertyName("helperText")]
     public string? HelperText { get; set; }
+    [JsonPropertyName("subsection")]
+    public string? Subsection { get; set; }
 }
