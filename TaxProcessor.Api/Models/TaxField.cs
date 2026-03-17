@@ -1,6 +1,14 @@
 using System.Text.Json.Serialization;
+using TaxProcessor.Api.Data;
 
 namespace TaxProcessor.Api.Models;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum FieldCalculationCallback
+{
+    [JsonPropertyName("standardDeduction")]
+    StandardDeduction,
+}
 
 public class TaxField
 {
@@ -17,10 +25,19 @@ public class TaxField
     public required string Type { get; set; }
 
     [JsonPropertyName("selectionOptions")]
-    public List<string>? SelectionOptions { get; set; }
+    public List<SelectionOption>? SelectionOptions { get; set; }
 
     [JsonPropertyName("helperText")]
     public string? HelperText { get; set; }
+
     [JsonPropertyName("subsection")]
     public string? Subsection { get; set; }
+
+    /// <summary>
+    /// Not currently used, but keeping around in case there is a need for the frontend to trigger 
+    /// a calculation for a specific field (e.g., standard deduction) and we want to have 
+    /// a strongly typed way to identify which calculation to perform.
+    /// </summary>
+    [JsonPropertyName("calculationCallback")]
+    public FieldCalculationCallback? CalculationCallback { get; set; }
 }

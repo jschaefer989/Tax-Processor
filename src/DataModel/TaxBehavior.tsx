@@ -1,5 +1,6 @@
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
 import { DuplicateResponse } from "./DuplicateResponse";
+import type { FieldCalculationCallback } from "./TaxField";
 import TaxProgress from "./TaxProgress";
 import TaxResponse from "./TaxResponse";
 import { StandardDeductionOption, Steps, TaxStep } from "./TaxStep";
@@ -242,8 +243,7 @@ export class TaxBehavior {
               response.label,
               response.line,
               response.value,
-              response.formCode,
-              response.subsection,
+              { fromCode: response.formCode, subsection: response.subsection },
             ),
         ),
       );
@@ -356,8 +356,7 @@ export class TaxBehavior {
             item.label,
             item.line,
             item.value,
-            item.formCode,
-            item.subsection,
+            { fromCode: item.formCode, subsection: item.subsection },
           ),
       );
       this.setResponses((existingResponses) => {
@@ -372,6 +371,44 @@ export class TaxBehavior {
         }
         return [...existingResponses, ...incomingResponses];
       });
+    } catch (err) {
+      this.setToastMessage(
+        err instanceof Error ? err.message : "Unable to upload file.",
+      );
+    } finally {
+      this.setIsLoading(false);
+    }
+  }
+
+    async calculateFieldRequest(callback: FieldCalculationCallback, value: string): Promise<string | undefined> {
+    try {
+      this.setIsLoading(true);
+      const formData = new FormData();
+      formData.append("calculationCallback", callback);
+      formData.append("value", value);
+      const response = await fetch("/api/steps/calculate-field", {
+        method: "POST",
+        body: formData,
+      });
+
+      const responseText = await response.text();
+
+      if (!response.ok) {
+        try {
+          const errorData = JSON.parse(responseText) as { message?: string };
+          throw new Error(errorData.message ?? "Unable to upload file.");
+        } catch {
+          throw new Error(
+            `Server error: ${responseText || response.statusText}`,
+          );
+        }
+      }
+
+      if (!responseText) {
+        throw new Error("Server returned an empty response.");
+      }
+
+      return JSON.parse(responseText);
     } catch (err) {
       this.setToastMessage(
         err instanceof Error ? err.message : "Unable to upload file.",

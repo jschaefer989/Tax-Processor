@@ -36,22 +36,24 @@ export default function EntryField(props: EntryFieldComponentProps) {
 
   //#region useCallback
   const handleResponseChange = useCallback(
-    (value: string) => {
+    async (value: string) => {
       lastHandledValueRef.current = value;
-      taxBehavior.setResponses((prev) => {
-      const existingIndex = prev.findIndex((response) => response.form === form && response.label === label && response.line === line);
-      if (existingIndex !== -1) {
-        // Update existing response
-        const updated = [...prev];
-        updated[existingIndex] = new TaxResponse(form, label, line, value, undefined, step.step as string);
-        return updated;
-      } else {
-        // Add new response
-        return [...prev, new TaxResponse(form, label, line, value, undefined, step.step as string)];
-      }
-    });
+      const convertedValue = await handleServerConversion(
+        field,
+        value,
+        taxBehavior,
+      );
+      updateResponses(taxBehavior, form, label, line, convertedValue, field);
     },
-    [field.form, field.taxFieldLabel, line, taxBehavior, step.step, form, label],
+    [
+      field.form,
+      field.taxFieldLabel,
+      line,
+      taxBehavior,
+      step.step,
+      form,
+      label,
+    ],
   );
   //#endregion useCallback
 
@@ -75,8 +77,8 @@ export default function EntryField(props: EntryFieldComponentProps) {
       >
         <option value="">Select an option</option>
         {field.selectionOptions?.map((option) => (
-          <option key={option} value={option}>
-            {option}
+          <option key={option.value} value={option.value}>
+            {option.displayText}
           </option>
         ))}
       </select>
@@ -84,18 +86,73 @@ export default function EntryField(props: EntryFieldComponentProps) {
   }
 
   const inputType =
-    normalizedType === TaxFieldType.Currency || normalizedType === TaxFieldType.Number
+    normalizedType === TaxFieldType.Currency ||
+    normalizedType === TaxFieldType.Number
       ? "number"
       : normalizedType;
   return (
     <input
       id={field.taxFieldLabel}
       type={inputType}
-      inputMode={normalizedType === TaxFieldType.Currency ? "decimal" : undefined}
+      inputMode={
+        normalizedType === TaxFieldType.Currency ? "decimal" : undefined
+      }
       step={normalizedType === TaxFieldType.Currency ? "0.01" : undefined}
-      placeholder={normalizedType === TaxFieldType.Currency ? "0.00" : undefined}
+      placeholder={
+        normalizedType === TaxFieldType.Currency ? "0.00" : undefined
+      }
       value={matchingValue ?? ""}
       onChange={(event) => handleResponseChange(event.target.value)}
     />
   );
+}
+
+async function handleServerConversion(
+  field: TaxField,
+  value: string,
+  taxBehavior: TaxBehavior,
+): Promise<string> {
+  if (field.calculationCallback) {
+    return (
+      (await taxBehavior.calculateFieldRequest(
+        field.calculationCallback,
+        value,
+      )) ?? ""
+    );
+  }
+  return value;
+}
+
+function updateResponses(
+  taxBehavior: TaxBehavior,
+  form: TaxForm,
+  label: TaxFieldLabel,
+  line: number,
+  value: string,
+  field: TaxField,
+) {
+  taxBehavior.setResponses((prev) => {
+    const existingIndex = prev.findIndex(
+      (response) =>
+        response.form === form &&
+        response.label === label &&
+        response.line === line,
+    );
+    if (existingIndex !== -1) {
+      // Update existing response
+      const updated = [...prev];
+      updated[existingIndex] = new TaxResponse(form, label, line, value, {
+        subsection: field.subsection,
+      });
+      return updated;
+    } else {
+      // Add new response
+      return [
+        ...prev,
+        new TaxResponse(form, label, line, value, {
+          subsection: field.subsection,
+        }),
+      ];
+    }
+  });
 }

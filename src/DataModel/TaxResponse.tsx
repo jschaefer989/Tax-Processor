@@ -20,6 +20,11 @@ export enum TaxFieldLabel {
   twoE = "twoE",
 }
 
+interface ConstructionOptions {
+  fromCode?: string;
+  subsection?: string;
+}
+
 export default class TaxResponse {
   form: TaxForm;
   label: TaxFieldLabel;
@@ -33,15 +38,14 @@ export default class TaxResponse {
     label: TaxFieldLabel,
     line: number,
     value: string,
-    formCode?: string,
-    subsection?: string,
+    constructionOptions?: ConstructionOptions,
   ) {
     this.form = form;
     this.label = label;
     this.line = line;
     this.value = value;
-    this.formCode = formCode;
-    this.subsection = subsection;
+    this.formCode = constructionOptions?.fromCode;
+    this.subsection = constructionOptions?.subsection;
   }
 
   getUserFriendlyLabel(): string {

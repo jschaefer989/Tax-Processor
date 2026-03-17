@@ -1,3 +1,4 @@
+import type SelectionOption from "./SelectionOption";
 import type { TaxFieldLabel, TaxForm } from "./TaxResponse";
 
 export enum TaxFieldType {
@@ -8,9 +9,17 @@ export enum TaxFieldType {
   Select = "select",
 }
 
+export enum FieldCalculationCallback
+{
+    StandardDeduction = "standardDeduction",
+}
+
+
 interface ConstructionOptions {
   helperText?: string;
-  selectionOptions?: string[];
+  selectionOptions?: SelectionOption[];
+  subsection?: string;
+  calculationCallback?: FieldCalculationCallback;
 }
 
 export default class TaxField {
@@ -19,7 +28,9 @@ export default class TaxField {
   label: string;
   type: TaxFieldType;
   helperText?: string;
-  selectionOptions?: string[];
+  selectionOptions?: SelectionOption[];
+  subsection?: string;
+  calculationCallback?: FieldCalculationCallback;
 
   constructor(
     form: TaxForm,
@@ -34,5 +45,7 @@ export default class TaxField {
     this.type = type;
     this.helperText = constructionOptions?.helperText;
     this.selectionOptions = constructionOptions?.selectionOptions;
+    this.subsection = constructionOptions?.subsection;
+    this.calculationCallback = constructionOptions?.calculationCallback;
   }
 }

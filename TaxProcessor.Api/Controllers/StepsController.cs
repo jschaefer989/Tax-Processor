@@ -68,14 +68,20 @@ public class StepsController : ControllerBase
                         HelperText = "Select the standard deduction amount for your filing status.",
                         SelectionOptions =
                         [
-                            $"Single: ${GetStandardDeductionAmount(StandardDeductionOption.single)}",
-                            $"Married Filing Jointly: ${GetStandardDeductionAmount(StandardDeductionOption.marriedFilingJointly)}",
-                            $"Head of Household: ${GetStandardDeductionAmount(StandardDeductionOption.headOfHousehold)}",
+                            new SelectionOption(
+                                $"${GetStandardDeductionAmount(StandardDeductionOption.single).ToString()}",
+                                $"Single: ${GetStandardDeductionAmount(StandardDeductionOption.single)}"),
+                            new SelectionOption(
+                                $"${GetStandardDeductionAmount(StandardDeductionOption.marriedFilingJointly).ToString()}",
+                                 $"Married Filing Jointly: ${GetStandardDeductionAmount(StandardDeductionOption.marriedFilingJointly)}"),
+                            new SelectionOption(
+                                $"${GetStandardDeductionAmount(StandardDeductionOption.headOfHousehold).ToString()}",
+                                 $"Head of Household: ${GetStandardDeductionAmount(StandardDeductionOption.headOfHousehold)}"),
                         ],
                         Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
-                }
-            ]
-        }
+                    }
+                ]
+            }
         };
 
         var standardDeductions = new Dictionary<StandardDeductionOption, decimal>
@@ -110,6 +116,25 @@ public class StepsController : ControllerBase
         else
         {
             return BadRequest(new { message = "Invalid form type." });
+        }
+    }
+
+    [HttpPost("calculate-field")]
+    public async Task<ActionResult<string>> CalculateField([FromForm] CalculateFieldRequest request)
+    {
+        switch (request.CalculationCallback)
+        {
+            case FieldCalculationCallback.StandardDeduction:
+                if (Enum.TryParse(request.Value, out StandardDeductionOption option))
+                {
+                    return Ok(GetStandardDeductionAmount(option).ToString());
+                }
+                else
+                {
+                    return BadRequest(new { message = "Invalid standard deduction option." });
+                }
+            default:
+                return BadRequest(new { message = "Unsupported calculation callback." });
         }
     }
 
