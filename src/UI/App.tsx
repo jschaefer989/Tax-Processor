@@ -1,3 +1,4 @@
+import { use, useEffect } from "react";
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import { useTaxBehavior } from "../hooks/useTaxBehavior";
 import { MainAppFooter } from "./Footer/MainAppFooter";
@@ -30,6 +31,10 @@ export default function App() {
   } = useTaxBehavior();
 
   useRefreshDbConnection(showStartPage, noDbConnection, taxBehavior);
+
+  useEffect(() => {
+    throw new Error("Test error boundary");
+  })
 
   return (
     <div className="app" onClick={onWhitespaceClick}>
