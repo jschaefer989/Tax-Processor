@@ -1,14 +1,16 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type TaxResponse from "../../DataModel/TaxResponse";
 import { Steps } from "../../DataModel/TaxStep";
 import CheckmarkIcon from "../General/CheckMarkIcon";
 
 interface StepTrackerProps {
   readonly taxBehavior: TaxBehavior;
   readonly activeStep: Steps;
+  readonly responses: TaxResponse[];
 }
 
 export default function StepTracker(props: StepTrackerProps) {
-  const { taxBehavior, activeStep } = props;
+  const { taxBehavior, activeStep, responses } = props;
 
   const steps = Object.values(Steps);
 
@@ -18,6 +20,7 @@ export default function StepTracker(props: StepTrackerProps) {
         taxBehavior={taxBehavior}
         steps={steps}
         activeStep={activeStep}
+        responses={responses}
       />
       <StepTrackerLabels steps={steps} activeStep={activeStep} />
     </div>
@@ -28,10 +31,11 @@ interface StepTrackerNumbersProps {
   readonly taxBehavior: TaxBehavior;
   readonly steps: Steps[];
   readonly activeStep: Steps;
+  readonly responses: TaxResponse[];
 }
 
 function StepTrackerNumbers(props: StepTrackerNumbersProps) {
-  const { taxBehavior, steps, activeStep } = props;
+  const { taxBehavior, steps, activeStep, responses } = props;
 
   const activeIndex = steps.indexOf(activeStep);
 
@@ -46,6 +50,7 @@ function StepTrackerNumbers(props: StepTrackerNumbersProps) {
           activeIndex={activeIndex}
           steps={steps}
           activeStep={activeStep}
+          responses={responses}
         />
       ))}
     </div>
@@ -59,24 +64,26 @@ interface StepTrackerNumberProps {
   readonly activeIndex: number;
   readonly steps: Steps[];
   readonly activeStep: Steps;
+  readonly responses: TaxResponse[];
 }
 
 function OneStepTrackerNumber(props: StepTrackerNumberProps) {
-  const { taxBehavior, step, index, activeIndex, steps, activeStep } = props;
+  const { taxBehavior, step, index, activeIndex, steps, activeStep, responses } = props;
 
   const isCompleted = index < activeIndex;
   const isActive = index === activeIndex;
   const stepNumber = index + 1;
 
   const onClick = () => {
-    if (taxBehavior.getMissingFieldsForStep(activeStep).length > 0) {
+    if (taxBehavior.getMissingFieldsForStep(activeStep, responses).length > 0) {
       // Don't allow the user to advance if there are missing required fields,
       // but record that they tried to advance so we can show validation errors.
-      taxBehavior.setLastTimeTriedAdvancing(new Date());      
+      taxBehavior.setAdvancedWithErrors(true);      
       return;
     }
 
     taxBehavior.setCurrentStep(step);
+    taxBehavior.setAdvancedWithErrors(false);  
   };
 
   return (

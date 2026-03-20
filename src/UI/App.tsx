@@ -29,7 +29,7 @@ export default function App() {
     contextMenu,
     onWhitespaceClick,
     duplicateResponses,
-    lastTimeTriedAdvancing,
+    advancedWithErrors,
   } = useTaxBehavior();
 
   useRefreshDbConnection(showStartPage, noDbConnection, taxBehavior);
@@ -78,7 +78,7 @@ export default function App() {
                 responses={responses}
                 isLoading={isLoading}
                 taxBehavior={taxBehavior}
-                lastTimeTriedAdvancing={lastTimeTriedAdvancing}
+                advancedWithErrors={advancedWithErrors}
               />
             </section>
 

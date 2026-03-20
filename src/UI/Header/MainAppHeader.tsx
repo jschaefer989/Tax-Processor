@@ -49,7 +49,7 @@ export default function MainAppHeader(props: HeaderProps) {
       <div className="panel">
         <div className="tabs-progress-wrapper">
           {currentStep ? (
-            <StepTracker taxBehavior={taxBehavior} activeStep={currentStep} />
+            <StepTracker taxBehavior={taxBehavior} activeStep={currentStep} responses={responses} />
           ) : (
             <p>Loading...</p>
           )}

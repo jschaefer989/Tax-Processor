@@ -22,7 +22,7 @@ interface UseTaxBehaviorResult {
   contextMenu: ContextMenuProps | undefined;
   onWhitespaceClick: (event: React.MouseEvent<HTMLDivElement>) => void;
   duplicateResponses: DuplicateResponse[] | undefined;
-  lastTimeTriedAdvancing: Date | undefined;
+  advancedWithErrors: boolean;
 }
 
 export function useTaxBehavior(): UseTaxBehaviorResult {
@@ -42,7 +42,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
   const [panelExpanded, setPanelExpanded] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [duplicateResponses, setDuplicateResponses] = useState<DuplicateResponse[] | undefined>(undefined);
-  const [lastTimeTriedAdvancing, setLastTimeTriedAdvancing] = useState<Date | undefined>(undefined);
+  const [advancedWithErrors, setAdvancedWithErrors] = useState<boolean>(false);
 
   const { contextMenu, setContextMenu, onWhitespaceClick } = useContextMenu();
 
@@ -62,7 +62,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
         setToastMessage,
         setContextMenu,
         setDuplicateResponses,
-        setLastTimeTriedAdvancing,
+        setAdvancedWithErrors,
       ),
     [
       setCurrentStep,
@@ -77,7 +77,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
       setSidebarExpanded,
       setToastMessage,
       setDuplicateResponses,
-      setLastTimeTriedAdvancing,
+      setAdvancedWithErrors,
     ],
   );
 
@@ -97,6 +97,6 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
     contextMenu,
     onWhitespaceClick,
     duplicateResponses,
-    lastTimeTriedAdvancing,
+    advancedWithErrors,
   };
 }

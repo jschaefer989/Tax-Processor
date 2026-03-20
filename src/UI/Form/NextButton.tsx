@@ -1,25 +1,27 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
 
 interface NextButtonProps {
   readonly taxBehavior: TaxBehavior;
   readonly currentStep: Steps;
   readonly isLoading: boolean;
+  readonly responses: TaxResponse[];
 }
 
 export default function NextButton(props: NextButtonProps) {
-  const { taxBehavior, currentStep, isLoading } = props;
+  const { taxBehavior, currentStep, isLoading, responses } = props;
 
   const currentIndex = taxBehavior.getStepIndex(currentStep);
 
   const hasMissingFields =
-    taxBehavior.getMissingFieldsForStep(currentStep).length > 0;
+    taxBehavior.getMissingFieldsForStep(currentStep, responses).length > 0;
 
   const handleNext = () => {
     if (hasMissingFields) {
       // Don't allow the user to advance if there are missing required fields, 
       // but record that they tried to advance so we can show validation errors.
-      taxBehavior.setLastTimeTriedAdvancing(new Date());
+      taxBehavior.setAdvancedWithErrors(true);
       return;
     }
 
@@ -29,7 +31,7 @@ export default function NextButton(props: NextButtonProps) {
       return;
     }
     taxBehavior.setCurrentStep(nextStep.step);
-    taxBehavior.setLastTimeTriedAdvancing(undefined);
+    taxBehavior.setAdvancedWithErrors(false);
   };
 
   return (

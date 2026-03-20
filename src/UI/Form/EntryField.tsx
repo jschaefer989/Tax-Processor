@@ -1,20 +1,17 @@
-import { useMemo, useCallback, useEffect, useRef } from "react";
-import type TaxField from "../../DataModel/TaxField";
-import TaxResponse from "../../DataModel/TaxResponse";
-import { type TaxForm, type TaxFieldLabel } from "../../DataModel/TaxResponse";
-import { TaxFieldType } from "../../DataModel/TaxField";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type { TaxStep } from "../../DataModel/TaxStep";
+import type TaxField from "../../DataModel/TaxField";
+import { TaxFieldType } from "../../DataModel/TaxField";
+import TaxResponse, { type TaxFieldLabel, type TaxForm } from "../../DataModel/TaxResponse";
 
 interface EntryFieldComponentProps {
   readonly field: TaxField;
   readonly line: number;
   readonly responses: TaxResponse[];
-  readonly taxBehavior: TaxBehavior;
-  readonly step: TaxStep;
+  readonly taxBehavior: TaxBehavior;  
   readonly form: TaxForm;
   readonly label: TaxFieldLabel;
-  readonly lastTimeTriedAdvancing: Date | undefined;
+  readonly advancedWithErrors: boolean;
 }
 
 export default function EntryField(props: EntryFieldComponentProps) {
@@ -23,10 +20,9 @@ export default function EntryField(props: EntryFieldComponentProps) {
     line,
     responses,
     taxBehavior,
-    step,
     form,
     label,
-    lastTimeTriedAdvancing,
+    advancedWithErrors,
   } = props;
   const lastHandledValueRef = useRef("");
   const normalizedType = String(field.type).toLowerCase();
@@ -60,7 +56,6 @@ export default function EntryField(props: EntryFieldComponentProps) {
       field.taxFieldLabel,
       line,
       taxBehavior,
-      step.step,
       form,
       label,
     ],
@@ -79,7 +74,7 @@ export default function EntryField(props: EntryFieldComponentProps) {
   }, [matchingValue]);
 
   const hasValidationError =
-    Boolean(lastTimeTriedAdvancing) &&
+    advancedWithErrors &&
     field.isRequired &&
     String(matchingValue ?? "").trim().length === 0;
 
@@ -160,37 +155,49 @@ function updateResponses(
   value: string,
   field: TaxField,
 ) {
-  taxBehavior.setResponses((prev) => {
-    const existingIndex = prev.findIndex(
+  taxBehavior.setResponses((previousResponses) => {
+    const existingIndex = previousResponses.findIndex(
       (response) =>
         response.form === form &&
         response.label === label &&
         response.line === line,
     );
+
+    // If the response for this field already exists, update it.
     if (existingIndex !== -1) {
-      // Update existing response
-      const updated = [...prev];
-      if (value === "") {
-        // Remove the response if the value is empty
-        updated.splice(existingIndex, 1);
-        return updated;
+      const updatedResponse = [...previousResponses];
+
+      // Remove the response if the value is empty
+      if (value.trim() === "") {
+        updatedResponse.splice(existingIndex, 1);
+        return updatedResponse;
+        // Otherwise, update the existing response
+      } else {
+        updatedResponse[existingIndex] = new TaxResponse(
+          form,
+          label,
+          line,
+          value,
+          {
+            subsection: field.subsection,
+          },
+        );
+        return updatedResponse;
       }
-      updated[existingIndex] = new TaxResponse(form, label, line, value, {
-        subsection: field.subsection,
-      });
-      return updated;
+
+      // Otherwise, add a new response.
     } else {
-      // Add new response
-      if (value === "") {
-        // Don't add a response if the value is empty
-        return prev;
-      }
-      return [
-        ...prev,
-        new TaxResponse(form, label, line, value, {
+      // Don't add a response if the value is empty
+      if (value.trim() === "") {
+        return previousResponses;
+      } else {
+        const newResponse = new TaxResponse(form, label, line, value, {
           subsection: field.subsection,
-        }),
-      ];
+        });
+        return [...previousResponses, newResponse];
+      }
     }
   });
 }
+
+

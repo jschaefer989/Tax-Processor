@@ -1,6 +1,7 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
+import ErrorMessage from "../General/ErrorMessage";
 import LastSavedText from "./LastSavedText";
 import { ReturnButton } from "./ReturnButton";
 import SaveButton from "./SaveButton";
@@ -31,9 +32,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
   if (noDbConnection) {
     return (
       <div className="last-save-text-wrapper">
-        <div className="last-save-text subtitle-chip subtitle-chip--error-soft">
-          No database connection. Progress will not be saved.
-        </div>
+        <ErrorMessage text="No database connection. Progress will not be saved." />
       </div>
     );
   }

@@ -1,18 +1,15 @@
 /* Import modular stylesheets - must be at the top */
-@import './styles/global.css';
 @import './styles/header.css';
 @import './styles/layout.css';
 @import './styles/sidebar.css';
 @import './styles/stepper.css';
-@import './styles/progress.css';
 @import './styles/forms.css';
 @import './styles/buttons.css';
 @import './styles/cards.css';
-@import './styles/components.css';
 @import './styles/pages.css';
 @import './styles/utilities.css';
 @import './styles/footer.css';
-@import './styles/Popup.css';
+@import './styles/popup.css';
 
 :root {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
@@ -64,3 +61,19 @@ a {
 #root {
   min-height: 100vh;
 }
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 4.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+@media (max-width: 960px) {
+  .app {
+    padding: 2rem 1rem 3rem;
+  }
+}
+

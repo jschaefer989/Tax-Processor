@@ -69,7 +69,8 @@ export class TaxBehavior {
   setDuplicateResponses: React.Dispatch<
     React.SetStateAction<DuplicateResponse[] | undefined>
   > = () => {};
-  setLastTimeTriedAdvancing: React.Dispatch<React.SetStateAction<Date | undefined>> = () => {};
+  setAdvancedWithErrors: React.Dispatch<React.SetStateAction<boolean>> =
+    () => {};
   //#endregion State
 
   constructor(
@@ -90,7 +91,7 @@ export class TaxBehavior {
     setDuplicateResponses: React.Dispatch<
       React.SetStateAction<DuplicateResponse[] | undefined>
     >,
-    setLastTimeTriedAdvancing: React.Dispatch<React.SetStateAction<Date | undefined>>,
+    setAdvancedWithErrors: React.Dispatch<React.SetStateAction<boolean>>,
   ) {
     this.setCurrentStep = setCurrentStep;
     this.setResponses = setResponses;
@@ -105,7 +106,7 @@ export class TaxBehavior {
     this.setToastMessage = setToastMessage;
     this.setContextMenu = setContextMenu;
     this.setDuplicateResponses = setDuplicateResponses;
-    this.setLastTimeTriedAdvancing = setLastTimeTriedAdvancing;
+    this.setAdvancedWithErrors = setAdvancedWithErrors;
     this.steps = [];
   }
 
@@ -138,23 +139,23 @@ export class TaxBehavior {
     );
   }
 
-  getMissingFieldsForStep(step: Steps): TaxField[] {
+  getMissingFieldsForStep(step: Steps, responses: TaxResponse[]): TaxField[] {
     const stepInfo = this.getStep(step);
     if (!stepInfo) {
       return [];
     }
 
-    const requiredFields = stepInfo.getRequiredFields();
-    console.log(`Checking required fields for step ${step}:`, requiredFields);
     const missingFields: TaxField[] = [];
-    
-    for (const field of requiredFields) {
-      const response = this.getResponse(field.form, field.label);
-      if (!response || response.value === undefined || response.value === "") {
+    for (const field of stepInfo.getRequiredFields()) {
+      const response = responses.find(
+        (response) =>
+          response.form === field.form &&
+          response.label === field.taxFieldLabel,
+      );
+      if (!response || !response.value || response.value.trim() === "") {
         missingFields.push(field);
       }
     }
-    console.log(`Missing fields for step ${step}:`, missingFields);
     return missingFields;
   }
 
@@ -258,19 +259,22 @@ export class TaxBehavior {
             step.step,
             step.title,
             step.description,
-            step.fields.map(field => new TaxField(
-              field.form as TaxForm,
-              field.taxFieldLabel as TaxFieldLabel, 
-              field.label,
-              field.type as TaxFieldType, 
-              {
-                isRequired: field.isRequired,
-                helperText: field.helperText,
-                selectionOptions: field.selectionOptions,
-                subsection: field.subsection,
-                calculationCallback: field.calculationCallback,
-              }
-            )),
+            step.fields.map(
+              (field) =>
+                new TaxField(
+                  field.form as TaxForm,
+                  field.taxFieldLabel as TaxFieldLabel,
+                  field.label,
+                  field.type as TaxFieldType,
+                  {
+                    isRequired: field.isRequired,
+                    helperText: field.helperText,
+                    selectionOptions: field.selectionOptions,
+                    subsection: field.subsection,
+                    calculationCallback: field.calculationCallback,
+                  },
+                ),
+            ),
             step.files.map(
               (file) =>
                 new TaxFile(
@@ -580,10 +584,10 @@ export class TaxBehavior {
 
     const sortedEntries = Array.from(responsesByLine.entries())
       .sort(([leftLine], [rightLine]) => leftLine - rightLine)
-      .map(([line, responsesForLine]) => [
-        line,
-        TaxResponse.sortByLabel(responsesForLine),
-      ] as const);
+      .map(
+        ([line, responsesForLine]) =>
+          [line, TaxResponse.sortByLabel(responsesForLine)] as const,
+      );
 
     return new Map<number, TaxResponse[]>(sortedEntries);
   }
