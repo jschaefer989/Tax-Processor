@@ -6,14 +6,18 @@ using TaxProcessor.Api.Models;
 namespace TaxProcessor.Api.Controllers;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum StandardDeductionOption
+public enum FilingStatus
 {
     [JsonPropertyName("single")]
     single,
     [JsonPropertyName("marriedFilingJointly")]
     marriedFilingJointly,
+    [JsonPropertyName("marriedFilingSeparately")]
+    marriedFilingSeparately,
     [JsonPropertyName("headOfHousehold")]
     headOfHousehold,
+    [JsonPropertyName("qualifyingWidow")]
+    qualifyingWidow,
 }
 
 [ApiController]
@@ -25,6 +29,33 @@ public class StepsController : ControllerBase
     {
         var steps = new List<TaxStep>
         {
+            new()
+            {
+                Step = GetStepValue(Steps.Demographics),
+                Title = "Demographics",
+                Description = "Provide basic information about yourself to get started.",
+                Fields =
+                [
+                    new()
+                    {
+                        Form = TaxForm.Form1040.ToString(),
+                        TaxFieldLabel = TaxFieldLabel.oneD.ToString(),
+                        Label = "Filing status",
+                        Type = GetTaxFieldTypeValue(TaxFieldType.Select),
+                        HelperText = "Select your filing status for the tax year.",
+                        SelectionOptions =
+                        [
+                            new SelectionOption("single", "Single"),
+                            new SelectionOption("marriedFilingJointly", "Married Filing Jointly"),
+                            new SelectionOption("marriedFilingSeparately", "Married Filing Separately"),
+                            new SelectionOption("headOfHousehold", "Head of Household"),
+                            new SelectionOption("qualifyingWidow", "Qualifying Widow(er)"),
+                        ],
+                        Subsection = TaxStep.GetStepValue(Steps.Demographics),
+                        IsRequired = true,
+                    },
+                ]
+            },
             new()
             {
                 Step = GetStepValue(Steps.Income),
@@ -52,43 +83,16 @@ public class StepsController : ControllerBase
                     },
                 ],
             },
-            new()
-            {
-                Step = GetStepValue(Steps.TaxAndCredits),
-                Title = "Tax and credits",
-                Description = "Provide information about your tax situation to identify potential credits and deductions.",
-                Fields =
-                [
-                    new()
-                    {
-                        Form = TaxForm.Form1040.ToString(),
-                        TaxFieldLabel = TaxFieldLabel.twoE.ToString(),
-                        Label = "Standard deduction",
-                        Type = GetTaxFieldTypeValue(TaxFieldType.Select),
-                        HelperText = "Select the standard deduction amount for your filing status.",
-                        SelectionOptions =
-                        [
-                            new SelectionOption(
-                                $"${GetStandardDeductionAmount(StandardDeductionOption.single).ToString()}",
-                                $"Single: ${GetStandardDeductionAmount(StandardDeductionOption.single)}"),
-                            new SelectionOption(
-                                $"${GetStandardDeductionAmount(StandardDeductionOption.marriedFilingJointly).ToString()}",
-                                 $"Married Filing Jointly: ${GetStandardDeductionAmount(StandardDeductionOption.marriedFilingJointly)}"),
-                            new SelectionOption(
-                                $"${GetStandardDeductionAmount(StandardDeductionOption.headOfHousehold).ToString()}",
-                                 $"Head of Household: ${GetStandardDeductionAmount(StandardDeductionOption.headOfHousehold)}"),
-                        ],
-                        Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
-                    }
-                ]
-            }
         };
 
-        var standardDeductions = new Dictionary<StandardDeductionOption, decimal>
+        var standardDeductions = new Dictionary<FilingStatus, decimal>
         {
-            { StandardDeductionOption.single, GetStandardDeductionAmount(StandardDeductionOption.single) },
-            { StandardDeductionOption.marriedFilingJointly, GetStandardDeductionAmount(StandardDeductionOption.marriedFilingJointly) },
-            { StandardDeductionOption.headOfHousehold, GetStandardDeductionAmount(StandardDeductionOption.headOfHousehold) },
+            { FilingStatus.single, GetStandardDeductionAmount(FilingStatus.single) },
+            { FilingStatus.marriedFilingJointly, GetStandardDeductionAmount(FilingStatus.marriedFilingJointly) },
+            { FilingStatus.marriedFilingSeparately, GetStandardDeductionAmount(FilingStatus.marriedFilingSeparately) },
+            { FilingStatus.headOfHousehold, GetStandardDeductionAmount(FilingStatus.headOfHousehold) },
+            { FilingStatus.qualifyingWidow, GetStandardDeductionAmount(FilingStatus.qualifyingWidow) },
+
         };
 
         return Ok(new StepsResponse
@@ -125,7 +129,7 @@ public class StepsController : ControllerBase
         switch (request.CalculationCallback)
         {
             case FieldCalculationCallback.StandardDeduction:
-                if (Enum.TryParse(request.Value, out StandardDeductionOption option))
+                if (Enum.TryParse(request.Value, out FilingStatus option))
                 {
                     return Ok(GetStandardDeductionAmount(option).ToString());
                 }
@@ -138,25 +142,27 @@ public class StepsController : ControllerBase
         }
     }
 
-    private static decimal GetStandardDeductionAmount(StandardDeductionOption option)
+    private static decimal GetStandardDeductionAmount(FilingStatus option)
     {
         return option switch
         {
-            StandardDeductionOption.single => 15750m,
-            StandardDeductionOption.marriedFilingJointly => 31500m,
-            StandardDeductionOption.headOfHousehold => 23625m,
+            FilingStatus.single => 15750m,
+            FilingStatus.marriedFilingJointly => 31500m,
+            FilingStatus.marriedFilingSeparately => 15750m,
+            FilingStatus.headOfHousehold => 23625m,
+            FilingStatus.qualifyingWidow => 31500m,
             _ => 0m,
         };
     }
 
-    private static string GetStepValue(Steps step)
+    public static string GetStepValue(Steps step)
     {
         return step switch
         {
+            Steps.Demographics => "demographics",
             Steps.Income => "income",
             Steps.TaxAndCredits => "taxAndCredits",
             Steps.PaymentsAndRefundableCredits => "paymentsAndRefundableCredits",
-            Steps.RefundOwe => "refundOwe",
             _ => throw new ArgumentOutOfRangeException(nameof(step), step, null),
         };
     }
@@ -177,6 +183,6 @@ public class StepsController : ControllerBase
     public class StepsResponse
     {
         public List<TaxStep> Steps { get; set; } = [];
-        public Dictionary<StandardDeductionOption, decimal> StandardDeductions { get; set; } = [];
+        public Dictionary<FilingStatus, decimal> StandardDeductions { get; set; } = [];
     }
 }

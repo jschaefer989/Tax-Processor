@@ -22,6 +22,7 @@ interface UseTaxBehaviorResult {
   contextMenu: ContextMenuProps | undefined;
   onWhitespaceClick: (event: React.MouseEvent<HTMLDivElement>) => void;
   duplicateResponses: DuplicateResponse[] | undefined;
+  lastTimeTriedAdvancing: Date | undefined;
 }
 
 export function useTaxBehavior(): UseTaxBehaviorResult {
@@ -41,6 +42,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
   const [panelExpanded, setPanelExpanded] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [duplicateResponses, setDuplicateResponses] = useState<DuplicateResponse[] | undefined>(undefined);
+  const [lastTimeTriedAdvancing, setLastTimeTriedAdvancing] = useState<Date | undefined>(undefined);
 
   const { contextMenu, setContextMenu, onWhitespaceClick } = useContextMenu();
 
@@ -60,6 +62,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
         setToastMessage,
         setContextMenu,
         setDuplicateResponses,
+        setLastTimeTriedAdvancing,
       ),
     [
       setCurrentStep,
@@ -74,6 +77,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
       setSidebarExpanded,
       setToastMessage,
       setDuplicateResponses,
+      setLastTimeTriedAdvancing,
     ],
   );
 
@@ -93,5 +97,6 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
     contextMenu,
     onWhitespaceClick,
     duplicateResponses,
+    lastTimeTriedAdvancing,
   };
 }

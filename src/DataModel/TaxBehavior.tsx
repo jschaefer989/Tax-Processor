@@ -1,14 +1,45 @@
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
 import { DuplicateResponse } from "./DuplicateResponse";
-import type { FieldCalculationCallback } from "./TaxField";
+import type SelectionOption from "./SelectionOption";
+import TaxField from "./TaxField";
+import type { FieldCalculationCallback, TaxFieldType } from "./TaxField";
+import TaxFile, { ReadableForm } from "./TaxFile";
 import TaxProgress from "./TaxProgress";
-import TaxResponse from "./TaxResponse";
-import { StandardDeductionOption, Steps, TaxStep } from "./TaxStep";
+import TaxResponse, { TaxFieldLabel, TaxForm } from "./TaxResponse";
+import { FilingStatus, Steps, TaxStep } from "./TaxStep";
 
 interface StepResponse {
-  steps: TaxStep[];
-  standardDeductions: Record<StandardDeductionOption, number>;
+  steps: StepDto[];
+  standardDeductions: Record<FilingStatus, number>;
 }
+
+//#region DTOs
+interface StepDto {
+  step: Steps;
+  title: string;
+  description: string;
+  fields: TaxFieldDto[];
+  files: TaxFileDto[];
+}
+
+interface TaxFieldDto {
+  form: string;
+  taxFieldLabel: string;
+  label: string;
+  type: string;
+  isRequired: boolean;
+  helperText?: string;
+  selectionOptions?: SelectionOption[];
+  subsection?: string;
+  calculationCallback?: FieldCalculationCallback;
+}
+
+interface TaxFileDto {
+  fromForm: string;
+  toForm: string;
+  label: string;
+}
+//#endregion DTOs
 
 export class TaxBehavior {
   /** Static steps and associated fields loaded from the database for the user to populate */
@@ -38,6 +69,7 @@ export class TaxBehavior {
   setDuplicateResponses: React.Dispatch<
     React.SetStateAction<DuplicateResponse[] | undefined>
   > = () => {};
+  setLastTimeTriedAdvancing: React.Dispatch<React.SetStateAction<Date | undefined>> = () => {};
   //#endregion State
 
   constructor(
@@ -58,6 +90,7 @@ export class TaxBehavior {
     setDuplicateResponses: React.Dispatch<
       React.SetStateAction<DuplicateResponse[] | undefined>
     >,
+    setLastTimeTriedAdvancing: React.Dispatch<React.SetStateAction<Date | undefined>>,
   ) {
     this.setCurrentStep = setCurrentStep;
     this.setResponses = setResponses;
@@ -72,6 +105,7 @@ export class TaxBehavior {
     this.setToastMessage = setToastMessage;
     this.setContextMenu = setContextMenu;
     this.setDuplicateResponses = setDuplicateResponses;
+    this.setLastTimeTriedAdvancing = setLastTimeTriedAdvancing;
     this.steps = [];
   }
 
@@ -86,10 +120,13 @@ export class TaxBehavior {
   getResponse(
     form: string,
     label: string,
-    line: number,
+    line?: number,
   ): TaxResponse | undefined {
     return this.progress?.responses.find(
-      (r) => r.form === form && r.label === label && r.line === line,
+      (response) =>
+        response.form === form &&
+        response.label === label &&
+        (line === undefined || response.line === line),
     );
   }
 
@@ -99,6 +136,26 @@ export class TaxBehavior {
         (r) => r.form === form && r.line === line,
       ) ?? []
     );
+  }
+
+  getMissingFieldsForStep(step: Steps): TaxField[] {
+    const stepInfo = this.getStep(step);
+    if (!stepInfo) {
+      return [];
+    }
+
+    const requiredFields = stepInfo.getRequiredFields();
+    console.log(`Checking required fields for step ${step}:`, requiredFields);
+    const missingFields: TaxField[] = [];
+    
+    for (const field of requiredFields) {
+      const response = this.getResponse(field.form, field.label);
+      if (!response || response.value === undefined || response.value === "") {
+        missingFields.push(field);
+      }
+    }
+    console.log(`Missing fields for step ${step}:`, missingFields);
+    return missingFields;
   }
 
   //#region API Calls
@@ -195,7 +252,35 @@ export class TaxBehavior {
         throw new Error("Unable to load tax steps.");
       }
       const data = (await response.json()) as StepResponse;
-      this.steps = data.steps;
+      this.steps = data.steps.map(
+        (step) =>
+          new TaxStep(
+            step.step,
+            step.title,
+            step.description,
+            step.fields.map(field => new TaxField(
+              field.form as TaxForm,
+              field.taxFieldLabel as TaxFieldLabel, 
+              field.label,
+              field.type as TaxFieldType, 
+              {
+                isRequired: field.isRequired,
+                helperText: field.helperText,
+                selectionOptions: field.selectionOptions,
+                subsection: field.subsection,
+                calculationCallback: field.calculationCallback,
+              }
+            )),
+            step.files.map(
+              (file) =>
+                new TaxFile(
+                  file.fromForm as ReadableForm,
+                  file.toForm,
+                  file.label,
+                ),
+            ),
+          ),
+      );
 
       if (this.steps.length > 0) {
         this.setCurrentStep(this.steps[0].step);
@@ -351,13 +436,10 @@ export class TaxBehavior {
       const data = JSON.parse(responseText) as TaxResponse[];
       const incomingResponses = data.map(
         (item) =>
-          new TaxResponse(
-            item.form,
-            item.label,
-            item.line,
-            item.value,
-            { fromCode: item.formCode, subsection: item.subsection },
-          ),
+          new TaxResponse(item.form, item.label, item.line, item.value, {
+            fromCode: item.formCode,
+            subsection: item.subsection,
+          }),
       );
       this.setResponses((existingResponses) => {
         const duplicates = this.getDuplicateResponses(
@@ -380,7 +462,10 @@ export class TaxBehavior {
     }
   }
 
-    async calculateFieldRequest(callback: FieldCalculationCallback, value: string): Promise<string | undefined> {
+  async calculateFieldRequest(
+    callback: FieldCalculationCallback,
+    value: string,
+  ): Promise<string | undefined> {
     try {
       this.setIsLoading(true);
       const formData = new FormData();

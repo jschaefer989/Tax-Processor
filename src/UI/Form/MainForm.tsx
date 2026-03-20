@@ -13,9 +13,16 @@ interface MainFormProps {
   readonly responses: TaxResponse[];
   readonly isLoading: boolean;
   readonly taxBehavior: TaxBehavior;
+  readonly lastTimeTriedAdvancing: Date | undefined;
 }
 export default function MainForm(props: MainFormProps) {
-  const { currentStep, responses, isLoading, taxBehavior } = props;
+  const {
+    currentStep,
+    responses,
+    isLoading,
+    taxBehavior,
+    lastTimeTriedAdvancing,
+  } = props;
 
   //#useMemo
   const step = useMemo(() => {
@@ -43,6 +50,7 @@ export default function MainForm(props: MainFormProps) {
           step={step}
           responses={responses}
           taxBehavior={taxBehavior}
+          lastTimeTriedAdvancing={lastTimeTriedAdvancing}
         />
       )}
 

@@ -5,14 +5,14 @@ namespace TaxProcessor.Api.Models;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Steps
 {
+    [JsonPropertyName("demographics")]
+    Demographics,
     [JsonPropertyName("income")]
     Income,
     [JsonPropertyName("taxAndCredits")]
     TaxAndCredits,
     [JsonPropertyName("paymentsAndRefundableCredits")]
     PaymentsAndRefundableCredits,
-    [JsonPropertyName("refundOwe")]
-    RefundOwe,
 }
 
 public class TaxStep
@@ -36,10 +36,10 @@ public class TaxStep
     {
         return step switch
         {
+            Steps.Demographics => "demographics",
             Steps.Income => "income",
             Steps.TaxAndCredits => "taxAndCredits",
             Steps.PaymentsAndRefundableCredits => "paymentsAndRefundableCredits",
-            Steps.RefundOwe => "refundOwe",
             _ => throw new ArgumentOutOfRangeException(nameof(step), step, null),
         };
     }

@@ -4,13 +4,14 @@ import type { TaxStep } from "../../DataModel/TaxStep";
 import EntryField from "./EntryField";
 
 interface FormFieldsProps {
-  step: TaxStep;
-  responses: TaxResponse[];
-  taxBehavior: TaxBehavior;
+  readonly step: TaxStep;
+  readonly responses: TaxResponse[];
+  readonly taxBehavior: TaxBehavior;
+  readonly lastTimeTriedAdvancing: Date | undefined;
 }
 
 export default function FormFields(props: FormFieldsProps) {
-  const { step, responses, taxBehavior } = props;
+  const { step, responses, taxBehavior, lastTimeTriedAdvancing } = props;
 
   return (
     <div className="fields">
@@ -25,7 +26,7 @@ export default function FormFields(props: FormFieldsProps) {
             step={step}
             form={field.form}
             label={field.taxFieldLabel}
-
+            lastTimeTriedAdvancing={lastTimeTriedAdvancing}
           />
           {field.helperText ? <small>{field.helperText}</small> : null}
         </label>

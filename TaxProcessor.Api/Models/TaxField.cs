@@ -33,6 +33,9 @@ public class TaxField
     [JsonPropertyName("subsection")]
     public string? Subsection { get; set; }
 
+    [JsonPropertyName("isRequired")]
+    public bool IsRequired { get; set; } = false;
+
     /// <summary>
     /// Not currently used, but keeping around in case there is a need for the frontend to trigger 
     /// a calculation for a specific field (e.g., standard deduction) and we want to have 

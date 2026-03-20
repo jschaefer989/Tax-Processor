@@ -78,13 +78,13 @@ export default function StepTracker(props: StepTrackerProps) {
 
 function getStepLabel(step: Steps): string {
   switch (step) {
+    case Steps.Demographics:
+      return "Demographics";
     case Steps.Income:
       return "Income";
     case Steps.TaxAndCredits:
       return "Tax and Credits";
     case Steps.PaymentsAndRefundableCredits:
-      return "Payments and Refundable Credits";
-    case Steps.RefundOwe:
-      return "Refund or Owe";
+      return "Payments and Refundable Credits";    
   }
 }

@@ -3,7 +3,7 @@ import ContextMenuOption, {
   ContextMenuIcon,
 } from "../../DataModel/ContextMenuOption";
 import { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
+import TaxResponse from "../../DataModel/TaxResponse";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
 import FormLine from "./FormLine";
@@ -65,7 +65,7 @@ export default function FormSection(props: FormSectionProps) {
           key={line}
           taxBehavior={taxBehavior}
           form={responsesForLine[0].form}
-          responses={responsesForLine}
+          responses={TaxResponse.sortByLabel(responsesForLine)}
         />,
       );
     },

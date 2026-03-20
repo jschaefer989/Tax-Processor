@@ -2,16 +2,18 @@ import type TaxField from "./TaxField";
 import type TaxFile from "./TaxFile";
 
 export enum Steps {
+  Demographics = "demographics",
   Income = "income",
   TaxAndCredits = "taxAndCredits",
   PaymentsAndRefundableCredits = "paymentsAndRefundableCredits",
-  RefundOwe = "refundOwe",
 }
 
-export enum StandardDeductionOption {
+export enum FilingStatus {
     single = "single",
     marriedFilingJointly = "marriedFilingJointly",
+    marriedFilingSeparately = "marriedFilingSeparately",
     headOfHousehold = "headOfHousehold",
+    qualifyingWidow = "qualifyingWidow",
 }
 
 export class TaxStep {
@@ -35,4 +37,7 @@ export class TaxStep {
     this.files = files;
   }
 
+  public getRequiredFields(): TaxField[] {
+    return this.fields.filter((field) => field.isRequired);
+  }
 }

@@ -19,6 +19,10 @@ export default function Form1040(props: Form1040Props) {
     return null;
   }
 
+  const demographicsResponses = responses.filter(
+    (response) => hasSubsection(response, Steps.Demographics),
+  );
+
   const incomeResponses = responses.filter(
     (response) => hasSubsection(response, Steps.Income),
   );
@@ -31,15 +35,11 @@ export default function Form1040(props: Form1040Props) {
     (response) => hasSubsection(response, Steps.PaymentsAndRefundableCredits),
   );
 
-  const refundOrOweResponses = responses.filter(
-    (response) => hasSubsection(response, Steps.RefundOwe),
-  );
-
   if (
+    demographicsResponses.length === 0 &&
     incomeResponses.length === 0 &&
     taxAndCreditsResponses.length === 0 &&
-    paymentsAndRefundableCreditsResponses.length === 0 &&
-    refundOrOweResponses.length === 0
+    paymentsAndRefundableCreditsResponses.length === 0
   ) {
     return null;
   }
@@ -51,6 +51,13 @@ export default function Form1040(props: Form1040Props) {
       form={TaxForm.Form1040}
       isExpandedOverride={isExpandedOverride}
     >
+      {demographicsResponses.length > 0 && (
+        <FormSection
+          taxBehavior={taxBehavior}
+          title="Demographics"
+          responses={TaxResponse.sortByLabel(demographicsResponses)}
+        />
+      )}
       {incomeResponses.length > 0 && (
         <FormSection
           taxBehavior={taxBehavior}
@@ -73,14 +80,7 @@ export default function Form1040(props: Form1040Props) {
             paymentsAndRefundableCreditsResponses,
           )}
         />
-      )}
-      {refundOrOweResponses.length > 0 && (
-        <FormSection
-          taxBehavior={taxBehavior}
-          title="Refund or Amount Owed"
-          responses={TaxResponse.sortByLabel(refundOrOweResponses)}
-        />
-      )}
+      )}      
     </FormHeader>
   );
 }

@@ -1,4 +1,3 @@
-import { use, useEffect } from "react";
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import { useTaxBehavior } from "../hooks/useTaxBehavior";
 import { MainAppFooter } from "./Footer/MainAppFooter";
@@ -10,6 +9,8 @@ import Toast from "./General/Toast";
 import MainAppHeader from "./Header/MainAppHeader";
 import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
+
+// TODO: add this link https://www.irs.gov/help/ita
 
 export default function App() {
   const {
@@ -28,13 +29,10 @@ export default function App() {
     contextMenu,
     onWhitespaceClick,
     duplicateResponses,
+    lastTimeTriedAdvancing,
   } = useTaxBehavior();
 
   useRefreshDbConnection(showStartPage, noDbConnection, taxBehavior);
-
-  useEffect(() => {
-    throw new Error("Test error boundary");
-  })
 
   return (
     <div className="app" onClick={onWhitespaceClick}>
@@ -80,6 +78,7 @@ export default function App() {
                 responses={responses}
                 isLoading={isLoading}
                 taxBehavior={taxBehavior}
+                lastTimeTriedAdvancing={lastTimeTriedAdvancing}
               />
             </section>
 

@@ -7,17 +7,27 @@ import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type { TaxStep } from "../../DataModel/TaxStep";
 
 interface EntryFieldComponentProps {
-  field: TaxField;
-  line: number;
-  responses: TaxResponse[];
-  taxBehavior: TaxBehavior;
-  step: TaxStep;
-  form: TaxForm;
-  label: TaxFieldLabel;
+  readonly field: TaxField;
+  readonly line: number;
+  readonly responses: TaxResponse[];
+  readonly taxBehavior: TaxBehavior;
+  readonly step: TaxStep;
+  readonly form: TaxForm;
+  readonly label: TaxFieldLabel;
+  readonly lastTimeTriedAdvancing: Date | undefined;
 }
 
 export default function EntryField(props: EntryFieldComponentProps) {
-  const { field, line, responses, taxBehavior, step, form, label } = props;
+  const {
+    field,
+    line,
+    responses,
+    taxBehavior,
+    step,
+    form,
+    label,
+    lastTimeTriedAdvancing,
+  } = props;
   const lastHandledValueRef = useRef("");
   const normalizedType = String(field.type).toLowerCase();
 
@@ -68,10 +78,22 @@ export default function EntryField(props: EntryFieldComponentProps) {
     }
   }, [matchingValue]);
 
+  const hasValidationError =
+    Boolean(lastTimeTriedAdvancing) &&
+    field.isRequired &&
+    String(matchingValue ?? "").trim().length === 0;
+
   if (normalizedType === TaxFieldType.Select) {
     return (
       <select
         id={field.taxFieldLabel}
+        className={
+          hasValidationError
+            ? "field-control field-control--error"
+            : "field-control"
+        }
+        aria-invalid={hasValidationError}
+        title={hasValidationError ? "This field is required" : undefined}
         value={matchingValue ?? ""}
         onChange={(event) => handleResponseChange(event.target.value)}
       >
@@ -93,6 +115,13 @@ export default function EntryField(props: EntryFieldComponentProps) {
   return (
     <input
       id={field.taxFieldLabel}
+      className={
+        hasValidationError
+          ? "field-control field-control--error"
+          : "field-control"
+      }
+      aria-invalid={hasValidationError}
+      title={hasValidationError ? "This field is required" : undefined}
       type={inputType}
       inputMode={
         normalizedType === TaxFieldType.Currency ? "decimal" : undefined

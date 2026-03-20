@@ -16,6 +16,7 @@ export enum FieldCalculationCallback
 
 
 interface ConstructionOptions {
+  isRequired?: boolean;
   helperText?: string;
   selectionOptions?: SelectionOption[];
   subsection?: string;
@@ -27,6 +28,7 @@ export default class TaxField {
   taxFieldLabel: TaxFieldLabel;
   label: string;
   type: TaxFieldType;
+  isRequired: boolean = false;
   helperText?: string;
   selectionOptions?: SelectionOption[];
   subsection?: string;
@@ -36,13 +38,14 @@ export default class TaxField {
     form: TaxForm,
     taxFieldLabel: TaxFieldLabel,
     label: string,
-    type: TaxFieldType,
+    type: TaxFieldType,    
     constructionOptions?: ConstructionOptions,
   ) {
     this.form = form;
     this.taxFieldLabel = taxFieldLabel;
     this.label = label;
     this.type = type;
+    this.isRequired = constructionOptions?.isRequired ?? false;
     this.helperText = constructionOptions?.helperText;
     this.selectionOptions = constructionOptions?.selectionOptions;
     this.subsection = constructionOptions?.subsection;
