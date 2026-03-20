@@ -18,6 +18,7 @@ export enum TaxFieldLabel {
   threeA = "threeA",
   threeB = "threeB",
   twoE = "twoE",
+  Skip = "skip",
 }
 
 interface ConstructionOptions {

@@ -170,12 +170,21 @@ function updateResponses(
     if (existingIndex !== -1) {
       // Update existing response
       const updated = [...prev];
+      if (value === "") {
+        // Remove the response if the value is empty
+        updated.splice(existingIndex, 1);
+        return updated;
+      }
       updated[existingIndex] = new TaxResponse(form, label, line, value, {
         subsection: field.subsection,
       });
       return updated;
     } else {
       // Add new response
+      if (value === "") {
+        // Don't add a response if the value is empty
+        return prev;
+      }
       return [
         ...prev,
         new TaxResponse(form, label, line, value, {

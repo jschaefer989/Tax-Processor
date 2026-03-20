@@ -9,11 +9,11 @@ export enum Steps {
 }
 
 export enum FilingStatus {
-    single = "single",
-    marriedFilingJointly = "marriedFilingJointly",
-    marriedFilingSeparately = "marriedFilingSeparately",
-    headOfHousehold = "headOfHousehold",
-    qualifyingWidow = "qualifyingWidow",
+    single = "Single",
+    marriedFilingJointly = "Married Filing Jointly",
+    marriedFilingSeparately = "Married Filing Separately",
+    headOfHousehold = "Head of Household",
+    qualifyingWidow = "Qualifying Widow(er)",
 }
 
 export class TaxStep {

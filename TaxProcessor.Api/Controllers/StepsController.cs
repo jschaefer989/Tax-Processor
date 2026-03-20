@@ -9,15 +9,15 @@ namespace TaxProcessor.Api.Controllers;
 public enum FilingStatus
 {
     [JsonPropertyName("single")]
-    single,
+    Single,
     [JsonPropertyName("marriedFilingJointly")]
-    marriedFilingJointly,
+    MarriedFilingJointly,
     [JsonPropertyName("marriedFilingSeparately")]
-    marriedFilingSeparately,
+    MarriedFilingSeparately,
     [JsonPropertyName("headOfHousehold")]
-    headOfHousehold,
+    HeadOfHousehold,
     [JsonPropertyName("qualifyingWidow")]
-    qualifyingWidow,
+    QualifyingWidow,
 }
 
 [ApiController]
@@ -39,17 +39,17 @@ public class StepsController : ControllerBase
                     new()
                     {
                         Form = TaxForm.Form1040.ToString(),
-                        TaxFieldLabel = TaxFieldLabel.oneD.ToString(),
+                        TaxFieldLabel = TaxFieldLabel.Skip.ToString(),
                         Label = "Filing status",
                         Type = GetTaxFieldTypeValue(TaxFieldType.Select),
                         HelperText = "Select your filing status for the tax year.",
                         SelectionOptions =
                         [
-                            new SelectionOption("single", "Single"),
-                            new SelectionOption("marriedFilingJointly", "Married Filing Jointly"),
-                            new SelectionOption("marriedFilingSeparately", "Married Filing Separately"),
-                            new SelectionOption("headOfHousehold", "Head of Household"),
-                            new SelectionOption("qualifyingWidow", "Qualifying Widow(er)"),
+                            new SelectionOption(FilingStatus.Single.ToString(), "Single"),
+                            new SelectionOption(FilingStatus.MarriedFilingJointly.ToString(), "Married Filing Jointly"),
+                            new SelectionOption(FilingStatus.MarriedFilingSeparately.ToString(), "Married Filing Separately"),
+                            new SelectionOption(FilingStatus.HeadOfHousehold.ToString(), "Head of Household"),
+                            new SelectionOption(FilingStatus.QualifyingWidow.ToString(), "Qualifying Widow(er)"),
                         ],
                         Subsection = TaxStep.GetStepValue(Steps.Demographics),
                         IsRequired = true,
@@ -87,11 +87,11 @@ public class StepsController : ControllerBase
 
         var standardDeductions = new Dictionary<FilingStatus, decimal>
         {
-            { FilingStatus.single, GetStandardDeductionAmount(FilingStatus.single) },
-            { FilingStatus.marriedFilingJointly, GetStandardDeductionAmount(FilingStatus.marriedFilingJointly) },
-            { FilingStatus.marriedFilingSeparately, GetStandardDeductionAmount(FilingStatus.marriedFilingSeparately) },
-            { FilingStatus.headOfHousehold, GetStandardDeductionAmount(FilingStatus.headOfHousehold) },
-            { FilingStatus.qualifyingWidow, GetStandardDeductionAmount(FilingStatus.qualifyingWidow) },
+            { FilingStatus.Single, GetStandardDeductionAmount(FilingStatus.Single) },
+            { FilingStatus.MarriedFilingJointly, GetStandardDeductionAmount(FilingStatus.MarriedFilingJointly) },
+            { FilingStatus.MarriedFilingSeparately, GetStandardDeductionAmount(FilingStatus.MarriedFilingSeparately) },
+            { FilingStatus.HeadOfHousehold, GetStandardDeductionAmount(FilingStatus.HeadOfHousehold) },
+            { FilingStatus.QualifyingWidow, GetStandardDeductionAmount(FilingStatus.QualifyingWidow) },
 
         };
 
@@ -146,11 +146,11 @@ public class StepsController : ControllerBase
     {
         return option switch
         {
-            FilingStatus.single => 15750m,
-            FilingStatus.marriedFilingJointly => 31500m,
-            FilingStatus.marriedFilingSeparately => 15750m,
-            FilingStatus.headOfHousehold => 23625m,
-            FilingStatus.qualifyingWidow => 31500m,
+            FilingStatus.Single => 15750m,
+            FilingStatus.MarriedFilingJointly => 31500m,
+            FilingStatus.MarriedFilingSeparately => 15750m,
+            FilingStatus.HeadOfHousehold => 23625m,
+            FilingStatus.QualifyingWidow => 31500m,
             _ => 0m,
         };
     }
