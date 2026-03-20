@@ -35,7 +35,7 @@ export default function MainForm(props: MainFormProps) {
       currentStep != undefined &&
       taxBehavior.getMissingFieldsForStep(currentStep, responses).length === 0
     ) {
-      taxBehavior.setAdvancedWithErrors(false);
+      taxBehavior.state.setAdvancedWithErrors(false);
     }
   }, [responses, advancedWithErrors, currentStep]);
 

@@ -7,14 +7,9 @@ namespace TaxProcessor.Api.Controllers;
 
 [ApiController]
 [Route("api/progress")]
-public class ProgressController : ControllerBase
+public class ProgressController(TaxDbContext db) : ControllerBase
 {
-    private readonly TaxDbContext _db;
-
-    public ProgressController(TaxDbContext db)
-    {
-        _db = db;
-    }
+    private readonly TaxDbContext _db = db;
 
     [HttpGet("years")]
     public async Task<ActionResult<int[]>> GetYears()
@@ -58,12 +53,17 @@ public class ProgressController : ControllerBase
             return NotFound(new { message = "Progress not found." });
         }
 
+        if (!Enum.TryParse<Steps>(entity.CurrentStepId, ignoreCase: true, out var step))
+        {
+            return BadRequest(new { message = "Invalid current step value." });
+        }
+
         return Ok(new TaxProgress
         {
             Year = entity.Year,
             Name = entity.Name,
             UpdatedAt = entity.UpdatedAt,
-            CurrentStep = entity.CurrentStepId,
+            CurrentStep = step,
             Responses = entity.GetResponses(),
         });
     }
@@ -93,6 +93,11 @@ public class ProgressController : ControllerBase
             entity.CurrentStepId = request.CurrentStep;
         }
 
+        if (!Enum.TryParse<Steps>(entity.CurrentStepId, ignoreCase: true, out var step))
+        {
+            return BadRequest(new { message = "Invalid current step value." });
+        }
+
         entity.UpdateResponses(request.Responses, request.Year, request.Name);   
 
         await _db.SaveChangesAsync();
@@ -102,7 +107,7 @@ public class ProgressController : ControllerBase
             Year = entity.Year,
             Name = entity.Name,
             UpdatedAt = entity.UpdatedAt,
-            CurrentStep = entity.CurrentStepId,
+            CurrentStep = step,
             Responses = entity.GetResponses(),
         });
     }

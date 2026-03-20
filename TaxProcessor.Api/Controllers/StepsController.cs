@@ -31,17 +31,17 @@ public class StepsController : ControllerBase
         {
             new()
             {
-                Step = GetStepValue(Steps.Demographics),
+                Step = Steps.Demographics,
                 Title = "Demographics",
                 Description = "Provide basic information about yourself to get started.",
                 Fields =
                 [
                     new()
                     {
-                        Form = TaxForm.Form1040.ToString(),
-                        TaxFieldLabel = TaxFieldLabel.Skip.ToString(),
+                        Form = TaxForm.Form1040,
+                        TaxFieldLabel = TaxFieldLabel.Skip,
                         Label = "Filing status",
-                        Type = GetTaxFieldTypeValue(TaxFieldType.Select),
+                        Type = TaxFieldType.Select,
                         HelperText = "Select your filing status for the tax year.",
                         SelectionOptions =
                         [
@@ -58,17 +58,17 @@ public class StepsController : ControllerBase
             },
             new()
             {
-                Step = GetStepValue(Steps.Income),
+                Step = Steps.Income,
                 Title = "Income overview",
                 Description = "Enter high-level income details to determine required forms.",
                 Fields =
                 [
                     new()
                     {
-                        Form = TaxForm.Form1040.ToString(),
-                        TaxFieldLabel = TaxFieldLabel.oneA.ToString(),
+                        Form = TaxForm.Form1040,
+                        TaxFieldLabel = TaxFieldLabel.oneA,
                         Label = "W-2 wages (total)",
-                        Type = GetTaxFieldTypeValue(TaxFieldType.Currency),
+                        Type = TaxFieldType.Currency,
                         HelperText = "Use the total from all W-2s before taxes.",
                         Subsection = TaxStep.GetStepValue(Steps.Income),
                     },
@@ -77,8 +77,8 @@ public class StepsController : ControllerBase
                 [
                     new()
                     {
-                        FromForm = ReadableForm.Form1099.ToString(),
-                        ToForm = TaxForm.Form1040.ToString(),
+                        FromForm = ReadableForm.Form1099,
+                        ToForm = TaxForm.Form1040,
                         Label = "1099 Form(s)",
                     },
                 ],
@@ -152,31 +152,6 @@ public class StepsController : ControllerBase
             FilingStatus.HeadOfHousehold => 23625m,
             FilingStatus.QualifyingWidow => 31500m,
             _ => 0m,
-        };
-    }
-
-    public static string GetStepValue(Steps step)
-    {
-        return step switch
-        {
-            Steps.Demographics => "demographics",
-            Steps.Income => "income",
-            Steps.TaxAndCredits => "taxAndCredits",
-            Steps.PaymentsAndRefundableCredits => "paymentsAndRefundableCredits",
-            _ => throw new ArgumentOutOfRangeException(nameof(step), step, null),
-        };
-    }
-
-    private static string GetTaxFieldTypeValue(TaxFieldType type)
-    {
-        return type switch
-        {
-            TaxFieldType.Text => "text",
-            TaxFieldType.Number => "number",
-            TaxFieldType.Currency => "currency",
-            TaxFieldType.Date => "date",
-            TaxFieldType.Select => "select",
-            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
         };
     }
 

@@ -28,8 +28,8 @@ export default function NameButton(props: NameButtonProps) {
       }
     }
 
-    taxBehavior.setName(name);
-    taxBehavior.setShowStartPage(false);
+    taxBehavior.state.setName(name);
+    taxBehavior.state.setShowStartPage(false);
   }, [name, year, startBehavior]);
 
   const onDeleteName = useCallback(async () => {
@@ -42,7 +42,7 @@ export default function NameButton(props: NameButtonProps) {
     );
     if (confirmed) {
       await startBehavior.deleteName(year, name);
-      startBehavior.taxBehavior.setName(undefined);
+      startBehavior.taxBehavior.state.setName(undefined);
       
       startBehavior.setNames((prevNames) => {
         const newNames = prevNames.filter((prevName) => prevName !== name);
@@ -50,7 +50,7 @@ export default function NameButton(props: NameButtonProps) {
           startBehavior.setYears((prevYears) =>
             prevYears.filter((prevYear) => prevYear !== year),
           );
-          startBehavior.taxBehavior.setYear(undefined);
+          startBehavior.taxBehavior.state.setYear(undefined);
         }
         return newNames;
       });
@@ -60,7 +60,7 @@ export default function NameButton(props: NameButtonProps) {
   const onContextMenu = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
-      startBehavior.taxBehavior.setContextMenu({
+      startBehavior.taxBehavior.state.setContextMenu({
         x: event.clientX,
         y: event.clientY,
         options: [

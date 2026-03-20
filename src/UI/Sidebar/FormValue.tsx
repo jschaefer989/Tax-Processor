@@ -12,7 +12,7 @@ export function FormValue(props: FormValueProps) {
     
     const onClick = useCallback(() => {
         navigator.clipboard.writeText(response.value).then(() => {
-            taxBehavior.setToastMessage("Value copied to clipboard!");
+            taxBehavior.state.setToastMessage("Value copied to clipboard!");
         }).catch((err) => {
             console.error("Failed to copy text: ", err);
         });

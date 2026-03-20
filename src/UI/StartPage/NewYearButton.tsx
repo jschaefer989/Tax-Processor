@@ -12,7 +12,7 @@ export default function NewYearButton(props: NewYearButtonProps) {
 
   const onStartNewYear = useCallback(async () => {
     await startBehavior.loadAllNames();
-    startBehavior.taxBehavior.setYear(new Date().getFullYear() - 1);
+    startBehavior.taxBehavior.state.setYear(new Date().getFullYear() - 1);
     startBehavior.setNewYear(true);
   }, []);
 

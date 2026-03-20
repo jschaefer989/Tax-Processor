@@ -155,7 +155,7 @@ function updateResponses(
   value: string,
   field: TaxField,
 ) {
-  taxBehavior.setResponses((previousResponses) => {
+  taxBehavior.state.setResponses((previousResponses) => {
     const existingIndex = previousResponses.findIndex(
       (response) =>
         response.form === form &&

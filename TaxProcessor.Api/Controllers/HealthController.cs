@@ -7,14 +7,9 @@ namespace TaxProcessor.Api.Controllers;
 
 [ApiController]
 [Route("api/health")]
-public class HealthController : ControllerBase
+public class HealthController(TaxDbContext db) : ControllerBase
 {
-    private readonly TaxDbContext _db;
-
-    public HealthController(TaxDbContext db)
-    {
-        _db = db;
-    }
+    private readonly TaxDbContext _db = db;
 
     [HttpGet]
     public ActionResult<object> GetHealth()

@@ -12,7 +12,7 @@ export function useRefreshDbConnection(
     const refreshDbConnection = async () => {
       const connected = await taxBehavior.getDatabaseConnectionStatus();
       if (!isCancelled) {
-        taxBehavior.setNoDbConnection(!connected);
+        taxBehavior.state.setNoDbConnection(!connected);
       }
     };
 

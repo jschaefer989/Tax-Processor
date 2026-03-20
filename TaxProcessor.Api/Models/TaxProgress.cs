@@ -15,7 +15,7 @@ public class TaxProgress
     public DateTime UpdatedAt { get; set; }
 
     [JsonPropertyName("currentStep")]
-    public string? CurrentStep { get; set; }
+    public Steps? CurrentStep { get; set; }
 
     [JsonPropertyName("responses")]
     public TaxResponse[] Responses { get; set; } = [];

@@ -18,7 +18,7 @@ public enum Steps
 public class TaxStep
 {
     [JsonPropertyName("step")]
-    public string Step { get; set; } = null!;
+    public Steps Step { get; set; }
 
     [JsonPropertyName("title")]
     public string Title { get; set; } = null!;

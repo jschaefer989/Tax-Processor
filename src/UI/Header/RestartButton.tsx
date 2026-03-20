@@ -25,9 +25,9 @@ export default function RestartButton(props: DeleteButtonProps) {
       "Are you sure you want to delete all responses and restart?",
     );
     if (confirmed) {
-      taxBehavior.setResponses([]);
-      taxBehavior.setCurrentStep(Steps.Income);
-      taxBehavior.setLastSavedTime(undefined);
+      taxBehavior.state.setResponses([]);
+      taxBehavior.state.setCurrentStep(Steps.Income);
+      taxBehavior.state.setLastSavedTime(undefined);
     }
   }, [name, year]);
 

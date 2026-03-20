@@ -30,9 +30,9 @@ export default function NewTaxpayerPopup(props: NewYearPageProps) {
       return;
     }
 
-    startBehavior.taxBehavior.setName(tempName?.trim());
-    startBehavior.taxBehavior.setCurrentStep(Steps.Income);
-    startBehavior.taxBehavior.setShowStartPage(false);
+    startBehavior.taxBehavior.state.setName(tempName?.trim());
+    startBehavior.taxBehavior.state.setCurrentStep(Steps.Demographics);
+    startBehavior.taxBehavior.state.setShowStartPage(false);
 
     onClose();
   }, [tempName, year, onClose, startBehavior]);

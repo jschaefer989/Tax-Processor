@@ -16,8 +16,8 @@ export default function BeginButton(props: BeginButtonProps) {
     if (!stepsLoaded) {
       return;
     }
-    startBehavior.taxBehavior.setCurrentStep(Steps.Income);
-    startBehavior.taxBehavior.setShowStartPage(false);
+    startBehavior.taxBehavior.state.setCurrentStep(Steps.Income);
+    startBehavior.taxBehavior.state.setShowStartPage(false);
   }, [startBehavior]);
 
   return (

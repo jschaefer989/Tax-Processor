@@ -21,7 +21,7 @@ export default function NextButton(props: NextButtonProps) {
     if (hasMissingFields) {
       // Don't allow the user to advance if there are missing required fields, 
       // but record that they tried to advance so we can show validation errors.
-      taxBehavior.setAdvancedWithErrors(true);
+      taxBehavior.state.setAdvancedWithErrors(true);
       return;
     }
 
@@ -30,8 +30,8 @@ export default function NextButton(props: NextButtonProps) {
     if (!nextStep) {
       return;
     }
-    taxBehavior.setCurrentStep(nextStep.step);
-    taxBehavior.setAdvancedWithErrors(false);
+    taxBehavior.state.setCurrentStep(nextStep.step);
+    taxBehavior.state.setAdvancedWithErrors(false);
   };
 
   return (

@@ -78,12 +78,12 @@ function OneStepTrackerNumber(props: StepTrackerNumberProps) {
     if (taxBehavior.getMissingFieldsForStep(activeStep, responses).length > 0) {
       // Don't allow the user to advance if there are missing required fields,
       // but record that they tried to advance so we can show validation errors.
-      taxBehavior.setAdvancedWithErrors(true);      
+      taxBehavior.state.setAdvancedWithErrors(true);      
       return;
     }
 
-    taxBehavior.setCurrentStep(step);
-    taxBehavior.setAdvancedWithErrors(false);  
+    taxBehavior.state.setCurrentStep(step);
+    taxBehavior.state.setAdvancedWithErrors(false);  
   };
 
   return (

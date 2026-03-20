@@ -13,10 +13,10 @@ public enum ReadableForm
 public class TaxFile
 {
     [JsonPropertyName("fromForm")]
-    public required string FromForm { get; set; }
+    public required ReadableForm FromForm { get; set; }
 
     [JsonPropertyName("toForm")]
-    public required string ToForm { get; set; }
+    public required TaxForm ToForm { get; set; }
 
     [JsonPropertyName("label")]
     public string Label { get; set; } = null!;

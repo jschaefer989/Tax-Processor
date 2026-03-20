@@ -27,7 +27,7 @@ export function FormHeader(props: FormHeaderProps) {
       "Are you sure you want to delete all the data for this form? This cannot be undone.",
     );
     if (confirmed) {
-      taxBehavior.setResponses((prevResponses) => {
+      taxBehavior.state.setResponses((prevResponses) => {
         return prevResponses.filter(
           (currentResponse) =>
             !(
@@ -36,7 +36,7 @@ export function FormHeader(props: FormHeaderProps) {
             ),
         );
       });
-      taxBehavior.setContextMenu(undefined);
+      taxBehavior.state.setContextMenu(undefined);
     }
   }, [taxBehavior, form, formCode]);
 
@@ -44,7 +44,7 @@ export function FormHeader(props: FormHeaderProps) {
     (event: React.MouseEvent) => {
       event.preventDefault();
       event.stopPropagation();
-      taxBehavior.setContextMenu({
+      taxBehavior.state.setContextMenu({
         x: event.clientX,
         y: event.clientY,
         options: [

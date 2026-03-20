@@ -6,14 +6,9 @@ namespace TaxProcessor.Api.Controllers;
 
 [ApiController]
 [Route("api/start")]
-public class StartController : ControllerBase
+public class StartController(TaxDbContext context) : ControllerBase
 {
-    private readonly TaxDbContext _db;
-
-    public StartController(TaxDbContext context)
-    {
-        _db = context;
-    }
+    private readonly TaxDbContext _db = context;
 
     [HttpDelete("year/{year}")]
     public async Task<ActionResult> DeleteYear(int year)

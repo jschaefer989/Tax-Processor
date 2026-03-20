@@ -4,25 +4,6 @@ using System.Text.Json.Serialization;
 namespace TaxProcessor.Api.Models;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum TaxFieldType
-{
-    [JsonPropertyName("text")]
-    Text,
-
-    [JsonPropertyName("number")]
-    Number,
-
-    [JsonPropertyName("currency")]
-    Currency,
-
-    [JsonPropertyName("date")]
-    Date,
-
-    [JsonPropertyName("select")]
-    Select,
-}
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum TaxForm
 {
 

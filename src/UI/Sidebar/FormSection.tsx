@@ -24,7 +24,7 @@ export default function FormSection(props: FormSectionProps) {
       "Are you sure you want to delete all the data for this form? This cannot be undone.",
     );
     if (confirmed) {
-      taxBehavior.setResponses((prevResponses) => {
+      taxBehavior.state.setResponses((prevResponses) => {
         return prevResponses.filter(
           (currentResponse) =>
             !responses.some(
@@ -34,7 +34,7 @@ export default function FormSection(props: FormSectionProps) {
             ),
         );
       });
-      taxBehavior.setContextMenu(undefined);
+      taxBehavior.state.setContextMenu(undefined);
     }
   }, [taxBehavior]);
 
@@ -42,7 +42,7 @@ export default function FormSection(props: FormSectionProps) {
     (event: React.MouseEvent) => {
       event.preventDefault();
       event.stopPropagation();
-      taxBehavior.setContextMenu({
+      taxBehavior.state.setContextMenu({
         x: event.clientX,
         y: event.clientY,
         options: [

@@ -10,19 +10,38 @@ public enum FieldCalculationCallback
     StandardDeduction,
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum TaxFieldType
+{
+    [JsonPropertyName("text")]
+    Text,
+
+    [JsonPropertyName("number")]
+    Number,
+
+    [JsonPropertyName("currency")]
+    Currency,
+
+    [JsonPropertyName("date")]
+    Date,
+
+    [JsonPropertyName("select")]
+    Select,
+}
+
 public class TaxField
 {
     [JsonPropertyName("form")]
-    public required string Form { get; set; }
+    public required TaxForm Form { get; set; }
 
     [JsonPropertyName("taxFieldLabel")]
-    public required string? TaxFieldLabel { get; set; }
+    public required TaxFieldLabel? TaxFieldLabel { get; set; }
 
     [JsonPropertyName("label")]
     public string Label { get; set; } = null!;
 
     [JsonPropertyName("type")]
-    public required string Type { get; set; }
+    public required TaxFieldType Type { get; set; }
 
     [JsonPropertyName("selectionOptions")]
     public List<SelectionOption>? SelectionOptions { get; set; }

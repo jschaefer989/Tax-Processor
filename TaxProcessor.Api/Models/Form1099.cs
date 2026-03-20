@@ -10,5 +10,5 @@ public class Form1099
 
     public decimal? InterestIncome { get; set; }
 
-    public List<Form1099B> Form1099Bs { get; set; } = new List<Form1099B>();
+    public List<Form1099B> Form1099Bs { get; set; } = [];
 }

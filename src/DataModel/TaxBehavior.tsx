@@ -1,45 +1,12 @@
-import type { ContextMenuProps } from "../UI/General/ContextMenu";
 import { DuplicateResponse } from "./DuplicateResponse";
-import type SelectionOption from "./SelectionOption";
-import TaxField from "./TaxField";
-import type { FieldCalculationCallback, TaxFieldType } from "./TaxField";
+import ServerNormalizer, { type StepResponse, FILING_STATUS_TO_API } from "./ServerNormalizer";
+import type { StateSetters } from "./StateManager";
+import StateManager from "./StateManager";
+import TaxField, { FieldCalculationCallback } from "./TaxField";
 import TaxFile, { ReadableForm } from "./TaxFile";
 import TaxProgress from "./TaxProgress";
-import TaxResponse, { TaxFieldLabel, TaxForm } from "./TaxResponse";
-import { FilingStatus, Steps, TaxStep } from "./TaxStep";
-
-interface StepResponse {
-  steps: StepDto[];
-  standardDeductions: Record<FilingStatus, number>;
-}
-
-//#region DTOs
-interface StepDto {
-  step: Steps;
-  title: string;
-  description: string;
-  fields: TaxFieldDto[];
-  files: TaxFileDto[];
-}
-
-interface TaxFieldDto {
-  form: string;
-  taxFieldLabel: string;
-  label: string;
-  type: string;
-  isRequired: boolean;
-  helperText?: string;
-  selectionOptions?: SelectionOption[];
-  subsection?: string;
-  calculationCallback?: FieldCalculationCallback;
-}
-
-interface TaxFileDto {
-  fromForm: string;
-  toForm: string;
-  label: string;
-}
-//#endregion DTOs
+import TaxResponse, { TaxForm } from "./TaxResponse";
+import { Steps, TaxStep } from "./TaxStep";
 
 export class TaxBehavior {
   /** Static steps and associated fields loaded from the database for the user to populate */
@@ -47,66 +14,12 @@ export class TaxBehavior {
   progress: TaxProgress | undefined = undefined;
   /** Incoming responses from a file upload that are held until the duplicate popup is confirmed or cancelled */
   pendingFileResponses: TaxResponse[] = [];
-
-  //#region State
-  setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>> =
-    () => {};
-  setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>> = () => {};
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>> =
-    () => {};
-  setYear: React.Dispatch<React.SetStateAction<number | undefined>> = () => {};
-  setName: React.Dispatch<React.SetStateAction<string | undefined>> = () => {};
-  setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  setShowStartPage: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  setPanelExpanded: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  setSidebarExpanded: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>> =
-    () => {};
-  setContextMenu: React.Dispatch<
-    React.SetStateAction<ContextMenuProps | undefined>
-  > = () => {};
-  setDuplicateResponses: React.Dispatch<
-    React.SetStateAction<DuplicateResponse[] | undefined>
-  > = () => {};
-  setAdvancedWithErrors: React.Dispatch<React.SetStateAction<boolean>> =
-    () => {};
-  //#endregion State
+  state: StateManager;
 
   constructor(
-    setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>,
-    setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setLastSavedTime: React.Dispatch<React.SetStateAction<Date | undefined>>,
-    setYear: React.Dispatch<React.SetStateAction<number | undefined>>,
-    setName: React.Dispatch<React.SetStateAction<string | undefined>>,
-    setNoDbConnection: React.Dispatch<React.SetStateAction<boolean>>,
-    setShowStartPage: React.Dispatch<React.SetStateAction<boolean>>,
-    setPanelExpanded: React.Dispatch<React.SetStateAction<boolean>>,
-    setSidebarExpanded: React.Dispatch<React.SetStateAction<boolean>>,
-    setToastMessage: React.Dispatch<React.SetStateAction<string | undefined>>,
-    setContextMenu: React.Dispatch<
-      React.SetStateAction<ContextMenuProps | undefined>
-    >,
-    setDuplicateResponses: React.Dispatch<
-      React.SetStateAction<DuplicateResponse[] | undefined>
-    >,
-    setAdvancedWithErrors: React.Dispatch<React.SetStateAction<boolean>>,
+    stateSetters: StateSetters
   ) {
-    this.setCurrentStep = setCurrentStep;
-    this.setResponses = setResponses;
-    this.setIsLoading = setIsLoading;
-    this.setLastSavedTime = setLastSavedTime;
-    this.setYear = setYear;
-    this.setName = setName;
-    this.setNoDbConnection = setNoDbConnection;
-    this.setShowStartPage = setShowStartPage;
-    this.setPanelExpanded = setPanelExpanded;
-    this.setSidebarExpanded = setSidebarExpanded;
-    this.setToastMessage = setToastMessage;
-    this.setContextMenu = setContextMenu;
-    this.setDuplicateResponses = setDuplicateResponses;
-    this.setAdvancedWithErrors = setAdvancedWithErrors;
+    this.state = new StateManager(stateSetters);
     this.steps = [];
   }
 
@@ -162,21 +75,21 @@ export class TaxBehavior {
   //#region API Calls
   async checkDatabaseConnection(): Promise<boolean> {
     try {
-      this.setIsLoading(true);
+      this.state.setIsLoading(true);
       const response = await fetch("/api/health/db");
       if (!response.ok) {
-        this.setNoDbConnection(true);
+        this.state.setNoDbConnection(true);
         return false;
       }
 
       const data = (await response.json()) as { connected: boolean };
-      this.setNoDbConnection(!data.connected);
+      this.state.setNoDbConnection(!data.connected);
       return data.connected;
     } catch {
-      this.setNoDbConnection(true);
+      this.state.setNoDbConnection(true);
       return false;
     } finally {
-      this.setIsLoading(false);
+      this.state.setIsLoading(false);
     }
   }
 
@@ -196,7 +109,7 @@ export class TaxBehavior {
 
   async refreshDbConnectionState(): Promise<boolean> {
     const connected = await this.getDatabaseConnectionStatus();
-    this.setNoDbConnection(!connected);
+    this.state.setNoDbConnection(!connected);
     return connected;
   }
 
@@ -208,7 +121,7 @@ export class TaxBehavior {
     password: string,
   ): Promise<boolean> {
     try {
-      this.setIsLoading(true);
+      this.state.setIsLoading(true);
       const response = await fetch("/api/health/db/test", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -223,31 +136,31 @@ export class TaxBehavior {
 
       if (!response.ok) {
         const data = (await response.json()) as { message?: string };
-        this.setNoDbConnection(true);
-        this.setToastMessage(
+        this.state.setNoDbConnection(true);
+        this.state.setToastMessage(
           data.message ??
             "Unable to connect to database: " + response.statusText,
         );
         return false;
       }
 
-      this.setNoDbConnection(false);
-      this.setToastMessage(undefined);
+      this.state.setNoDbConnection(false);
+      this.state.setToastMessage(undefined);
       return true;
     } catch (err) {
-      this.setNoDbConnection(true);
-      this.setToastMessage(
+      this.state.setNoDbConnection(true);
+      this.state.setToastMessage(
         err instanceof Error ? err.message : "Unable to connect to database.",
       );
       return false;
     } finally {
-      this.setIsLoading(false);
+      this.state.setIsLoading(false);
     }
   }
 
   async loadSteps(): Promise<boolean> {
     try {
-      this.setIsLoading(true);
+      this.state.setIsLoading(true);
       const response = await fetch("/api/steps");
       if (!response.ok) {
         throw new Error("Unable to load tax steps.");
@@ -256,22 +169,24 @@ export class TaxBehavior {
       this.steps = data.steps.map(
         (step) =>
           new TaxStep(
-            step.step,
+            ServerNormalizer.normalizeStep(step.step),
             step.title,
             step.description,
             step.fields.map(
               (field) =>
                 new TaxField(
                   field.form as TaxForm,
-                  field.taxFieldLabel as TaxFieldLabel,
+                  ServerNormalizer.normalizeFieldLabel(field.taxFieldLabel),
                   field.label,
-                  field.type as TaxFieldType,
+                  ServerNormalizer.normalizeFieldType(field.type),
                   {
                     isRequired: field.isRequired,
                     helperText: field.helperText,
                     selectionOptions: field.selectionOptions,
                     subsection: field.subsection,
-                    calculationCallback: field.calculationCallback,
+                    calculationCallback: ServerNormalizer.normalizeCalculationCallback(
+                      field.calculationCallback,
+                    ),
                   },
                 ),
             ),
@@ -279,7 +194,7 @@ export class TaxBehavior {
               (file) =>
                 new TaxFile(
                   file.fromForm as ReadableForm,
-                  file.toForm,
+                  file.toForm as TaxForm,
                   file.label,
                 ),
             ),
@@ -287,19 +202,19 @@ export class TaxBehavior {
       );
 
       if (this.steps.length > 0) {
-        this.setCurrentStep(this.steps[0].step);
+        this.state.setCurrentStep(this.steps[0].step);
       }
-      this.setNoDbConnection(false);
-      this.setToastMessage(undefined);
+      this.state.setNoDbConnection(false);
+      this.state.setToastMessage(undefined);
       return true;
     } catch (err) {
       await this.refreshDbConnectionState();
-      this.setToastMessage(
+      this.state.setToastMessage(
         err instanceof Error ? err.message : "Something went wrong.",
       );
       return false;
     } finally {
-      this.setIsLoading(false);
+      this.state.setIsLoading(false);
     }
   }
 
@@ -308,12 +223,12 @@ export class TaxBehavior {
       return false;
     }
     try {
-      this.setIsLoading(true);
+      this.state.setIsLoading(true);
       const response = await fetch(`/api/progress/${year}/${name}`);
       if (!response.ok) {
         if (response.status === 404) {
-          this.setNoDbConnection(false);
-          this.setToastMessage(undefined);
+          this.state.setNoDbConnection(false);
+          this.state.setToastMessage(undefined);
           return true;
         }
         throw new Error("Unable to load saved progress.");
@@ -322,31 +237,31 @@ export class TaxBehavior {
       if (saved.year !== year) {
         return false;
       }
-      this.setNoDbConnection(false);
-      this.setCurrentStep(saved.currentStep as Steps);
-      this.setResponses(
+      this.state.setNoDbConnection(false);
+      this.state.setCurrentStep(ServerNormalizer.normalizeStep(saved.currentStep));
+      this.state.setResponses(
         saved.responses.map(
           (response) =>
             new TaxResponse(
               response.form,
-              response.label,
+              ServerNormalizer.normalizeFieldLabel(response.label),
               response.line,
               response.value,
               { fromCode: response.formCode, subsection: response.subsection },
             ),
         ),
       );
-      this.setLastSavedTime(new Date(saved.updatedAt));
-      this.setToastMessage(undefined);
+      this.state.setLastSavedTime(new Date(saved.updatedAt));
+      this.state.setToastMessage(undefined);
       return true;
     } catch (err) {
       await this.refreshDbConnectionState();
-      this.setToastMessage(
+      this.state.setToastMessage(
         err instanceof Error ? err.message : "Unable to load saved progress.",
       );
       return false;
     } finally {
-      this.setIsLoading(false);
+      this.state.setIsLoading(false);
     }
   }
 
@@ -361,11 +276,16 @@ export class TaxBehavior {
     }
 
     try {
-      this.setIsLoading(true);
-      const payload: Partial<TaxProgress> = {
+      this.state.setIsLoading(true);
+      const payload: {
+        year: number;
+        name: string;
+        currentStep: string;
+        responses: TaxResponse[];
+      } = {
         year,
         name,
-        currentStep: this.getStep(currentStep)?.step,
+        currentStep: ServerNormalizer.serializeStepForApi(currentStep),
         responses,
       };
       const response = await fetch("/api/progress/save", {
@@ -378,40 +298,40 @@ export class TaxBehavior {
       }
       const saved = (await response.json()) as TaxProgress;
       const savedTime = new Date(saved.updatedAt);
-      this.setLastSavedTime(savedTime);
-      this.setToastMessage(`Saved at ${savedTime.toLocaleTimeString()}`);
+      this.state.setLastSavedTime(savedTime);
+      this.state.setToastMessage(`Saved at ${savedTime.toLocaleTimeString()}`);
     } catch (err) {
-      this.setToastMessage(
+      this.state.setToastMessage(
         err instanceof Error ? err.message : "Unable to save progress.",
       );
     } finally {
-      this.setIsLoading(false);
+      this.state.setIsLoading(false);
     }
   }
 
   async deleteProgress(year: number, name: string) {
     try {
-      this.setIsLoading(true);
+      this.state.setIsLoading(true);
       const response = await fetch(`/api/progress/${year}/${name}`, {
         method: "DELETE",
       });
       if (!response.ok) {
         throw new Error(response.statusText);
       }
-      this.setToastMessage("Progress deleted.");
+      this.state.setToastMessage("Progress deleted.");
     } catch (err) {
-      this.setToastMessage(
+      this.state.setToastMessage(
         "Failed to delete progress: " +
           (err instanceof Error ? err.message : "Unknown error"),
       );
     } finally {
-      this.setIsLoading(false);
+      this.state.setIsLoading(false);
     }
   }
 
   async uploadTaxFile(file: File, formType: string) {
     try {
-      this.setIsLoading(true);
+      this.state.setIsLoading(true);
       const formData = new FormData();
       formData.append("file", file);
       formData.append("form", formType);
@@ -440,29 +360,35 @@ export class TaxBehavior {
       const data = JSON.parse(responseText) as TaxResponse[];
       const incomingResponses = data.map(
         (item) =>
-          new TaxResponse(item.form, item.label, item.line, item.value, {
+          new TaxResponse(
+            item.form,
+            ServerNormalizer.normalizeFieldLabel(item.label),
+            item.line,
+            item.value,
+            {
             fromCode: item.formCode,
             subsection: item.subsection,
-          }),
+            },
+          ),
       );
-      this.setResponses((existingResponses) => {
+      this.state.setResponses((existingResponses) => {
         const duplicates = this.getDuplicateResponses(
           incomingResponses,
           existingResponses,
         );
         if (duplicates.length > 0) {
           this.pendingFileResponses = incomingResponses;
-          this.setDuplicateResponses(duplicates);
+          this.state.setDuplicateResponses(duplicates);
           return existingResponses;
         }
         return [...existingResponses, ...incomingResponses];
       });
     } catch (err) {
-      this.setToastMessage(
+      this.state.setToastMessage(
         err instanceof Error ? err.message : "Unable to upload file.",
       );
     } finally {
-      this.setIsLoading(false);
+      this.state.setIsLoading(false);
     }
   }
 
@@ -471,10 +397,14 @@ export class TaxBehavior {
     value: string,
   ): Promise<string | undefined> {
     try {
-      this.setIsLoading(true);
+      this.state.setIsLoading(true);
       const formData = new FormData();
-      formData.append("calculationCallback", callback);
-      formData.append("value", value);
+      const callbackForApi =
+        callback === FieldCalculationCallback.StandardDeduction
+          ? "StandardDeduction"
+          : callback;
+      formData.append("calculationCallback", callbackForApi);
+      formData.append("value", FILING_STATUS_TO_API[value] ?? value);
       const response = await fetch("/api/steps/calculate-field", {
         method: "POST",
         body: formData,
@@ -499,11 +429,11 @@ export class TaxBehavior {
 
       return JSON.parse(responseText);
     } catch (err) {
-      this.setToastMessage(
+      this.state.setToastMessage(
         err instanceof Error ? err.message : "Unable to upload file.",
       );
     } finally {
-      this.setIsLoading(false);
+      this.state.setIsLoading(false);
     }
   }
   //#endregion API Calls
@@ -538,8 +468,8 @@ export class TaxBehavior {
   confirmPendingFileResponses() {
     const pending = this.pendingFileResponses;
     this.pendingFileResponses = [];
-    this.setDuplicateResponses(undefined);
-    this.setResponses((prevResponses) => {
+    this.state.setDuplicateResponses(undefined);
+    this.state.setResponses((prevResponses) => {
       const existingResponses = [...prevResponses];
       for (const newResponse of pending) {
         const existingIndex = existingResponses.findIndex(
@@ -560,7 +490,7 @@ export class TaxBehavior {
 
   cancelPendingFileResponses() {
     this.pendingFileResponses = [];
-    this.setDuplicateResponses(undefined);
+    this.state.setDuplicateResponses(undefined);
   }
 
   static getResponsesByLine(

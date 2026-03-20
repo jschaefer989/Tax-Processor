@@ -18,12 +18,12 @@ export default function YearButton(props: YearButtonProps) {
   const onClick = useCallback(async () => {
     const { taxBehavior } = startBehavior;
     if (selectedYear === year) {
-      taxBehavior.setYear(undefined);
+      taxBehavior.state.setYear(undefined);
     } else {
-      taxBehavior.setIsLoading(true);
+      taxBehavior.state.setIsLoading(true);
       await startBehavior.loadNames(year);
-      taxBehavior.setYear(year);
-      taxBehavior.setIsLoading(false);
+      taxBehavior.state.setYear(year);
+      taxBehavior.state.setIsLoading(false);
     }
   }, [year, selectedYear]);
 
@@ -38,7 +38,7 @@ export default function YearButton(props: YearButtonProps) {
         prevYears.filter((year) => year !== year),
       );
       if (selectedYear === year) {
-        taxBehavior.setYear(undefined);
+        taxBehavior.state.setYear(undefined);
         startBehavior.setNames([]);
       }
     }
@@ -47,7 +47,7 @@ export default function YearButton(props: YearButtonProps) {
   const onContextMenu = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
-      startBehavior.taxBehavior.setContextMenu({
+      startBehavior.taxBehavior.state.setContextMenu({
         x: event.clientX,
         y: event.clientY,
         options: [

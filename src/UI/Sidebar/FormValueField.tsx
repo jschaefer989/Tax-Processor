@@ -19,7 +19,7 @@ export default function FormValueField(props: FormValueFieldProps) {
       "Are you sure you want to delete this row? This cannot be undone.",
     );
     if (confirmed) {
-      taxBehavior.setResponses((prevResponses) => {
+      taxBehavior.state.setResponses((prevResponses) => {
         return prevResponses.filter(
           (currentResponse) =>
             !(
@@ -30,7 +30,7 @@ export default function FormValueField(props: FormValueFieldProps) {
             ),
         );
       });
-      taxBehavior.setContextMenu(undefined);
+      taxBehavior.state.setContextMenu(undefined);
     }
   }, [taxBehavior]);
 
@@ -38,7 +38,7 @@ export default function FormValueField(props: FormValueFieldProps) {
     (event: React.MouseEvent) => {
       event.preventDefault();
       event.stopPropagation();
-      taxBehavior.setContextMenu({
+      taxBehavior.state.setContextMenu({
         x: event.clientX,
         y: event.clientY,
         options: [

@@ -24,13 +24,13 @@ export default function FormLine(props: FormLineProps) {
       "Are you sure you want to delete the data for this line on this form? This cannot be undone.",
     );
     if (confirmed) {
-      taxBehavior.setResponses((prevResponses) => {
+      taxBehavior.state.setResponses((prevResponses) => {
         return prevResponses.filter(
           (currentResponse) =>
             !(currentResponse.form === form && currentResponse.line === line),
         );
       });
-      taxBehavior.setContextMenu(undefined);
+      taxBehavior.state.setContextMenu(undefined);
     }
   }, [form, line, taxBehavior]);
 
@@ -38,7 +38,7 @@ export default function FormLine(props: FormLineProps) {
     (event: React.MouseEvent) => {
       event.preventDefault();
       event.stopPropagation();
-      taxBehavior.setContextMenu({
+      taxBehavior.state.setContextMenu({
         x: event.clientX,
         y: event.clientY,
         options: [

@@ -11,14 +11,14 @@ export default function Toast(props: ToastProps) {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      taxBehavior.setToastMessage(undefined);
+      taxBehavior.state.setToastMessage(undefined);
     }, 3000);
 
     return () => clearTimeout(timeout);
   }, [toastMessage]);
 
   return (
-    <div className="toast" onClick={() => taxBehavior.setToastMessage(undefined)}>
+    <div className="toast" onClick={() => taxBehavior.state.setToastMessage(undefined)}>
       {toastMessage}
     </div>
   );

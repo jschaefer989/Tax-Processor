@@ -19,7 +19,7 @@ export default function BackButton(props: BackButtonProps) {
   const handleBack = useCallback(() => {
     const nextIndex = Math.max(currentIndex - 1, 0);
     const nextStep = taxBehavior.steps[nextIndex];
-    taxBehavior.setCurrentStep(nextStep.step);
+    taxBehavior.state.setCurrentStep(nextStep.step);
   }, [currentIndex, taxBehavior.steps]);
 
   return (

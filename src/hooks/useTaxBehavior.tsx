@@ -41,14 +41,16 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
   const [showStartPage, setShowStartPage] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [duplicateResponses, setDuplicateResponses] = useState<DuplicateResponse[] | undefined>(undefined);
+  const [duplicateResponses, setDuplicateResponses] = useState<
+    DuplicateResponse[] | undefined
+  >(undefined);
   const [advancedWithErrors, setAdvancedWithErrors] = useState<boolean>(false);
 
   const { contextMenu, setContextMenu, onWhitespaceClick } = useContextMenu();
 
   const taxBehavior = useMemo(
     () =>
-      new TaxBehavior(
+      new TaxBehavior({
         setCurrentStep,
         setResponses,
         setIsLoading,
@@ -63,7 +65,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
         setContextMenu,
         setDuplicateResponses,
         setAdvancedWithErrors,
-      ),
+      }),
     [
       setCurrentStep,
       setResponses,

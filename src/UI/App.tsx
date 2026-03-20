@@ -85,7 +85,7 @@ export default function App() {
             {sidebarExpanded && (
               <ExpandButton
                 expanded={panelExpanded}
-                setExpanded={taxBehavior.setPanelExpanded}
+                setExpanded={taxBehavior.state.setPanelExpanded}
                 title={
                   panelExpanded
                     ? "Collapse income overview"
@@ -97,7 +97,7 @@ export default function App() {
             {panelExpanded && (
               <ExpandButton
                 expanded={sidebarExpanded}
-                setExpanded={taxBehavior.setSidebarExpanded}
+                setExpanded={taxBehavior.state.setSidebarExpanded}
                 title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
                 direction={ExpandDirection.Right}
               />
