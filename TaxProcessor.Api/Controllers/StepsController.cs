@@ -87,11 +87,11 @@ public class StepsController : ControllerBase
 
         var standardDeductions = new Dictionary<FilingStatus, decimal>
         {
-            { FilingStatus.Single, GetStandardDeductionAmount(FilingStatus.Single) },
-            { FilingStatus.MarriedFilingJointly, GetStandardDeductionAmount(FilingStatus.MarriedFilingJointly) },
-            { FilingStatus.MarriedFilingSeparately, GetStandardDeductionAmount(FilingStatus.MarriedFilingSeparately) },
-            { FilingStatus.HeadOfHousehold, GetStandardDeductionAmount(FilingStatus.HeadOfHousehold) },
-            { FilingStatus.QualifyingWidow, GetStandardDeductionAmount(FilingStatus.QualifyingWidow) },
+            { FilingStatus.Single, TaxCalculator.GetStandardDeductionAmount(FilingStatus.Single) },
+            { FilingStatus.MarriedFilingJointly, TaxCalculator.GetStandardDeductionAmount(FilingStatus.MarriedFilingJointly) },
+            { FilingStatus.MarriedFilingSeparately, TaxCalculator.GetStandardDeductionAmount(FilingStatus.MarriedFilingSeparately) },
+            { FilingStatus.HeadOfHousehold, TaxCalculator.GetStandardDeductionAmount(FilingStatus.HeadOfHousehold) },
+            { FilingStatus.QualifyingWidow, TaxCalculator.GetStandardDeductionAmount(FilingStatus.QualifyingWidow) },
 
         };
 
@@ -131,7 +131,7 @@ public class StepsController : ControllerBase
             case FieldCalculationCallback.StandardDeduction:
                 if (Enum.TryParse(request.Value, out FilingStatus option))
                 {
-                    return Ok(GetStandardDeductionAmount(option).ToString());
+                    return Ok(TaxCalculator.GetStandardDeductionAmount(option).ToString());
                 }
                 else
                 {
@@ -140,19 +140,6 @@ public class StepsController : ControllerBase
             default:
                 return BadRequest(new { message = "Unsupported calculation callback." });
         }
-    }
-
-    private static decimal GetStandardDeductionAmount(FilingStatus option)
-    {
-        return option switch
-        {
-            FilingStatus.Single => 15750m,
-            FilingStatus.MarriedFilingJointly => 31500m,
-            FilingStatus.MarriedFilingSeparately => 15750m,
-            FilingStatus.HeadOfHousehold => 23625m,
-            FilingStatus.QualifyingWidow => 31500m,
-            _ => 0m,
-        };
     }
 
     public class StepsResponse
