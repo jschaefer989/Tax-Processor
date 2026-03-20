@@ -38,8 +38,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
     );
   }
 
-  if (!year || !name) {
-    taxBehavior.setError("Year or name is missing. Cannot save progress.");
+  if (!year || !name) {    
     return null;
   }
 

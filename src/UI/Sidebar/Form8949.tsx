@@ -41,7 +41,7 @@ export default function Form8949(props: Form8949Props) {
         taxBehavior={taxBehavior}
         form={form}
         title={title}
-        isExpandedOverride={isExpandedOverride}
+        isExpandedOverride={isExpandedOverride ?? false}
       >
         <FormSection taxBehavior={taxBehavior} responses={responses} />
       </FormHeader>
@@ -57,7 +57,7 @@ export default function Form8949(props: Form8949Props) {
             form={form}
             key={formCode}
             title={`${title}, Code ${formCode}`}
-            isExpandedOverride={isExpandedOverride}
+            isExpandedOverride={isExpandedOverride ?? false}
             formCode={formCode}
           >
             <FormSection

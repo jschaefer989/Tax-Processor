@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type TaxResponse from "../../DataModel/TaxResponse";
-import { TaxForm } from "../../DataModel/TaxResponse";
+import { TaxFieldLabel, TaxForm } from "../../DataModel/TaxResponse";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import Form1040 from "./Form1040";
 import Form8949 from "./Form8949";
@@ -26,17 +26,19 @@ export default function FileSidebar(props: FileSidebarProps) {
     isLoading,
   } = props;
 
-  const [allSectionsExpanded, setAllSectionsExpanded] = useState(true);
+  const [allSectionsExpanded, setAllSectionsExpanded] = useState<boolean | undefined>(undefined);
 
-  const form1040Responses = responses.filter(
+  const skippedResponses = responses.filter((response) => response.label !== TaxFieldLabel.Skip);
+
+  const form1040Responses = skippedResponses.filter(
     (response) => response.form === TaxForm.Form1040,
   );
 
-  const form8949Page1Responses = responses.filter(
+  const form8949Page1Responses = skippedResponses.filter(
     (response) => response.form === TaxForm.Form8949Page1,
   );
 
-  const form8949Page2Responses = responses.filter(
+  const form8949Page2Responses = skippedResponses.filter(
     (response) => response.form === TaxForm.Form8949Page2,
   );
 
@@ -57,7 +59,7 @@ export default function FileSidebar(props: FileSidebarProps) {
                 isLoading={isLoading}
               />
               <ExpandButton
-                expanded={allSectionsExpanded}
+                expanded={allSectionsExpanded ?? false}
                 setExpanded={setAllSectionsExpanded}
                 title={
                   allSectionsExpanded
