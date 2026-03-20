@@ -31,6 +31,8 @@ public class TaxStep
 
     [JsonPropertyName("files")]
     public List<TaxFile> Files { get; set; } = [];
+    [JsonPropertyName("buttons")]
+    public List<TaxButton> Buttons { get; set; } = [];
 
     static public string GetStepValue(Steps step)
     {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaxProcessor.Api.Data;
 using TaxProcessor.Api.Models;
+using TaxProcessor.Api.Models.Requests;
 
 namespace TaxProcessor.Api.Controllers;
 

@@ -46,8 +46,13 @@ public enum TaxFieldLabel
     threeB,
     [JsonPropertyName("2e")]
     twoE,
-    [JsonPropertyName("skip")]
-    Skip,
+
+    [JsonPropertyName("12e")]
+    twelveE,
+
+
+    [JsonPropertyName("filingStatus")]
+    FilingStatus,
 }
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AdditionalIdentifierLabel

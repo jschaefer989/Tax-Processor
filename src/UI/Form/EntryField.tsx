@@ -2,13 +2,16 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxField from "../../DataModel/TaxField";
 import { TaxFieldType } from "../../DataModel/TaxField";
-import TaxResponse, { type TaxFieldLabel, type TaxForm } from "../../DataModel/TaxResponse";
+import TaxResponse, {
+  type TaxFieldLabel,
+  type TaxForm,
+} from "../../DataModel/TaxResponse";
 
 interface EntryFieldComponentProps {
   readonly field: TaxField;
   readonly line: number;
   readonly responses: TaxResponse[];
-  readonly taxBehavior: TaxBehavior;  
+  readonly taxBehavior: TaxBehavior;
   readonly form: TaxForm;
   readonly label: TaxFieldLabel;
   readonly advancedWithErrors: boolean;
@@ -44,21 +47,9 @@ export default function EntryField(props: EntryFieldComponentProps) {
   const handleResponseChange = useCallback(
     async (value: string) => {
       lastHandledValueRef.current = value;
-      const convertedValue = await handleServerConversion(
-        field,
-        value,
-        taxBehavior,
-      );
-      updateResponses(taxBehavior, form, label, line, convertedValue, field);
+      taxBehavior.updateResponses(form, label, line, value, field.subsection);
     },
-    [
-      field.form,
-      field.taxFieldLabel,
-      line,
-      taxBehavior,
-      form,
-      label,
-    ],
+    [field.form, field.taxFieldLabel, line, taxBehavior, form, label, field.subsection],
   );
   //#endregion useCallback
 
@@ -130,74 +121,3 @@ export default function EntryField(props: EntryFieldComponentProps) {
     />
   );
 }
-
-async function handleServerConversion(
-  field: TaxField,
-  value: string,
-  taxBehavior: TaxBehavior,
-): Promise<string> {
-  if (field.calculationCallback) {
-    return (
-      (await taxBehavior.calculateFieldRequest(
-        field.calculationCallback,
-        value,
-      )) ?? ""
-    );
-  }
-  return value;
-}
-
-function updateResponses(
-  taxBehavior: TaxBehavior,
-  form: TaxForm,
-  label: TaxFieldLabel,
-  line: number,
-  value: string,
-  field: TaxField,
-) {
-  taxBehavior.state.setResponses((previousResponses) => {
-    const existingIndex = previousResponses.findIndex(
-      (response) =>
-        response.form === form &&
-        response.label === label &&
-        response.line === line,
-    );
-
-    // If the response for this field already exists, update it.
-    if (existingIndex !== -1) {
-      const updatedResponse = [...previousResponses];
-
-      // Remove the response if the value is empty
-      if (value.trim() === "") {
-        updatedResponse.splice(existingIndex, 1);
-        return updatedResponse;
-        // Otherwise, update the existing response
-      } else {
-        updatedResponse[existingIndex] = new TaxResponse(
-          form,
-          label,
-          line,
-          value,
-          {
-            subsection: field.subsection,
-          },
-        );
-        return updatedResponse;
-      }
-
-      // Otherwise, add a new response.
-    } else {
-      // Don't add a response if the value is empty
-      if (value.trim() === "") {
-        return previousResponses;
-      } else {
-        const newResponse = new TaxResponse(form, label, line, value, {
-          subsection: field.subsection,
-        });
-        return [...previousResponses, newResponse];
-      }
-    }
-  });
-}
-
-

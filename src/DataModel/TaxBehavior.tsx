@@ -1,11 +1,12 @@
 import { DuplicateResponse } from "./DuplicateResponse";
-import ServerNormalizer, { type StepResponse, FILING_STATUS_TO_API } from "./ServerNormalizer";
+import ServerNormalizer from "./ServerNormalizer";
 import type { StateSetters } from "./StateManager";
 import StateManager from "./StateManager";
-import TaxField, { FieldCalculationCallback } from "./TaxField";
+import TaxButton, { FieldCalculationCallback } from "./TaxButton";
+import TaxField from "./TaxField";
 import TaxFile, { ReadableForm } from "./TaxFile";
 import TaxProgress from "./TaxProgress";
-import TaxResponse, { TaxForm } from "./TaxResponse";
+import TaxResponse, { TaxFieldLabel, TaxForm } from "./TaxResponse";
 import { Steps, TaxStep } from "./TaxStep";
 
 export class TaxBehavior {
@@ -16,9 +17,7 @@ export class TaxBehavior {
   pendingFileResponses: TaxResponse[] = [];
   state: StateManager;
 
-  constructor(
-    stateSetters: StateSetters
-  ) {
+  constructor(stateSetters: StateSetters) {
     this.state = new StateManager(stateSetters);
     this.steps = [];
   }
@@ -165,8 +164,8 @@ export class TaxBehavior {
       if (!response.ok) {
         throw new Error("Unable to load tax steps.");
       }
-      const data = (await response.json()) as StepResponse;
-      this.steps = data.steps.map(
+      const data = (await response.json()) as TaxStep[];
+      this.steps = data.map(
         (step) =>
           new TaxStep(
             ServerNormalizer.normalizeStep(step.step),
@@ -184,9 +183,6 @@ export class TaxBehavior {
                     helperText: field.helperText,
                     selectionOptions: field.selectionOptions,
                     subsection: field.subsection,
-                    calculationCallback: ServerNormalizer.normalizeCalculationCallback(
-                      field.calculationCallback,
-                    ),
                   },
                 ),
             ),
@@ -196,6 +192,18 @@ export class TaxBehavior {
                   file.fromForm as ReadableForm,
                   file.toForm as TaxForm,
                   file.label,
+                ),
+            ),
+            step.buttons.map(
+              (button) =>
+                new TaxButton(
+                  button.form as TaxForm,
+                  ServerNormalizer.normalizeFieldLabel(button.taxFieldLabel),
+                  button.label,
+                  ServerNormalizer.normalizeCalculationCallback(
+                    button.calculationCallback,
+                  ),
+                  button.subsection,
                 ),
             ),
           ),
@@ -238,7 +246,9 @@ export class TaxBehavior {
         return false;
       }
       this.state.setNoDbConnection(false);
-      this.state.setCurrentStep(ServerNormalizer.normalizeStep(saved.currentStep));
+      this.state.setCurrentStep(
+        ServerNormalizer.normalizeStep(saved.currentStep),
+      );
       this.state.setResponses(
         saved.responses.map(
           (response) =>
@@ -366,8 +376,8 @@ export class TaxBehavior {
             item.line,
             item.value,
             {
-            fromCode: item.formCode,
-            subsection: item.subsection,
+              fromCode: item.formCode,
+              subsection: item.subsection,
             },
           ),
       );
@@ -398,16 +408,19 @@ export class TaxBehavior {
   ): Promise<string | undefined> {
     try {
       this.state.setIsLoading(true);
-      const formData = new FormData();
       const callbackForApi =
         callback === FieldCalculationCallback.StandardDeduction
           ? "StandardDeduction"
           : callback;
-      formData.append("calculationCallback", callbackForApi);
-      formData.append("value", FILING_STATUS_TO_API[value] ?? value);
       const response = await fetch("/api/steps/calculate-field", {
         method: "POST",
-        body: formData,
+        body: JSON.stringify({
+          calculationCallback: callbackForApi,
+          value,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       const responseText = await response.text();
@@ -415,7 +428,7 @@ export class TaxBehavior {
       if (!response.ok) {
         try {
           const errorData = JSON.parse(responseText) as { message?: string };
-          throw new Error(errorData.message ?? "Unable to upload file.");
+          throw new Error(errorData.message ?? "Unable to calculate field.");
         } catch {
           throw new Error(
             `Server error: ${responseText || response.statusText}`,
@@ -427,10 +440,13 @@ export class TaxBehavior {
         throw new Error("Server returned an empty response.");
       }
 
-      return JSON.parse(responseText);
+      const parsedValue = JSON.parse(responseText);
+      return parsedValue === undefined || parsedValue === null
+        ? undefined
+        : String(parsedValue);
     } catch (err) {
       this.state.setToastMessage(
-        err instanceof Error ? err.message : "Unable to upload file.",
+        err instanceof Error ? err.message : "Unable to calculate field.",
       );
     } finally {
       this.state.setIsLoading(false);
@@ -520,5 +536,57 @@ export class TaxBehavior {
       );
 
     return new Map<number, TaxResponse[]>(sortedEntries);
+  }
+
+  updateResponses(
+    form: TaxForm,
+    label: TaxFieldLabel,
+    line: number,
+    value: string,
+    subsection?: string,
+  ) {
+    this.state.setResponses((previousResponses) => {
+      const existingIndex = previousResponses.findIndex(
+        (response) =>
+          response.form === form &&
+          response.label === label &&
+          response.line === line,
+      );
+
+      // If the response for this field already exists, update it.
+      if (existingIndex !== -1) {
+        const updatedResponse = [...previousResponses];
+
+        // Remove the response if the value is empty
+        if (value.trim() === "") {
+          updatedResponse.splice(existingIndex, 1);
+          return updatedResponse;
+          // Otherwise, update the existing response
+        } else {
+          updatedResponse[existingIndex] = new TaxResponse(
+            form,
+            label,
+            line,
+            value,
+            {
+              subsection,
+            },
+          );
+          return updatedResponse;
+        }
+
+        // Otherwise, add a new response.
+      } else {
+        // Don't add a response if the value is empty
+        if (value.trim() === "") {
+          return previousResponses;
+        } else {
+          const newResponse = new TaxResponse(form, label, line, value, {
+            subsection,
+          });
+          return [...previousResponses, newResponse];
+        }
+      }
+    });
   }
 }

@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using TaxProcessor.Api.Data;
 using TaxProcessor.Api.Models;
+using TaxProcessor.Api.Models.Requests;
 
 namespace TaxProcessor.Api.Controllers;
 
@@ -25,7 +26,7 @@ public enum FilingStatus
 public class StepsController : ControllerBase
 {
     [HttpGet]
-    public ActionResult<StepsResponse> GetSteps()
+    public ActionResult<TaxStep> GetSteps()
     {
         var steps = new List<TaxStep>
         {
@@ -39,7 +40,7 @@ public class StepsController : ControllerBase
                     new()
                     {
                         Form = TaxForm.Form1040,
-                        TaxFieldLabel = TaxFieldLabel.Skip,
+                        TaxFieldLabel = TaxFieldLabel.FilingStatus,
                         Label = "Filing status",
                         Type = TaxFieldType.Select,
                         HelperText = "Select your filing status for the tax year.",
@@ -83,23 +84,26 @@ public class StepsController : ControllerBase
                     },
                 ],
             },
+            new()
+            {
+                Step = Steps.TaxAndCredits,
+                Title = "Tax and credits",
+                Description = "Provide information about tax and credits to calculate your tax liability.",
+                Buttons =
+                [
+                    new()
+                    {
+                        Form = TaxForm.Form1040,
+                        TaxFieldLabel = TaxFieldLabel.twelveE,
+                        Label = "Standard deduction",
+                        CalculationCallback = FieldCalculationCallback.StandardDeduction,
+                        Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
+                    },
+                ]
+            }
         };
 
-        var standardDeductions = new Dictionary<FilingStatus, decimal>
-        {
-            { FilingStatus.Single, TaxCalculator.GetStandardDeductionAmount(FilingStatus.Single) },
-            { FilingStatus.MarriedFilingJointly, TaxCalculator.GetStandardDeductionAmount(FilingStatus.MarriedFilingJointly) },
-            { FilingStatus.MarriedFilingSeparately, TaxCalculator.GetStandardDeductionAmount(FilingStatus.MarriedFilingSeparately) },
-            { FilingStatus.HeadOfHousehold, TaxCalculator.GetStandardDeductionAmount(FilingStatus.HeadOfHousehold) },
-            { FilingStatus.QualifyingWidow, TaxCalculator.GetStandardDeductionAmount(FilingStatus.QualifyingWidow) },
-
-        };
-
-        return Ok(new StepsResponse
-        {
-            Steps = steps,
-            StandardDeductions = standardDeductions,
-        });
+        return Ok(steps);
     }
 
     [HttpPost("file")]
@@ -124,27 +128,21 @@ public class StepsController : ControllerBase
     }
 
     [HttpPost("calculate-field")]
-    public async Task<ActionResult<string>> CalculateField([FromForm] CalculateFieldRequest request)
+    public async Task<ActionResult<string>> CalculateField([FromBody] CalculateFieldRequest request)
     {
         switch (request.CalculationCallback)
         {
             case FieldCalculationCallback.StandardDeduction:
-                if (Enum.TryParse(request.Value, out FilingStatus option))
+                if (Enum.TryParse(request.Value, out FilingStatus filingStatus))
                 {
-                    return Ok(TaxCalculator.GetStandardDeductionAmount(option).ToString());
+                    return Ok(TaxCalculator.GetStandardDeductionAmount(filingStatus));
                 }
                 else
                 {
-                    return BadRequest(new { message = "Invalid standard deduction option." });
+                    return BadRequest(new { message = "Invalid filing status." });
                 }
             default:
                 return BadRequest(new { message = "Unsupported calculation callback." });
         }
-    }
-
-    public class StepsResponse
-    {
-        public List<TaxStep> Steps { get; set; } = [];
-        public Dictionary<FilingStatus, decimal> StandardDeductions { get; set; } = [];
     }
 }

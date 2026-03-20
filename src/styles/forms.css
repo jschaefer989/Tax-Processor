@@ -16,6 +16,11 @@
   color: var(--muted);
 }
 
+button.field-control.field-control--action {
+  justify-self: start;
+  width: fit-content;
+}
+
 input,
 select {
   background: rgba(11, 18, 28, 0.5);

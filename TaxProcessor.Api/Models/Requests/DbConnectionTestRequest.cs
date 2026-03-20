@@ -1,4 +1,4 @@
-    namespace TaxProcessor.Api.Models;
+    namespace TaxProcessor.Api.Models.Requests;
     
     public class DbConnectionTestRequest
     {

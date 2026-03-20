@@ -8,6 +8,7 @@ import FormFields from "./FormFields";
 import FormFiles from "./FormFiles";
 import FormHeader from "./FormHeader";
 import NextButton from "./NextButton";
+import FormButtons from "./FormButtons";
 
 interface MainFormProps {
   readonly currentStep: Steps | undefined;
@@ -64,6 +65,14 @@ export default function MainForm(props: MainFormProps) {
 
       {step.files && step.files.length > 0 && (
         <FormFiles taxBehavior={taxBehavior} step={step} />
+      )}
+
+      {step.buttons && step.buttons.length > 0 && (
+        <FormButtons
+          step={step}
+          responses={responses}
+          taxBehavior={taxBehavior}
+        />
       )}
 
       <div className="panel__actions">

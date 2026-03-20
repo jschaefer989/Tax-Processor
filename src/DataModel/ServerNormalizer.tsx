@@ -1,38 +1,7 @@
-import SelectionOption from "./SelectionOption";
-import { FieldCalculationCallback, TaxFieldType } from "./TaxField";
+import { FieldCalculationCallback } from "./TaxButton";
+import { TaxFieldType } from "./TaxField";
 import { TaxFieldLabel } from "./TaxResponse";
-import { FilingStatus, Steps } from "./TaxStep";
-
-export interface StepResponse {
-  steps: StepDto[];
-  standardDeductions: Record<FilingStatus, number>;
-}
-
-export interface StepDto {
-  step: Steps;
-  title: string;
-  description: string;
-  fields: TaxFieldDto[];
-  files: TaxFileDto[];
-}
-
-export interface TaxFieldDto {
-  form: string;
-  taxFieldLabel: string;
-  label: string;
-  type: string;
-  isRequired: boolean;
-  helperText?: string;
-  selectionOptions?: SelectionOption[];
-  subsection?: string;
-  calculationCallback?: FieldCalculationCallback;
-}
-
-export interface TaxFileDto {
-  fromForm: string;
-  toForm: string;
-  label: string;
-}
+import { Steps } from "./TaxStep";
 
 export const STEP_MAP: Record<string, Steps> = {
   demographics: Steps.Demographics,
@@ -58,8 +27,8 @@ export const FIELD_LABEL_MAP: Record<string, TaxFieldLabel> = {
   threeA: TaxFieldLabel.threeA,
   threeB: TaxFieldLabel.threeB,
   twoE: TaxFieldLabel.twoE,
-  skip: TaxFieldLabel.Skip,
-  Skip: TaxFieldLabel.Skip,
+  filingStatus: TaxFieldLabel.FilingStatus,
+  FilingStatus: TaxFieldLabel.FilingStatus,
   "1a": TaxFieldLabel.oneA,
   "1b": TaxFieldLabel.oneB,
   "1c": TaxFieldLabel.oneC,
@@ -123,11 +92,8 @@ export default class ServerNormalizer {
   }
 
   static normalizeCalculationCallback(
-    callback?: string | FieldCalculationCallback,
-  ): FieldCalculationCallback | undefined {
-    if (!callback) {
-      return undefined;
-    }
+    callback: string | FieldCalculationCallback,
+  ): FieldCalculationCallback {
     return CALLBACK_MAP[callback] ?? (callback as FieldCalculationCallback);
   }
 

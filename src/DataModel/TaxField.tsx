@@ -7,20 +7,14 @@ export enum TaxFieldType {
   Currency = "currency",
   Date = "date",
   Select = "select",
+  Button = "button",
 }
-
-export enum FieldCalculationCallback
-{
-    StandardDeduction = "standardDeduction",
-}
-
 
 interface ConstructionOptions {
   isRequired?: boolean;
   helperText?: string;
   selectionOptions?: SelectionOption[];
   subsection?: string;
-  calculationCallback?: FieldCalculationCallback;
 }
 
 export default class TaxField {
@@ -32,13 +26,12 @@ export default class TaxField {
   helperText?: string;
   selectionOptions?: SelectionOption[];
   subsection?: string;
-  calculationCallback?: FieldCalculationCallback;
 
   constructor(
     form: TaxForm,
     taxFieldLabel: TaxFieldLabel,
     label: string,
-    type: TaxFieldType,    
+    type: TaxFieldType,
     constructionOptions?: ConstructionOptions,
   ) {
     this.form = form;
@@ -49,6 +42,5 @@ export default class TaxField {
     this.helperText = constructionOptions?.helperText;
     this.selectionOptions = constructionOptions?.selectionOptions;
     this.subsection = constructionOptions?.subsection;
-    this.calculationCallback = constructionOptions?.calculationCallback;
   }
 }

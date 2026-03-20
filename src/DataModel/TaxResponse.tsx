@@ -18,7 +18,7 @@ export enum TaxFieldLabel {
   threeA = "threeA",
   threeB = "threeB",
   twoE = "twoE",
-  Skip = "Skip",
+  FilingStatus = "FilingStatus",
 }
 
 interface ConstructionOptions {
@@ -128,6 +128,15 @@ export default class TaxResponse {
 
   getSubsection(): string | undefined {
     return this.subsection?.trim().toLowerCase();
+  }
+
+  isSkip(): boolean {
+    switch (this.label) {
+      case TaxFieldLabel.FilingStatus:
+        return true;
+      default:
+        return false;
+    }
   }
 
   static sortByLabel(responses: TaxResponse[]): TaxResponse[] {

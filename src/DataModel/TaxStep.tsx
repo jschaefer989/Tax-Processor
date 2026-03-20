@@ -1,3 +1,4 @@
+import type TaxButton from "./TaxButton";
 import type TaxField from "./TaxField";
 import type TaxFile from "./TaxFile";
 
@@ -22,6 +23,7 @@ export class TaxStep {
   description: string;
   fields: TaxField[];
   files: TaxFile[];
+  buttons: TaxButton[];
 
   constructor(
     step: Steps,
@@ -29,12 +31,14 @@ export class TaxStep {
     description: string,
     fields: TaxField[],
     files: TaxFile[],
+    buttons: TaxButton[],
   ) {
     this.step = step;
     this.title = title;
     this.description = description;
     this.fields = fields;
     this.files = files;
+    this.buttons = buttons;
   }
 
   public getRequiredFields(): TaxField[] {

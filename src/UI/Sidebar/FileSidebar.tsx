@@ -28,7 +28,7 @@ export default function FileSidebar(props: FileSidebarProps) {
 
   const [allSectionsExpanded, setAllSectionsExpanded] = useState<boolean | undefined>(undefined);
 
-  const skippedResponses = responses.filter((response) => response.label !== TaxFieldLabel.Skip);
+  const skippedResponses = responses.filter((response) => !response.isSkip());
 
   const form1040Responses = skippedResponses.filter(
     (response) => response.form === TaxForm.Form1040,

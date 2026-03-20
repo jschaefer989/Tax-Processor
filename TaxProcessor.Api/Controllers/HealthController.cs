@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using TaxProcessor.Api.Data;
 using TaxProcessor.Api.Models;
+using TaxProcessor.Api.Models.Requests;
 
 namespace TaxProcessor.Api.Controllers;
 
