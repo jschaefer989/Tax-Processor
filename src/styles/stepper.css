@@ -58,6 +58,15 @@
   transform: scale(1.05);
 }
 
+.stepper-button:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.stepper-button:disabled:hover .stepper-circle {
+  transform: none;
+}
+
 .stepper-circle {
   width: 60px;
   height: 60px;
