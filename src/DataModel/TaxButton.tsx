@@ -2,6 +2,7 @@ import type { TaxForm, TaxFieldLabel } from "./TaxResponse";
 
 export enum FieldCalculationCallback {
   StandardDeduction = "standardDeduction",
+  Tax = "tax",
 }
 
 export default class TaxButton {

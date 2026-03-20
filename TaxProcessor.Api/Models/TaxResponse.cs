@@ -38,19 +38,14 @@ public enum TaxFieldLabel
     twoA,
     [JsonPropertyName("2b")]
     twoB,
-
     [JsonPropertyName("3a")]
     threeA,
-
     [JsonPropertyName("3b")]
     threeB,
-    [JsonPropertyName("2e")]
-    twoE,
-
     [JsonPropertyName("12e")]
     twelveE,
-
-
+    [JsonPropertyName("16")]
+    sixteen,
     [JsonPropertyName("filingStatus")]
     FilingStatus,
 }

@@ -26,7 +26,7 @@ export const FIELD_LABEL_MAP: Record<string, TaxFieldLabel> = {
   twoB: TaxFieldLabel.twoB,
   threeA: TaxFieldLabel.threeA,
   threeB: TaxFieldLabel.threeB,
-  twoE: TaxFieldLabel.twoE,
+  twoE: TaxFieldLabel.twelveE,
   filingStatus: TaxFieldLabel.FilingStatus,
   FilingStatus: TaxFieldLabel.FilingStatus,
   "1a": TaxFieldLabel.oneA,
@@ -38,7 +38,7 @@ export const FIELD_LABEL_MAP: Record<string, TaxFieldLabel> = {
   "1g": TaxFieldLabel.oneG,
   "2a": TaxFieldLabel.twoA,
   "2b": TaxFieldLabel.twoB,
-  "2e": TaxFieldLabel.twoE,
+  "2e": TaxFieldLabel.twelveE,
   "3a": TaxFieldLabel.threeA,
   "3b": TaxFieldLabel.threeB,
 };
@@ -59,6 +59,8 @@ export const FIELD_TYPE_MAP: Record<string, TaxFieldType> = {
 export const CALLBACK_MAP: Record<string, FieldCalculationCallback> = {
   StandardDeduction: FieldCalculationCallback.StandardDeduction,
   standardDeduction: FieldCalculationCallback.StandardDeduction,
+  Tax: FieldCalculationCallback.Tax,
+  tax: FieldCalculationCallback.Tax,
 };
 
 export const FILING_STATUS_TO_API: Record<string, string> = {
@@ -95,6 +97,12 @@ export default class ServerNormalizer {
     callback: string | FieldCalculationCallback,
   ): FieldCalculationCallback {
     return CALLBACK_MAP[callback] ?? (callback as FieldCalculationCallback);
+  }
+
+  static serializeCalculationCallbackForApi(
+    callback: FieldCalculationCallback,
+  ): string {
+    return callback.charAt(0).toUpperCase() + callback.slice(1);
   }
 
   static serializeStepForApi(step: Steps): string {

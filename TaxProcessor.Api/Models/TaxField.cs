@@ -8,6 +8,8 @@ public enum FieldCalculationCallback
 {
     [JsonPropertyName("standardDeduction")]
     StandardDeduction,
+    [JsonPropertyName("tax")]
+    Tax,
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]

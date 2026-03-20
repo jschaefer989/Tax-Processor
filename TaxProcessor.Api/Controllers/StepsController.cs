@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using TaxProcessor.Api.Data;
@@ -99,6 +100,14 @@ public class StepsController : ControllerBase
                         CalculationCallback = FieldCalculationCallback.StandardDeduction,
                         Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
                     },
+                    new()
+                    {
+                        Form = TaxForm.Form1040,
+                        TaxFieldLabel = TaxFieldLabel.sixteen,
+                        Label = "Calculate tax",
+                        CalculationCallback = FieldCalculationCallback.Tax,
+                        Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
+                    }
                 ]
             }
         };
@@ -130,10 +139,17 @@ public class StepsController : ControllerBase
     [HttpPost("calculate-field")]
     public async Task<ActionResult<string>> CalculateField([FromBody] CalculateFieldRequest request)
     {
+        if (request.Responses is null)
+        {
+            return BadRequest(new { message = "Responses are required for field calculation." });
+        }
+        var filingStatusResponse = GetResponseValue([.. request.Responses], TaxForm.Form1040, TaxFieldLabel.FilingStatus);
+        FilingStatus filingStatus;
         switch (request.CalculationCallback)
         {
             case FieldCalculationCallback.StandardDeduction:
-                if (Enum.TryParse(request.Value, out FilingStatus filingStatus))
+
+                if (Enum.TryParse(filingStatusResponse, out filingStatus))
                 {
                     return Ok(TaxCalculator.GetStandardDeductionAmount(filingStatus));
                 }
@@ -141,8 +157,62 @@ public class StepsController : ControllerBase
                 {
                     return BadRequest(new { message = "Invalid filing status." });
                 }
+            case FieldCalculationCallback.Tax:
+            if (!Enum.TryParse(filingStatusResponse, out filingStatus))
+                {
+                    return BadRequest(new { message = "Invalid filing status." });
+                }
+                var taxCalculator = new TaxCalculator(filingStatus);
+
+                var w2Wages = GetResponseValue([.. request.Responses], TaxForm.Form1040, TaxFieldLabel.oneA);
+                int w2WagesNumber;
+                if (!TryParseCurrency(w2Wages, out w2WagesNumber))
+                {
+                    return BadRequest(new { message = "Invalid W-2 wages amount." });
+                }
+                var ordinaryDividends = GetResponseValue([.. request.Responses], TaxForm.Form1040, TaxFieldLabel.threeB);
+                int ordinaryDividendsNumber;
+                if (!TryParseCurrency(ordinaryDividends, out ordinaryDividendsNumber))
+                {
+                    ordinaryDividendsNumber = 0; // Treat invalid or missing dividends as zero
+                }         
+                var taxableInterest = GetResponseValue([.. request.Responses], TaxForm.Form1040, TaxFieldLabel.twoB);
+                int taxableInterestNumber;
+                if (!TryParseCurrency(taxableInterest, out taxableInterestNumber))
+                {
+                    taxableInterestNumber = 0; // Treat invalid or missing taxable interest as zero
+                }
+                taxCalculator.W2Wages = w2WagesNumber;
+                taxCalculator.OrdinaryDividends = ordinaryDividendsNumber;
+                taxCalculator.TaxableInterest = taxableInterestNumber;
+                return Ok(taxCalculator.CalculateTaxableIncome());
             default:
                 return BadRequest(new { message = "Unsupported calculation callback." });
         }
+    }
+
+    private static string? GetResponseValue(List<TaxResponse> responses, TaxForm form, TaxFieldLabel label)
+    {
+        return responses.FirstOrDefault(response => response.Form == form && response.Label == label)?.Value;
+    }
+
+    private static bool TryParseCurrency(string? value, out int parsed)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            parsed = 0;
+            return false;
+        }
+
+        decimal decimalValue;
+        if (decimal.TryParse(value, NumberStyles.Currency, CultureInfo.CurrentCulture, out decimalValue) ||
+            decimal.TryParse(value, NumberStyles.Currency, CultureInfo.InvariantCulture, out decimalValue))
+        {
+            parsed = (int)Math.Round(decimalValue, MidpointRounding.AwayFromZero);
+            return true;
+        }
+
+        parsed = 0;
+        return false;
     }
 }

@@ -17,7 +17,8 @@ export enum TaxFieldLabel {
   twoB = "twoB",
   threeA = "threeA",
   threeB = "threeB",
-  twoE = "twoE",
+  twelveE = "twelveE",
+  sixteen = "sixteen",
   FilingStatus = "FilingStatus",
 }
 
@@ -72,9 +73,11 @@ export default class TaxResponse {
       case TaxFieldLabel.threeA:
         return "3a";
       case TaxFieldLabel.threeB:
-        return "3b";
-      case TaxFieldLabel.twoE:
-        return "2e";
+        return "3b";      
+      case TaxFieldLabel.twelveE:
+        return "12e";
+      case TaxFieldLabel.sixteen:
+        return "16";
       default:
         return this.label;
     }
@@ -119,8 +122,9 @@ export default class TaxResponse {
         return 10;
       case TaxFieldLabel.threeB:
         return 11;
-      case TaxFieldLabel.twoE:
+      case TaxFieldLabel.twelveE:
         return 12;
+
       default:
         return Number.MAX_SAFE_INTEGER;
     }

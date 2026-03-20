@@ -404,19 +404,17 @@ export class TaxBehavior {
 
   async calculateFieldRequest(
     callback: FieldCalculationCallback,
-    value: string,
+    responses: TaxResponse[],
   ): Promise<string | undefined> {
     try {
       this.state.setIsLoading(true);
       const callbackForApi =
-        callback === FieldCalculationCallback.StandardDeduction
-          ? "StandardDeduction"
-          : callback;
+        ServerNormalizer.serializeCalculationCallbackForApi(callback);
       const response = await fetch("/api/steps/calculate-field", {
         method: "POST",
         body: JSON.stringify({
           calculationCallback: callbackForApi,
-          value,
+          responses,
         }),
         headers: {
           "Content-Type": "application/json",
