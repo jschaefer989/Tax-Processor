@@ -18,7 +18,6 @@ export default function FormLine(props: FormLineProps) {
 
   const line = responses[0]?.line;
   const isBoxed = line !== undefined && line !== 0;
-  4;
 
   const onDeleteLine = useCallback(async () => {
     const confirmed = window.confirm(
@@ -59,7 +58,7 @@ export default function FormLine(props: FormLineProps) {
       className={`form-line${isBoxed ? " form-line--boxed" : ""}`}
       onContextMenu={!isBoxed ? undefined : onContextMenu}
     >
-      {isBoxed && <p>{line}</p>}
+      {isBoxed && <p>Line {line}</p>}
       {responses.map((response, index) => (
         <FormValueField
           key={index}

@@ -578,10 +578,13 @@ export class TaxBehavior {
       }
     }
 
-    // Sort the responses in responsesByLine by label
-    for (const [line, respArr] of responsesByLine.entries()) {
-      responsesByLine.set(line, TaxResponse.sortByLabel(respArr));
-    }
-    return responsesByLine;
+    const sortedEntries = Array.from(responsesByLine.entries())
+      .sort(([leftLine], [rightLine]) => leftLine - rightLine)
+      .map(([line, responsesForLine]) => [
+        line,
+        TaxResponse.sortByLabel(responsesForLine),
+      ] as const);
+
+    return new Map<number, TaxResponse[]>(sortedEntries);
   }
 }
