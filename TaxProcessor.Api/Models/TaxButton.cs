@@ -12,7 +12,7 @@ public class TaxButton
 
     [JsonPropertyName("label")]
     public string Label { get; set; } = null!;
-    
+
     [JsonPropertyName("subsection")]
     public string? Subsection { get; set; }
 

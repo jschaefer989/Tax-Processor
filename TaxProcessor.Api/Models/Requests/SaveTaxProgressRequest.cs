@@ -8,7 +8,7 @@ public class SaveTaxProgressRequest
     public int Year { get; set; }
 
     [JsonPropertyName("name")]
-    public required string Name { get; set;}
+    public required string Name { get; set; }
 
     [JsonPropertyName("currentStep")]
     public string? CurrentStep { get; set; }

@@ -3,7 +3,7 @@ namespace TaxProcessor.Api.Models;
 public enum Term
 {
     Short,
-    Long
+    Long,
 }
 
 public class Form1099B

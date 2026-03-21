@@ -14,24 +14,22 @@ namespace TaxProcessor.Api.Migrations
                 name: "FormCode",
                 table: "TaxResponse",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "Subsection",
                 table: "TaxResponse",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "FormCode",
-                table: "TaxResponse");
+            migrationBuilder.DropColumn(name: "FormCode", table: "TaxResponse");
 
-            migrationBuilder.DropColumn(
-                name: "Subsection",
-                table: "TaxResponse");
+            migrationBuilder.DropColumn(name: "Subsection", table: "TaxResponse");
         }
     }
 }

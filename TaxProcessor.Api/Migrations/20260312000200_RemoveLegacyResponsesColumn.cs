@@ -11,15 +11,17 @@ namespace TaxProcessor.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(
-                                @"ALTER TABLE IF EXISTS ""TaxProgress""
-                                    DROP COLUMN IF EXISTS ""Responses"";");
+                @"ALTER TABLE IF EXISTS ""TaxProgress""
+                                    DROP COLUMN IF EXISTS ""Responses"";"
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(
-                                @"ALTER TABLE IF EXISTS ""TaxProgress""
-                                    ADD COLUMN IF NOT EXISTS ""Responses"" jsonb NOT NULL DEFAULT '[]'::jsonb;");
+                @"ALTER TABLE IF EXISTS ""TaxProgress""
+                                    ADD COLUMN IF NOT EXISTS ""Responses"" jsonb NOT NULL DEFAULT '[]'::jsonb;"
+            );
         }
     }
 }

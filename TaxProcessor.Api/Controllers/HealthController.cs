@@ -24,19 +24,19 @@ public class HealthController(TaxDbContext db) : ControllerBase
         var provider = _db.Database.ProviderName ?? "unknown";
         var connected = !provider.Contains("InMemory", StringComparison.OrdinalIgnoreCase);
 
-        return Ok(new
-        {
-            connected,
-            provider
-        });
+        return Ok(new { connected, provider });
     }
 
     [HttpPost("db/test")]
-    public async Task<ActionResult<object>> TestDatabaseConnection([FromBody] DbConnectionTestRequest request)
+    public async Task<ActionResult<object>> TestDatabaseConnection(
+        [FromBody] DbConnectionTestRequest request
+    )
     {
-        if (string.IsNullOrWhiteSpace(request.Host)
+        if (
+            string.IsNullOrWhiteSpace(request.Host)
             || string.IsNullOrWhiteSpace(request.Database)
-            || string.IsNullOrWhiteSpace(request.Username))
+            || string.IsNullOrWhiteSpace(request.Username)
+        )
         {
             return BadRequest(new { message = "Host, database, and username are required." });
         }
@@ -49,7 +49,7 @@ public class HealthController(TaxDbContext db) : ControllerBase
             Username = request.Username,
             Password = request.Password ?? string.Empty,
             Timeout = 3,
-            CommandTimeout = 3
+            CommandTimeout = 3,
         };
 
         try
@@ -61,13 +61,16 @@ public class HealthController(TaxDbContext db) : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(503, new
-            {
-                connected = false,
-                message = string.IsNullOrWhiteSpace(ex.Message)
-                    ? "Unable to connect to database."
-                    : ex.Message
-            });
+            return StatusCode(
+                503,
+                new
+                {
+                    connected = false,
+                    message = string.IsNullOrWhiteSpace(ex.Message)
+                        ? "Unable to connect to database."
+                        : ex.Message,
+                }
+            );
         }
     }
 }

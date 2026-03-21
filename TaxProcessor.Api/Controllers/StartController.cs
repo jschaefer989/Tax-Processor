@@ -15,14 +15,16 @@ public class StartController(TaxDbContext context) : ControllerBase
     {
         try
         {
-            var names = await _db.TaxProgress
-                .Where(progress => progress.Year == year)
+            var names = await _db
+                .TaxProgress.Where(progress => progress.Year == year)
                 .Select(progress => progress.Name)
                 .ToListAsync();
 
             foreach (var name in names)
             {
-                var entity = await _db.TaxProgress.FirstOrDefaultAsync(progress => progress.Year == year && progress.Name == name);
+                var entity = await _db.TaxProgress.FirstOrDefaultAsync(progress =>
+                    progress.Year == year && progress.Name == name
+                );
                 if (entity != null)
                 {
                     _db.TaxProgress.Remove(entity);
@@ -44,8 +46,8 @@ public class StartController(TaxDbContext context) : ControllerBase
     {
         try
         {
-            var entity = await _db.TaxProgress
-                .Where(progress => progress.Year == year && progress.Name == name)
+            var entity = await _db
+                .TaxProgress.Where(progress => progress.Year == year && progress.Name == name)
                 .FirstOrDefaultAsync();
 
             if (entity != null)

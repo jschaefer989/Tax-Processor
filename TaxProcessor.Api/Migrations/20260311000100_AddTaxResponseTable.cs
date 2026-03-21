@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using TaxProcessor.Api.Data;
 
 namespace TaxProcessor.Api.Migrations
@@ -20,11 +20,13 @@ namespace TaxProcessor.Api.Migrations
                     ""Value"" text NULL,
                     CONSTRAINT ""PK_TaxResponse"" PRIMARY KEY (""Year"", ""Name"", ""Form"", ""Label"", ""Line""),
                     CONSTRAINT ""FK_TaxResponse_TaxProgress_Year_Name"" FOREIGN KEY (""Year"", ""Name"") REFERENCES ""TaxProgress"" (""Year"", ""Name"") ON DELETE CASCADE
-                );");
+                );"
+            );
 
             migrationBuilder.Sql(
                 @"CREATE INDEX IF NOT EXISTS ""IX_TaxResponse_Year_Name""
-                  ON ""TaxResponse"" (""Year"", ""Name"");");
+                  ON ""TaxResponse"" (""Year"", ""Name"");"
+            );
 
             migrationBuilder.Sql(
                 @"DO $$
@@ -48,13 +50,13 @@ namespace TaxProcessor.Api.Migrations
                         CROSS JOIN LATERAL jsonb_array_elements(COALESCE(tp.""Responses"", '[]'::jsonb)) resp
                         ON CONFLICT DO NOTHING;
                     END IF;
-                END $$;");
+                END $$;"
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "TaxResponse");
+            migrationBuilder.DropTable(name: "TaxResponse");
         }
     }
 }

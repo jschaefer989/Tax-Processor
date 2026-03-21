@@ -7,10 +7,13 @@ public enum Steps
 {
     [JsonPropertyName("demographics")]
     Demographics,
+
     [JsonPropertyName("income")]
     Income,
+
     [JsonPropertyName("taxAndCredits")]
     TaxAndCredits,
+
     [JsonPropertyName("paymentsAndRefundableCredits")]
     PaymentsAndRefundableCredits,
 }
@@ -31,10 +34,11 @@ public class TaxStep
 
     [JsonPropertyName("files")]
     public List<TaxFile> Files { get; set; } = [];
+
     [JsonPropertyName("buttons")]
     public List<TaxButton> Buttons { get; set; } = [];
 
-    static public string GetStepValue(Steps step)
+    public static string GetStepValue(Steps step)
     {
         return step switch
         {

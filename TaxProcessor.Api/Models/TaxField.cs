@@ -8,6 +8,7 @@ public enum FieldCalculationCallback
 {
     [JsonPropertyName("standardDeduction")]
     StandardDeduction,
+
     [JsonPropertyName("tax")]
     Tax,
 }
@@ -55,5 +56,5 @@ public class TaxField
     public string? Subsection { get; set; }
 
     [JsonPropertyName("isRequired")]
-    public bool IsRequired { get; set; } = false;    
+    public bool IsRequired { get; set; } = false;
 }

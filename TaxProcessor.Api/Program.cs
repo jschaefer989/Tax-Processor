@@ -1,20 +1,23 @@
-using TaxProcessor.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Npgsql;
+using TaxProcessor.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<StandardDeductionFetcher>();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocal", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
+    options.AddPolicy(
+        "AllowLocal",
+        policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+    );
 });
 
 LoadDotEnv();
@@ -37,13 +40,14 @@ if (!string.IsNullOrWhiteSpace(connectionString))
     }
     else
     {
-        Console.WriteLine("Postgres connection is configured but unreachable. Falling back to in-memory storage for local development.");
+        Console.WriteLine(
+            "Postgres connection is configured but unreachable. Falling back to in-memory storage for local development."
+        );
     }
 }
 
 if (usingPostgres)
 {
-
     var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
     dataSourceBuilder.EnableDynamicJson();
     var dataSource = dataSourceBuilder.Build();
@@ -51,12 +55,16 @@ if (usingPostgres)
     builder.Services.AddDbContext<TaxDbContext>(options =>
         options
             .UseNpgsql(dataSource)
-            .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
+            .ConfigureWarnings(warnings =>
+                warnings.Ignore(RelationalEventId.PendingModelChangesWarning)
+            )
     );
 }
 else
 {
-    Console.WriteLine("DATABASE_URL is not set. Falling back to in-memory storage for local development.");
+    Console.WriteLine(
+        "DATABASE_URL is not set. Falling back to in-memory storage for local development."
+    );
     builder.Services.AddDbContext<TaxDbContext>(options =>
         options.UseInMemoryDatabase("TaxProcessorLocal")
     );
@@ -79,8 +87,7 @@ using (var scope = app.Services.CreateScope())
 
 app.MapControllers();
 
-var port = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")
-    ?? "http://localhost:5000";
+var port = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://localhost:5000";
 
 app.Run(port);
 
@@ -96,7 +103,10 @@ static void LoadDotEnv()
             foreach (var line in File.ReadAllLines(envPath))
             {
                 var trimmed = line.Trim();
-                if (string.IsNullOrEmpty(trimmed) || trimmed.StartsWith("#", StringComparison.Ordinal))
+                if (
+                    string.IsNullOrEmpty(trimmed)
+                    || trimmed.StartsWith("#", StringComparison.Ordinal)
+                )
                 {
                     continue;
                 }
@@ -124,8 +134,10 @@ static void LoadDotEnv()
 
 static string NormalizeConnectionString(string connectionString)
 {
-    if (!connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
-        && !connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+    if (
+        !connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+        && !connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase)
+    )
     {
         return connectionString;
     }
@@ -143,11 +155,13 @@ static string NormalizeConnectionString(string connectionString)
         Port = uri.Port > 0 ? uri.Port : 5432,
         Username = username,
         Password = password,
-        Database = database
+        Database = database,
     };
 
-    if (queryParams.TryGetValue("sslmode", out var sslModeValue)
-        && Enum.TryParse<SslMode>(sslModeValue, true, out var sslMode))
+    if (
+        queryParams.TryGetValue("sslmode", out var sslModeValue)
+        && Enum.TryParse<SslMode>(sslModeValue, true, out var sslMode)
+    )
     {
         builder.SslMode = sslMode;
     }
@@ -186,7 +200,7 @@ static bool CanConnectToPostgres(string connectionString)
         var testBuilder = new NpgsqlConnectionStringBuilder(connectionString)
         {
             Timeout = 2,
-            CommandTimeout = 2
+            CommandTimeout = 2,
         };
 
         using var connection = new NpgsqlConnection(testBuilder.ConnectionString);

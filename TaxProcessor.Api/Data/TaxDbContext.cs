@@ -4,9 +4,8 @@ namespace TaxProcessor.Api.Data;
 
 public class TaxDbContext : DbContext
 {
-    public TaxDbContext(DbContextOptions<TaxDbContext> options) : base(options)
-    {
-    }
+    public TaxDbContext(DbContextOptions<TaxDbContext> options)
+        : base(options) { }
 
     public DbSet<TaxProgressEntity> TaxProgress { get; set; } = null!;
 

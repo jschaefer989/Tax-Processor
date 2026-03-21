@@ -15,8 +15,8 @@ public class ProgressController(TaxDbContext db) : ControllerBase
     [HttpGet("years")]
     public async Task<ActionResult<int[]>> GetYears()
     {
-        var years = await _db.TaxProgress
-            .Select(progress => progress.Year)
+        var years = await _db
+            .TaxProgress.Select(progress => progress.Year)
             .Distinct()
             .OrderByDescending(year => year)
             .ToArrayAsync();
@@ -26,22 +26,19 @@ public class ProgressController(TaxDbContext db) : ControllerBase
     [HttpGet("names")]
     public async Task<ActionResult<string[]>> GetAllNames()
     {
-        var names = await _db.TaxProgress
-            .Select(progress => progress.Name)
-            .ToArrayAsync();
+        var names = await _db.TaxProgress.Select(progress => progress.Name).ToArrayAsync();
         return Ok(names);
     }
 
     [HttpGet("{year}/names")]
     public async Task<ActionResult<string[]>> GetNames(int year)
     {
-        var names = await _db.TaxProgress
-            .Where(progress => progress.Year == year)
+        var names = await _db
+            .TaxProgress.Where(progress => progress.Year == year)
             .Select(progress => progress.Name)
             .ToArrayAsync();
         return Ok(names);
     }
-
 
     [HttpGet("{year}/{name}")]
     [HttpGet("get/{year}/{name}")]
@@ -59,18 +56,22 @@ public class ProgressController(TaxDbContext db) : ControllerBase
             return BadRequest(new { message = "Invalid current step value." });
         }
 
-        return Ok(new TaxProgress
-        {
-            Year = entity.Year,
-            Name = entity.Name,
-            UpdatedAt = entity.UpdatedAt,
-            CurrentStep = step,
-            Responses = entity.GetResponses(),
-        });
+        return Ok(
+            new TaxProgress
+            {
+                Year = entity.Year,
+                Name = entity.Name,
+                UpdatedAt = entity.UpdatedAt,
+                CurrentStep = step,
+                Responses = entity.GetResponses(),
+            }
+        );
     }
 
     [HttpPost("save")]
-    public async Task<ActionResult<TaxProgress>> SaveProgress([FromBody] SaveTaxProgressRequest request)
+    public async Task<ActionResult<TaxProgress>> SaveProgress(
+        [FromBody] SaveTaxProgressRequest request
+    )
     {
         var now = DateTime.UtcNow;
 
@@ -99,18 +100,20 @@ public class ProgressController(TaxDbContext db) : ControllerBase
             return BadRequest(new { message = "Invalid current step value." });
         }
 
-        entity.UpdateResponses(request.Responses, request.Year, request.Name);   
+        entity.UpdateResponses(request.Responses, request.Year, request.Name);
 
         await _db.SaveChangesAsync();
 
-        return Ok(new TaxProgress
-        {
-            Year = entity.Year,
-            Name = entity.Name,
-            UpdatedAt = entity.UpdatedAt,
-            CurrentStep = step,
-            Responses = entity.GetResponses(),
-        });
+        return Ok(
+            new TaxProgress
+            {
+                Year = entity.Year,
+                Name = entity.Name,
+                UpdatedAt = entity.UpdatedAt,
+                CurrentStep = step,
+                Responses = entity.GetResponses(),
+            }
+        );
     }
 
     [HttpDelete("{year}/{name}")]
@@ -131,8 +134,8 @@ public class ProgressController(TaxDbContext db) : ControllerBase
 
     private async Task<TaxProgressEntity?> GetTaxProgressEntity(int year, string name)
     {
-        return await _db.TaxProgress
-            .Include(progress => progress.Responses)
+        return await _db
+            .TaxProgress.Include(progress => progress.Responses)
             .FirstOrDefaultAsync(progress => progress.Year == year && progress.Name == name);
     }
 }

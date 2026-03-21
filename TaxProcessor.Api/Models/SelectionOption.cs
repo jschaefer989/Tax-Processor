@@ -7,10 +7,7 @@ public class SelectionOption
     public required string Value { get; set; }
     public required string DisplayText { get; set; }
 
-    public SelectionOption()
-    {
-
-    }
+    public SelectionOption() { }
 
     [SetsRequiredMembers]
     public SelectionOption(string value)

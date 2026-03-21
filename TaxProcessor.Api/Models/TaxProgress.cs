@@ -4,7 +4,6 @@ namespace TaxProcessor.Api.Models;
 
 public class TaxProgress
 {
-
     [JsonPropertyName("year")]
     public int Year { get; set; }
 

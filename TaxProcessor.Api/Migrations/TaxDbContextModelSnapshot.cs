@@ -1,8 +1,8 @@
-using TaxProcessor.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using TaxProcessor.Api.Data;
 
 namespace TaxProcessor.Api.Migrations
 {
@@ -18,19 +18,18 @@ namespace TaxProcessor.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TaxProcessor.Api.Data.TaxProgressEntity", builder =>
+            modelBuilder.Entity(
+                "TaxProcessor.Api.Data.TaxProgressEntity",
+                builder =>
                 {
-                    builder.Property<int>("Year")
-                        .HasColumnType("integer");
+                    builder.Property<int>("Year").HasColumnType("integer");
 
-                    builder.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    builder.Property<string>("Name").IsRequired().HasColumnType("text");
 
-                    builder.Property<string>("CurrentStepId")
-                        .HasColumnType("text");
+                    builder.Property<string>("CurrentStepId").HasColumnType("text");
 
-                    builder.Property<DateTime>("UpdatedAt")
+                    builder
+                        .Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     builder.HasKey("Year", "Name");
@@ -38,33 +37,28 @@ namespace TaxProcessor.Api.Migrations
                     builder.ToTable("TaxProgress");
 
                     builder.Navigation("Responses");
-                });
+                }
+            );
 
-            modelBuilder.Entity("TaxProcessor.Api.Data.TaxResponseEntity", builder =>
+            modelBuilder.Entity(
+                "TaxProcessor.Api.Data.TaxResponseEntity",
+                builder =>
                 {
-                    builder.Property<int>("Year")
-                        .HasColumnType("integer");
+                    builder.Property<int>("Year").HasColumnType("integer");
 
-                    builder.Property<string>("Name")
-                        .HasColumnType("text");
+                    builder.Property<string>("Name").HasColumnType("text");
 
-                    builder.Property<string>("Form")
-                        .HasColumnType("text");
+                    builder.Property<string>("Form").HasColumnType("text");
 
-                    builder.Property<string>("FormCode")
-                        .HasColumnType("text");
+                    builder.Property<string>("FormCode").HasColumnType("text");
 
-                    builder.Property<string>("Subsection")
-                        .HasColumnType("text");
+                    builder.Property<string>("Subsection").HasColumnType("text");
 
-                    builder.Property<string>("Label")
-                        .HasColumnType("text");
+                    builder.Property<string>("Label").HasColumnType("text");
 
-                    builder.Property<int>("Line")
-                        .HasColumnType("integer");
+                    builder.Property<int>("Line").HasColumnType("integer");
 
-                    builder.Property<string>("Value")
-                        .HasColumnType("text");
+                    builder.Property<string>("Value").HasColumnType("text");
 
                     builder.HasKey("Year", "Name", "Form", "Label", "Line");
 
@@ -72,14 +66,16 @@ namespace TaxProcessor.Api.Migrations
 
                     builder.ToTable("TaxResponse");
 
-                    builder.HasOne("TaxProcessor.Api.Data.TaxProgressEntity", "TaxProgress")
+                    builder
+                        .HasOne("TaxProcessor.Api.Data.TaxProgressEntity", "TaxProgress")
                         .WithMany("Responses")
                         .HasForeignKey("Year", "Name")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     builder.Navigation("TaxProgress");
-                });
+                }
+            );
 
 #pragma warning restore 612, 618
         }

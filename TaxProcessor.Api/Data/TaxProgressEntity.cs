@@ -18,16 +18,17 @@ public class TaxProgressEntity
 
     public TaxResponse[] GetResponses()
     {
-        return [.. Responses
-            .Select(response => new TaxResponse
-            (
+        return
+        [
+            .. Responses.Select(response => new TaxResponse(
                 form: Enum.Parse<TaxForm>(response.Form),
                 label: ParseTaxFieldLabel(response.Label),
                 line: response.Line,
                 value: response.Value,
                 formCode: response.FormCode,
                 subsection: response.Subsection
-            ))];
+            )),
+        ];
     }
 
     private static TaxFieldLabel ParseTaxFieldLabel(string label)
@@ -50,7 +51,7 @@ public class TaxProgressEntity
             "2b" => TaxFieldLabel.twoB,
             "3a" => TaxFieldLabel.threeA,
             "3b" => TaxFieldLabel.threeB,
-            _ => throw new ArgumentException($"Requested value '{label}' was not found.")
+            _ => throw new ArgumentException($"Requested value '{label}' was not found."),
         };
     }
 
@@ -66,18 +67,21 @@ public class TaxProgressEntity
         }
         foreach (var response in responses)
         {
-            if (response == null) continue;
-            Responses.Add(new TaxResponseEntity
-            {
-                Year = year,
-                Name = name,
-                Form = response.Form.ToString(),
-                Label = response.Label.ToString(),
-                Line = response.Line,
-                Value = response.Value,
-                FormCode = response.FormCode,
-                Subsection = response.Subsection
-            });
+            if (response == null)
+                continue;
+            Responses.Add(
+                new TaxResponseEntity
+                {
+                    Year = year,
+                    Name = name,
+                    Form = response.Form.ToString(),
+                    Label = response.Label.ToString(),
+                    Line = response.Line,
+                    Value = response.Value,
+                    FormCode = response.FormCode,
+                    Subsection = response.Subsection,
+                }
+            );
         }
     }
 }

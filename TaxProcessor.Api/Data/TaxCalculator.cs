@@ -2,9 +2,13 @@ using TaxProcessor.Api.Controllers;
 
 namespace TaxProcessor.Api.Data;
 
-public class TaxCalculator(FilingStatus filingStatus)
+public class TaxCalculator(
+    StandardDeductionFetcher standardDeductionFetcher,
+    FilingStatus filingStatus
+)
 {
-    public int StandardDeduction { get; set; } = GetStandardDeductionAmount(filingStatus);
+    public int StandardDeduction =>
+        DetermineStandardDeductionAsync(filingStatus).GetAwaiter().GetResult();
     public int? OrdinaryDividends { get; set; }
     public int? TaxableInterest { get; set; }
 
@@ -14,20 +18,40 @@ public class TaxCalculator(FilingStatus filingStatus)
 
     public int TaxableIncome => CalculateTaxableIncome();
 
+    public async Task<int> DetermineStandardDeductionAsync(FilingStatus filingStatus)
+    {
+        var standardDeductions = await standardDeductionFetcher.GetStandardDeductionsAsync();
+        if (standardDeductions.TryGetValue(filingStatus, out var deduction))
+        {
+            return deduction;
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                $"Standard deduction not found for filing status: {filingStatus}"
+            );
+        }
+    }
 
     public int CalculateAdjustedGrossIncome()
     {
         if (W2Wages == null)
         {
-            throw new InvalidOperationException("W-2 wages must be provided to calculate adjusted gross income.");
+            throw new InvalidOperationException(
+                "W-2 wages must be provided to calculate adjusted gross income."
+            );
         }
         if (OrdinaryDividends == null)
         {
-            throw new InvalidOperationException("Ordinary dividends must be provided to calculate adjusted gross income.");
+            throw new InvalidOperationException(
+                "Ordinary dividends must be provided to calculate adjusted gross income."
+            );
         }
         if (TaxableInterest == null)
         {
-            throw new InvalidOperationException("Taxable interest must be provided to calculate adjusted gross income.");
+            throw new InvalidOperationException(
+                "Taxable interest must be provided to calculate adjusted gross income."
+            );
         }
         return (W2Wages ?? 0) + (OrdinaryDividends ?? 0) + (TaxableInterest ?? 0);
     }
@@ -35,18 +59,5 @@ public class TaxCalculator(FilingStatus filingStatus)
     public int CalculateTaxableIncome()
     {
         return Math.Max(0, AdjustedGrossIncome - StandardDeduction);
-    }
-
-    public static int GetStandardDeductionAmount(FilingStatus option)
-    {
-        return option switch
-        {
-            FilingStatus.Single => 15750,
-            FilingStatus.MarriedFilingJointly => 31500,
-            FilingStatus.MarriedFilingSeparately => 15750,
-            FilingStatus.HeadOfHousehold => 23625,
-            FilingStatus.QualifyingWidow => 31500,
-            _ => 0,
-        };
     }
 }

@@ -7,7 +7,7 @@ public enum ReadableForm
     Form1099,
     Form1099DIV,
     Form1099INT,
-    Form1099B
+    Form1099B,
 }
 
 public class TaxFile

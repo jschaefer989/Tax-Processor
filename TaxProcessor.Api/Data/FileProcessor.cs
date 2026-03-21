@@ -1,8 +1,8 @@
 namespace TaxProcessor.Api.Data;
 
-using TaxProcessor.Api.Models;
-using Microsoft.VisualBasic.FileIO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.VisualBasic.FileIO;
+using TaxProcessor.Api.Models;
 
 public class FileProcessorResult(bool success, List<TaxResponse> responses, string? errorMessage)
 {
@@ -10,6 +10,7 @@ public class FileProcessorResult(bool success, List<TaxResponse> responses, stri
     public List<TaxResponse> Responses { get; private set; } = responses;
     public string? ErrorMessage { get; private set; } = errorMessage;
 }
+
 public class FileProcessor
 {
     public async Task<FileProcessorResult> ProcessFile(IFormFile file, ReadableForm form)
@@ -51,6 +52,7 @@ public class FileProcessor
             }
         }
     }
+
     public static bool ValidateHeaders(string[] actual, string[] expected)
     {
         if (actual.Length != expected.Length)
@@ -86,5 +88,4 @@ public class FileProcessor
             parser.ReadLine();
         }
     }
-    
 }
