@@ -5,6 +5,8 @@ namespace TaxProcessor.Api.Data;
 
 public class TaxCalculator(
     StandardDeductionFetcher standardDeductionFetcher,
+    QualifiedDividendsThresholdFetcher qualifiedDividendsThresholdFetcher,
+    TaxTableFetcher taxTableFetcher,
     FilingStatus filingStatus
 )
 {
@@ -15,6 +17,12 @@ public class TaxCalculator(
     public int? TaxableInterest { get; set; }
 
     public int? W2Wages { get; set; }
+
+    public int? CapitalGains { get; set; }
+
+    public int? NetLongTermCapitalGains { get; set; }
+
+    public int? ScheduleD16 { get; set; }
 
     public int AdjustedGrossIncome => CalculateAdjustedGrossIncome();
 
@@ -45,26 +53,8 @@ public class TaxCalculator(
     }
 
     public int CalculateAdjustedGrossIncome()
-    {
-        if (W2Wages == null)
-        {
-            throw new InvalidOperationException(
-                "W-2 wages must be provided to calculate adjusted gross income."
-            );
-        }
-        if (OrdinaryDividends == null)
-        {
-            throw new InvalidOperationException(
-                "Ordinary dividends must be provided to calculate adjusted gross income."
-            );
-        }
-        if (TaxableInterest == null)
-        {
-            throw new InvalidOperationException(
-                "Taxable interest must be provided to calculate adjusted gross income."
-            );
-        }
-        return (W2Wages ?? 0) + (OrdinaryDividends ?? 0) + (TaxableInterest ?? 0);
+    {                
+        return (W2Wages ?? 0) + (OrdinaryDividends ?? 0) + (TaxableInterest ?? 0) + (CapitalGains ?? 0);
     }
 
     public int CalculateTaxableIncome()
@@ -72,24 +62,41 @@ public class TaxCalculator(
         return Math.Max(0, AdjustedGrossIncome - StandardDeduction);
     }
 
-    public int CalculateTax(int? taxFromTaxTable, TaxResponse[] taxResponses)
+    public async Task<int> CalculateTaxAsync(TaxResponse[] taxResponses)
     {
         // TODO: there are a bunch of cases that this doesn't handle yet, like schedule D, form 8615, foreign income tax, etc.
 
-        if (taxFromTaxTable == null)
+        // Determine if we must use the qualified dividends and capital gains worksheet
+        if (QualifiedDividends > 0 || (NetLongTermCapitalGains ?? 0) > 0 || (ScheduleD16 ?? 0) > 0)
         {
-            throw new InvalidOperationException(
-                "Tax from tax table is required to calculate total tax."
-            );
+            var worksheet = new QualifiedDividendsAndCapitalGainsWorksheet(
+                filingStatus,
+                QualifiedDividends ?? 0,
+                TaxableIncome,
+                NetLongTermCapitalGains,
+                ScheduleD16,
+                qualifiedDividendsThresholdFetcher,
+                this
+            );            
+            return await worksheet.CalculateTaxAsync(taxResponses);
         }
 
-        // Determine if we must use the qualified dividends and capital gains worksheet
+        var taxFromTaxTable = await CalculateTax(filingStatus, TaxableIncome);
+        return taxFromTaxTable;
+    }
 
-        // if (QualifiedDividends > 0 || )
-        // {
-
-        // }
-        return taxFromTaxTable.Value;
+    public async Task<int> CalculateTax(FilingStatus filingStatus, int amount)
+    {   
+        if (amount < 0)
+        {
+            throw new InvalidOperationException("Amount for tax calculation cannot be negative.");
+        }
+        if (amount < 100000)
+        {
+            var taxFromTaxTable = await taxTableFetcher.GetTaxTableAsync(filingStatus, amount);
+            return taxFromTaxTable ?? throw new InvalidOperationException("Tax from tax table is required to calculate total tax.");
+        }
+        throw new InvalidOperationException("Tax calculation for amounts $100,000 or greater is not supported yet. Please submit a feature request.");
     }
 
     public bool SetIncomeSources(TaxResponse[] responses)
@@ -130,15 +137,47 @@ public class TaxCalculator(
             TaxFieldLabel.twoB
         );
         if (!TaxResponse.TryParseCurrency(taxableInterest, out int taxableInterestNumber))
-            if (!TaxResponse.TryParseCurrency(taxableInterest, out taxableInterestNumber))
-            {
-                taxableInterestNumber = 0; // Treat invalid or missing taxable interest as zero
-            }
+        {
+            taxableInterestNumber = 0; // Treat invalid or missing taxable interest as zero
+        }
+
+        var capitalGains = TaxResponse.GetResponseValue(
+            [.. responses],
+            TaxForm.Form1040,
+            TaxFieldLabel.sevenA
+        );
+        if (!TaxResponse.TryParseCurrency(capitalGains, out int capitalGainsNumber))
+        {
+            capitalGainsNumber = 0; // Treat invalid or missing capital gains as zero
+        }
+
+        var netLongTermCapitalGains = TaxResponse.GetResponseValue(
+            [.. responses],
+            TaxForm.ScheduleD,
+            TaxFieldLabel.fifteen
+        );
+        if (!TaxResponse.TryParseCurrency(netLongTermCapitalGains, out int netLongTermCapitalGainsNumber))
+        {
+            netLongTermCapitalGainsNumber = 0; // Treat invalid or missing net long-term capital gains as zero
+        }
+
+        var scheduleD16 = TaxResponse.GetResponseValue(
+            [.. responses],
+            TaxForm.ScheduleD,
+            TaxFieldLabel.sixteen
+        );
+        if (!TaxResponse.TryParseCurrency(scheduleD16, out int scheduleD16Number))
+        {
+            scheduleD16Number = 0; // Treat invalid or missing Schedule D line 16 as zero
+        }
 
         W2Wages = w2WagesNumber;
         QualifiedDividends = qualifiedDividendsNumber;
         OrdinaryDividends = ordinaryDividendsNumber;
         TaxableInterest = taxableInterestNumber;
+        NetLongTermCapitalGains = netLongTermCapitalGainsNumber;
+        ScheduleD16 = scheduleD16Number;
+        CapitalGains = capitalGainsNumber;
         return true;
     }
 }

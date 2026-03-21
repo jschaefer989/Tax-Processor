@@ -1,3 +1,4 @@
+import TaxField from "./TaxField";
 
 export enum TaxForm {
   Form1040 = "Form1040",
@@ -28,6 +29,7 @@ export enum TaxFieldLabel {
   threeG = "threeG",
   threeH = "threeH",
   seven = "seven",
+  sevenA = "sevenA",
   eightD = "eightD",
   eightE = "eightE",
   eightG = "eightG",
@@ -118,6 +120,8 @@ export default class TaxResponse {
         return "3h";
       case TaxFieldLabel.seven:
         return "7";
+      case TaxFieldLabel.sevenA:
+        return "7a";
       case TaxFieldLabel.eightD:
         return "8d";
       case TaxFieldLabel.eightE:
@@ -212,6 +216,8 @@ export default class TaxResponse {
         return 20;
       case TaxFieldLabel.seven:
         return 21;
+      case TaxFieldLabel.sevenA:
+        return 21.1;
       case TaxFieldLabel.eightD:
         return 22;
       case TaxFieldLabel.eightE:

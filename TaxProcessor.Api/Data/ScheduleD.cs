@@ -112,6 +112,19 @@ public class ScheduleD
         AddResponse(TaxFieldLabel.tenG, TotalTenG);
         AddResponse(TaxFieldLabel.tenH, TotalTenH);
         AddResponse(TaxFieldLabel.fifteen, Fifteen);
-        AddResponse(TaxFieldLabel.sixteen, Seven + Fifteen);
+        var sixteen = Seven + Fifteen;
+        AddResponse(TaxFieldLabel.sixteen, sixteen);
+        if (sixteen > 0)
+        {
+            responses.Add(
+                new TaxResponse(
+                    form: TaxForm.Form1040,
+                    label: TaxFieldLabel.sevenA,
+                    line: 0,
+                    value: sixteen.ToString(),
+                    subsection: TaxStep.GetStepValue(Steps.Income)
+                )
+            );
+        }
     }
 }

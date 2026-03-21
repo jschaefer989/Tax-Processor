@@ -1,0 +1,62 @@
+using TaxProcessor.Api.Controllers;
+using TaxProcessor.Api.Models;
+
+namespace TaxProcessor.Api.Data;
+
+public class QualifiedDividendsAndCapitalGainsWorksheet(
+    FilingStatus filingStatus,
+    int qualifiedDividends,
+    int taxableIncome,
+    int? netLongTermCapitalGains,
+    int? scheduleD16,
+    QualifiedDividendsThresholdFetcher thresholdsFetcher,
+    TaxCalculator taxCalculator
+)
+{
+    public async Task<int> CalculateTaxAsync(TaxResponse[] responses)
+    {
+        var capitalGains = DetermineCapitalGains(responses);
+        var thresholds = await thresholdsFetcher.GetThresholdsAsync();
+
+        var line4 = qualifiedDividends + capitalGains;
+        var line5 = Math.Max(taxableIncome - line4, 0);;
+        var line6 = thresholds.GetZeroRateThreshold(filingStatus);
+        var line7 = Math.Min(taxableIncome, line6);
+        var line8 = Math.Min(line5, line7);
+        var line9 = line7 - line8;
+        var line10 = Math.Min(taxableIncome, line4);
+        var line12 = Math.Max(line10 - line9, 0);
+        var line13 = thresholds.GetFifteenRateUpperThreshold(filingStatus);
+        var line14 = Math.Min(taxableIncome, line13);        
+        var line15 = line5 + line9;        
+        var line16 = Math.Max(line14 - line15, 0);
+        var line17 = Math.Min(line12, line16);
+        var line18 = (int)Math.Round(line17 * thresholds.MiddleBracketRate, MidpointRounding.AwayFromZero);
+        var line19 = line9 + line17;
+        var line20 = Math.Max(line10 - line19, 0);
+        var line21 = (int)Math.Round(line20 * thresholds.TopBracketRate, MidpointRounding.AwayFromZero);
+        var line22 = await taxCalculator.CalculateTax(filingStatus, line5);
+        var line23 = line18 + line21 + line22;        
+        var line24 = await taxCalculator.CalculateTax(filingStatus, taxableIncome);
+
+        return Math.Min(line23, line24);
+    }
+
+    private int DetermineCapitalGains(TaxResponse[] responses)
+    {
+        if ((netLongTermCapitalGains ?? 0) != 0 || (scheduleD16 ?? 0) != 0)
+        {
+            return Math.Min(netLongTermCapitalGains ?? 0, scheduleD16 ?? 0);
+        }
+
+        var sevenA = TaxResponse.GetResponseValue([.. responses], TaxForm.Form1040, TaxFieldLabel.sevenA);
+        if (!TaxResponse.TryParseCurrency(sevenA, out var sevenANumber))
+        {
+            throw new Exception(
+                "Expected Schedule D line 16 or Form 1040 line 7a to be present and parseable for qualified dividends and capital gains tax calculation."
+            );
+        }
+
+        return sevenANumber;
+    }
+}

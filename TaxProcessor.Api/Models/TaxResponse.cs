@@ -85,7 +85,8 @@ public enum TaxFieldLabel
 
     [JsonPropertyName("7")]
     seven,
-
+    [JsonPropertyName("7a")]
+    sevenA,
     [JsonPropertyName("8d")]
     eightD,
 

@@ -30,7 +30,6 @@ public enum FilingStatus
 [Route("api/steps")]
 public class StepsController(
     StandardDeductionFetcher standardDeductionFetcher,
-    TaxTableFetcher taxTableFetcher,
     Func<FilingStatus, TaxCalculator> taxCalculatorFactory,
     FileProcessor fileProcessor
 ) : ControllerBase
@@ -205,12 +204,6 @@ public class StepsController(
             return BadRequest(new { message = "Invalid filing status." });
         }
 
-        var taxCalculator = GetTaxCalculatorFromResponses(
-            request.CalculationCallback,
-            request.Responses
-        );
-        taxCalculator.SetIncomeSources(request.Responses);
-
         switch (request.CalculationCallback)
         {
             case FieldCalculationCallback.StandardDeduction:
@@ -219,6 +212,11 @@ public class StepsController(
                 int taxableIncome;
                 try
                 {
+                    var taxCalculator = GetTaxCalculatorFromResponses(
+                        request.CalculationCallback,
+                        request.Responses
+                    );
+                    taxCalculator.SetIncomeSources(request.Responses);
                     taxableIncome = taxCalculator.CalculateTaxableIncome();
                 }
                 catch (Exception ex)
@@ -232,21 +230,17 @@ public class StepsController(
                 int tax;
                 try
                 {
-                    if (taxCalculator.TaxableIncome > 100000)
-                    {
-                        return BadRequest(new { message = "Taxable income over $100,000 is not supported yet, please submit a feature request." });
-                    }
-                    var taxFromTaxTable = await taxTableFetcher.GetTaxTableAsync(
-                        filingStatus,
-                        taxCalculator.TaxableIncome
+                    var taxCalculator = GetTaxCalculatorFromResponses(
+                        request.CalculationCallback,
+                        request.Responses
                     );
-                    tax = taxCalculator.CalculateTax(taxFromTaxTable, request.Responses);
+                    taxCalculator.SetIncomeSources(request.Responses);
+                    tax = await taxCalculator.CalculateTaxAsync(request.Responses);
                 }
                 catch (Exception ex)
                 {
-                    return StatusCode(
-                        500,
-                        new { message = $"Error fetching tax table: {ex.Message}" }
+                    return BadRequest(
+                        new { message = $"Error calculating tax: {ex.Message}" }
                     );
                 }
                 return Ok(tax);

@@ -11,6 +11,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<StandardDeductionFetcher>();
 builder.Services.AddSingleton<TaxTableFetcher>();
+builder.Services.AddSingleton<QualifiedDividendsThresholdFetcher>();
 builder.Services.AddTransient<TaxCalculator>();
 builder.Services.AddScoped<Func<FilingStatus, TaxCalculator>>(serviceProvider =>
     filingStatus => ActivatorUtilities.CreateInstance<TaxCalculator>(serviceProvider, filingStatus)
