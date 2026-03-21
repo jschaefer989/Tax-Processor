@@ -165,26 +165,28 @@ public class StepsController(StandardDeductionFetcher standardDeductionFetcher) 
             TaxForm.Form1040,
             TaxFieldLabel.FilingStatus
         );
-        var standardDeductions = await standardDeductionFetcher.GetStandardDeductionsAsync();
+
+        Dictionary<FilingStatus, int>? standardDeductions;
+        try
+        {
+            standardDeductions = await standardDeductionFetcher.GetStandardDeductionsAsync();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Error fetching standard deductions: {ex.Message}" });
+        }
+
         FilingStatus filingStatus;
+        if (!Enum.TryParse(filingStatusResponse, out filingStatus))
+        {
+            return BadRequest(new { message = "Invalid filing status." });
+        }
+
         switch (request.CalculationCallback)
         {
             case FieldCalculationCallback.StandardDeduction:
-
-                if (Enum.TryParse(filingStatusResponse, out filingStatus))
-                {
-                    return Ok(standardDeductions[filingStatus]);
-                }
-                else
-                {
-                    return BadRequest(new { message = "Invalid filing status." });
-                }
+                return Ok(standardDeductions[filingStatus]);
             case FieldCalculationCallback.Tax:
-                if (!Enum.TryParse(filingStatusResponse, out filingStatus))
-                {
-                    return BadRequest(new { message = "Invalid filing status." });
-                }
-
                 var taxCalculator = new TaxCalculator(standardDeductionFetcher, filingStatus);
 
                 var w2Wages = TaxResponse.GetResponseValue(

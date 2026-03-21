@@ -44,13 +44,12 @@ public partial class StandardDeductionFetcher(
                 return parsed;
             }
         }
-        catch
+        catch(Exception ex)
         {
-            throw new Exception(
-                "Failed to fetch or parse standard deduction amounts from the IRS website. Please submit an issue if this persists."
-            );
+            // Log the exception (not implemented here) and fall back to hardcoded values.
+            throw new Exception($"Error fetching/parsing standard deductions: {ex.Message}");
         }
-
+        
         return FallbackValues;
     }
 
@@ -65,9 +64,9 @@ public partial class StandardDeductionFetcher(
         // lowercase "single" combined with "under 65").
         var targetTable = doc
             .DocumentNode.SelectNodes("//table")
-            ?.FirstOrDefault(t =>
+            ?.FirstOrDefault(table =>
             {
-                var text = t.InnerText;
+                var text = table.InnerText;
                 return text.Contains(
                         "Single or Married filing separately",
                         StringComparison.OrdinalIgnoreCase
@@ -79,13 +78,13 @@ public partial class StandardDeductionFetcher(
 
         if (targetTable is null)
         {
-            return result;
+            throw new Exception("Could not find standard deduction table in IRS HTML.");
         }
 
         var rows = targetTable.SelectNodes(".//tr");
         if (rows is null)
         {
-            return result;
+            throw new Exception("Standard deduction table has no rows.");
         }
 
         foreach (var row in rows)

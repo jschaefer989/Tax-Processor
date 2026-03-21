@@ -20,7 +20,16 @@ public class TaxCalculator(
 
     public async Task<int> DetermineStandardDeductionAsync(FilingStatus filingStatus)
     {
-        var standardDeductions = await standardDeductionFetcher.GetStandardDeductionsAsync();
+        Dictionary<FilingStatus, int> standardDeductions;
+        try 
+        {
+            standardDeductions = await standardDeductionFetcher.GetStandardDeductionsAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error fetching standard deductions: {ex.Message}");
+        }
+        
         if (standardDeductions.TryGetValue(filingStatus, out var deduction))
         {
             return deduction;
