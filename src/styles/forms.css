@@ -3,6 +3,14 @@
   gap: 1.25rem;
 }
 
+.fields--calculations {
+  gap: 0.75rem;
+}
+
+.fields--calculations .form-section-header {
+  margin: 0 0 0.1rem;
+}
+
 .field {
   display: grid;
   gap: 0.5rem;

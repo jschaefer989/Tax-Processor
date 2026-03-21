@@ -7,7 +7,7 @@ export function FeatureRequest() {
   );
   return (
     <a
-      className="feature-request-link"
+      className="header-link"
       href={`mailto:${name}@${domain}?subject=${subject}&body=${body}`}
     >
       Feature request

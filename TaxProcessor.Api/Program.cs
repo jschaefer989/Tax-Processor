@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Npgsql;
+using TaxProcessor.Api.Controllers;
 using TaxProcessor.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,12 @@ builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<StandardDeductionFetcher>();
+builder.Services.AddSingleton<TaxTableFetcher>();
+builder.Services.AddTransient<TaxCalculator>();
+builder.Services.AddScoped<Func<FilingStatus, TaxCalculator>>(serviceProvider =>
+    filingStatus => ActivatorUtilities.CreateInstance<TaxCalculator>(serviceProvider, filingStatus)
+);
+builder.Services.AddScoped<FileProcessor>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(

@@ -84,6 +84,10 @@ public class Form1099Processor : FileProcessor
                     }
                 }
             }
+            // Generate a Schedule D once we're done processing all lines
+            ScheduleD scheduleD = new();
+            scheduleD.DetermineTotals(Responses);
+            scheduleD.BuildResponses(Responses);
         }
         catch (Exception ex)
         {

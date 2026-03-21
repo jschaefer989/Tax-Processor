@@ -9,6 +9,9 @@ public enum FieldCalculationCallback
     [JsonPropertyName("standardDeduction")]
     StandardDeduction,
 
+    [JsonPropertyName("taxableIncome")]
+    TaxableIncome,
+
     [JsonPropertyName("tax")]
     Tax,
 }

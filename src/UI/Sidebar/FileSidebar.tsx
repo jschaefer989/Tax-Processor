@@ -6,6 +6,7 @@ import Form1040 from "./Form1040";
 import Form8949 from "./Form8949";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import RestartButton from "../Header/RestartButton";
+import ScheduleD from "./ScheduleD";
 
 interface FileSidebarProps {
   readonly taxBehavior: TaxBehavior;
@@ -94,6 +95,13 @@ export default function FileSidebar(props: FileSidebarProps) {
               title="Form 8949 - Page 2"
               form={TaxForm.Form8949Page2}
               responses={form8949Page2Responses}
+              isExpandedOverride={allSectionsExpanded}
+            />
+            <ScheduleD
+              taxBehavior={taxBehavior}
+              title="Schedule D"
+              form={TaxForm.ScheduleD}
+              responses={skippedResponses.filter((response) => response.form === TaxForm.ScheduleD)}
               isExpandedOverride={allSectionsExpanded}
             />
           </div>

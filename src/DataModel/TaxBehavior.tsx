@@ -204,6 +204,7 @@ export class TaxBehavior {
                     button.calculationCallback,
                   ),
                   button.subsection,
+                  button.helperText,
                 ),
             ),
           ),

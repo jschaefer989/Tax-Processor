@@ -44,12 +44,12 @@ public partial class StandardDeductionFetcher(
                 return parsed;
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             // Log the exception (not implemented here) and fall back to hardcoded values.
             throw new Exception($"Error fetching/parsing standard deductions: {ex.Message}");
         }
-        
+
         return FallbackValues;
     }
 

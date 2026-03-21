@@ -1,6 +1,5 @@
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import { useTaxBehavior } from "../hooks/useTaxBehavior";
-import { MainAppFooter } from "./Footer/MainAppFooter";
 import { DuplicateDataPopup } from "./Form/DuplicateDataPopup";
 import MainForm from "./Form/MainForm";
 import ContextMenu from "./General/ContextMenu";
@@ -9,8 +8,6 @@ import Toast from "./General/Toast";
 import MainAppHeader from "./Header/MainAppHeader";
 import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
-
-// TODO: add this link https://www.irs.gov/help/ita
 
 export default function App() {
   const {
@@ -114,10 +111,6 @@ export default function App() {
               />
             </section>
           </main>
-
-          <footer>
-            <MainAppFooter />
-          </footer>
         </>
       )}
     </div>

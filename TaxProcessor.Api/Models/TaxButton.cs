@@ -18,4 +18,7 @@ public class TaxButton
 
     [JsonPropertyName("calculationCallback")]
     public FieldCalculationCallback CalculationCallback { get; set; }
+
+    [JsonPropertyName("helperText")]
+    public string? HelperText { get; set; }
 }

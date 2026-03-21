@@ -12,7 +12,7 @@ export default function FormFiles(props: FormFilesProps) {
 
   return (
     <div className="form-files">
-      <h2 className="form-section-header">Files</h2>
+      <h3 className="form-section-header">Files</h3>
       {step.files.map((file) => (
         <div key={file.label} className="form-file">
           <UploadFileButton

@@ -44,11 +44,26 @@ public enum TaxFieldLabel
     [JsonPropertyName("1g")]
     oneG,
 
+    [JsonPropertyName("1h")]
+    oneH,
+
     [JsonPropertyName("2a")]
     twoA,
 
     [JsonPropertyName("2b")]
     twoB,
+
+    [JsonPropertyName("2d")]
+    twoD,
+
+    [JsonPropertyName("2e")]
+    twoE,
+
+    [JsonPropertyName("2g")]
+    twoG,
+
+    [JsonPropertyName("2h")]
+    twoH,
 
     [JsonPropertyName("3a")]
     threeA,
@@ -56,8 +71,62 @@ public enum TaxFieldLabel
     [JsonPropertyName("3b")]
     threeB,
 
+    [JsonPropertyName("3d")]
+    threeD,
+
+    [JsonPropertyName("3e")]
+    threeE,
+
+    [JsonPropertyName("3g")]
+    threeG,
+
+    [JsonPropertyName("3h")]
+    threeH,
+
+    [JsonPropertyName("7")]
+    seven,
+
+    [JsonPropertyName("8d")]
+    eightD,
+
+    [JsonPropertyName("8e")]
+    eightE,
+
+    [JsonPropertyName("8g")]
+    eightG,
+
+    [JsonPropertyName("8h")]
+    eightH,
+
+    [JsonPropertyName("9d")]
+    nineD,
+
+    [JsonPropertyName("9e")]
+    nineE,
+
+    [JsonPropertyName("9g")]
+    nineG,
+
+    [JsonPropertyName("9h")]
+    nineH,
+
+    [JsonPropertyName("10d")]
+    tenD,
+
+    [JsonPropertyName("10e")]
+    tenE,
+
+    [JsonPropertyName("10g")]
+    tenG,
+
+    [JsonPropertyName("10h")]
+    tenH,
+
     [JsonPropertyName("12e")]
     twelveE,
+
+    [JsonPropertyName("15")]
+    fifteen,
 
     [JsonPropertyName("16")]
     sixteen,

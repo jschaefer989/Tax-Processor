@@ -1,4 +1,4 @@
-using System.Globalization;
+using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using TaxProcessor.Api.Data;
@@ -28,7 +28,12 @@ public enum FilingStatus
 
 [ApiController]
 [Route("api/steps")]
-public class StepsController(StandardDeductionFetcher standardDeductionFetcher) : ControllerBase
+public class StepsController(
+    StandardDeductionFetcher standardDeductionFetcher,
+    TaxTableFetcher taxTableFetcher,
+    Func<FilingStatus, TaxCalculator> taxCalculatorFactory,
+    FileProcessor fileProcessor
+) : ControllerBase
 {
     [HttpGet]
     public ActionResult<TaxStep> GetSteps()
@@ -116,6 +121,17 @@ public class StepsController(StandardDeductionFetcher standardDeductionFetcher) 
                         Label = "Standard deduction",
                         CalculationCallback = FieldCalculationCallback.StandardDeduction,
                         Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
+                        HelperText =
+                            "Verify that this matches the standard deduction for your filing status.",
+                    },
+                    new()
+                    {
+                        Form = TaxForm.Form1040,
+                        TaxFieldLabel = TaxFieldLabel.fifteen,
+                        Label = "Calculate taxable income",
+                        CalculationCallback = FieldCalculationCallback.TaxableIncome,
+                        Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
+                        HelperText = "Verify that this matches the auto-calculated taxable income.",
                     },
                     new()
                     {
@@ -124,6 +140,11 @@ public class StepsController(StandardDeductionFetcher standardDeductionFetcher) 
                         Label = "Calculate tax",
                         CalculationCallback = FieldCalculationCallback.Tax,
                         Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
+                        HelperText =
+                            "Only the tax table and the qualified dividends "
+                            + "and capital gains are considered. Double check using the instructions "
+                            + "for line 16 that you don't have additional taxes like form 8615, "
+                            + "foreign income tax, or schedule D.",
                     },
                 ],
             },
@@ -137,7 +158,7 @@ public class StepsController(StandardDeductionFetcher standardDeductionFetcher) 
     {
         if (Enum.TryParse(request.Form, out ReadableForm form))
         {
-            var result = await new FileProcessor().ProcessFile(request.File, form);
+            var result = await fileProcessor.ProcessFile(request.File, form);
             if (result.Success)
             {
                 return Ok(result.Responses);
@@ -173,62 +194,95 @@ public class StepsController(StandardDeductionFetcher standardDeductionFetcher) 
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = $"Error fetching standard deductions: {ex.Message}" });
+            return StatusCode(
+                500,
+                new { message = $"Error fetching standard deductions: {ex.Message}" }
+            );
         }
 
-        FilingStatus filingStatus;
-        if (!Enum.TryParse(filingStatusResponse, out filingStatus))
+        if (!Enum.TryParse(filingStatusResponse, out FilingStatus filingStatus))
         {
             return BadRequest(new { message = "Invalid filing status." });
         }
+
+        var taxCalculator = GetTaxCalculatorFromResponses(
+            request.CalculationCallback,
+            request.Responses
+        );
+        taxCalculator.SetIncomeSources(request.Responses);
 
         switch (request.CalculationCallback)
         {
             case FieldCalculationCallback.StandardDeduction:
                 return Ok(standardDeductions[filingStatus]);
+            case FieldCalculationCallback.TaxableIncome:
+                int taxableIncome;
+                try
+                {
+                    taxableIncome = taxCalculator.CalculateTaxableIncome();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(
+                        new { message = $"Error calculating taxable income: {ex.Message}" }
+                    );
+                }
+                return Ok(taxableIncome);
             case FieldCalculationCallback.Tax:
-                var taxCalculator = new TaxCalculator(standardDeductionFetcher, filingStatus);
-
-                var w2Wages = TaxResponse.GetResponseValue(
-                    [.. request.Responses],
-                    TaxForm.Form1040,
-                    TaxFieldLabel.oneA
-                );
-                int w2WagesNumber;
-                if (!TaxResponse.TryParseCurrency(w2Wages, out w2WagesNumber))
+                int tax;
+                try
                 {
-                    return BadRequest(new { message = "Invalid W-2 wages amount." });
+                    if (taxCalculator.TaxableIncome > 100000)
+                    {
+                        return BadRequest(new { message = "Taxable income over $100,000 is not supported yet, please submit a feature request." });
+                    }
+                    var taxFromTaxTable = await taxTableFetcher.GetTaxTableAsync(
+                        filingStatus,
+                        taxCalculator.TaxableIncome
+                    );
+                    tax = taxCalculator.CalculateTax(taxFromTaxTable, request.Responses);
                 }
-
-                var ordinaryDividends = TaxResponse.GetResponseValue(
-                    [.. request.Responses],
-                    TaxForm.Form1040,
-                    TaxFieldLabel.threeB
-                );
-                int ordinaryDividendsNumber;
-                if (!TaxResponse.TryParseCurrency(ordinaryDividends, out ordinaryDividendsNumber))
+                catch (Exception ex)
                 {
-                    ordinaryDividendsNumber = 0; // Treat invalid or missing dividends as zero
+                    return StatusCode(
+                        500,
+                        new { message = $"Error fetching tax table: {ex.Message}" }
+                    );
                 }
-
-                var taxableInterest = TaxResponse.GetResponseValue(
-                    [.. request.Responses],
-                    TaxForm.Form1040,
-                    TaxFieldLabel.twoB
-                );
-                int taxableInterestNumber;
-                if (!TaxResponse.TryParseCurrency(taxableInterest, out taxableInterestNumber))
-                {
-                    taxableInterestNumber = 0; // Treat invalid or missing taxable interest as zero
-                }
-
-                taxCalculator.W2Wages = w2WagesNumber;
-                taxCalculator.OrdinaryDividends = ordinaryDividendsNumber;
-                taxCalculator.TaxableInterest = taxableInterestNumber;
-
-                return Ok(taxCalculator.CalculateTaxableIncome());
+                return Ok(tax);
             default:
                 return BadRequest(new { message = "Unsupported calculation callback." });
         }
+    }
+
+    private TaxCalculator GetTaxCalculatorFromResponses(
+        FieldCalculationCallback callback,
+        TaxResponse[] responses
+    )
+    {
+        switch (callback)
+        {
+            case FieldCalculationCallback.StandardDeduction:
+                // Standard deduction doesn't require a tax calculator instance, so we can return early.
+                return null!;
+            case FieldCalculationCallback.TaxableIncome:
+            case FieldCalculationCallback.Tax:
+                break;
+            default:
+                throw new InvalidOperationException("Unsupported calculation callback.");
+        }
+
+        var filingStatusResponse = TaxResponse.GetResponseValue(
+            [.. responses],
+            TaxForm.Form1040,
+            TaxFieldLabel.FilingStatus
+        );
+
+        if (!Enum.TryParse(filingStatusResponse, out FilingStatus filingStatus))
+        {
+            throw new InvalidOperationException("Invalid filing status in responses.");
+        }
+
+        return taxCalculatorFactory(filingStatus);
     }
 }

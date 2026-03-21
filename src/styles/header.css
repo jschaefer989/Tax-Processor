@@ -47,3 +47,31 @@ header {
   font-size: clamp(2.6rem, 3vw + 1.6rem, 4rem);
   margin: 0 0 0.75rem;
 }
+
+.header-link {
+  display: inline-block;
+  color: #4666b1;
+  font-weight: 400;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.header-link:hover {
+  color: #1d4ed8;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.header-link:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
