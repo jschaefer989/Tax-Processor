@@ -5,6 +5,7 @@ import MissingDatabaseControls from "./MissingDatabaseControls";
 import NewTaxpayerPopup from "./NewTaxpayerPopup";
 import YearSelectionControls from "./YearSelectionControls";
 import LogoutButton from "../Header/LogoutButton";
+import StartTitle from "./StartTitle";
 
 type StartPageProps = {
   readonly taxBehavior: TaxBehavior;
@@ -74,9 +75,7 @@ export default function StartPage(props: StartPageProps) {
   }
 
   return (
-    <div className="start-page">
-      <p className="eyebrow">Tax Clarity</p>
-      <h1>File with clarity, step by step.</h1>
+    <StartTitle>
       {noDbConnection ? (
         <MissingDatabaseControls
           startBehavior={startBehavior}
@@ -94,6 +93,6 @@ export default function StartPage(props: StartPageProps) {
           <LogoutButton />
         </>
       )}
-    </div>
+    </StartTitle>
   );
 }

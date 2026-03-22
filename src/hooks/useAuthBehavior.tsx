@@ -1,0 +1,76 @@
+import { useState, useMemo } from "react";
+import type { AuthMode } from "../UI/Auth/AuthPage";
+import AuthBehavior from "../DataModel/AuthBehavior";
+
+type UseAuthBehaviorResult = {
+  mode: AuthMode;
+  email: string;
+  password: string;
+  newPassword: string;
+  confirmPassword: string;
+  error: string | undefined;
+  message: string | undefined;
+  authBehavior: AuthBehavior;
+  resetToken: string | undefined;
+};
+
+type UseAuthBehaviorProps = {
+    readonly setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function useAuthBehavior(props: UseAuthBehaviorProps): UseAuthBehaviorResult {
+  const { setIsBusy } = props;
+
+  const [mode, setMode] = useState<AuthMode>(() => getInitialMode());
+  const [email, setEmail] = useState(() => getInitialEmail());
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [message, setMessage] = useState<string | undefined>(undefined);
+
+  const resetToken = useMemo(() => getResetToken(), []);
+
+  const authBehavior = useMemo(
+    () =>
+      new AuthBehavior(
+        setMode,
+        setEmail,
+        setPassword,
+        setNewPassword,
+        setConfirmPassword,
+        setError,
+        setMessage,
+        setIsBusy,
+        resetToken,
+      ),
+    [resetToken],
+  );
+
+  return {
+    mode,
+    email,
+    password,
+    newPassword,
+    confirmPassword,
+    error,
+    message,
+    authBehavior,
+    resetToken,
+  };
+}
+
+function getInitialMode(): AuthMode {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("resetToken") ? "reset" : "login";
+}
+
+function getInitialEmail(): string {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("email") ?? "";
+}
+
+function getResetToken(): string | undefined {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("resetToken") ?? undefined;
+}

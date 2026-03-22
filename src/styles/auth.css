@@ -14,6 +14,19 @@
   padding: 2rem;
 }
 
+.auth-container {
+  width: min(560px, 95vw);
+  background: linear-gradient(145deg, rgba(13, 22, 35, 0.94), rgba(24, 36, 51, 0.9));
+  border: 1px solid rgba(246, 198, 91, 0.24);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.auth-container .auth-tabs {
+  justify-content: center;
+}
+
 .auth-card h1 {
   margin: 0;
   font-size: 2rem;
@@ -107,7 +120,8 @@
 }
 
 @media (max-width: 640px) {
-  .auth-card {
+  .auth-card,
+  .auth-container {
     padding: 1.2rem;
     border-radius: 14px;
   }

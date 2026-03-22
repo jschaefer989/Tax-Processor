@@ -13,9 +13,6 @@ import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
 
 export default function App() {
-  const { isAuthenticated, authLoading, setIsAuthenticated } =
-    useAuthentication();
-
   const {
     taxBehavior,
     currentStep,
@@ -33,7 +30,11 @@ export default function App() {
     onWhitespaceClick,
     duplicateResponses,
     advancedWithErrors,
-  } = useTaxBehavior({ setIsAuthenticated });
+  } = useTaxBehavior();
+
+  const { isAuthenticated, setIsAuthenticated } = useAuthentication({
+    setIsAuthenticated: taxBehavior.state.setIsLoading,
+  });
 
   useRefreshDbConnection(
     showStartPage,
@@ -43,12 +44,8 @@ export default function App() {
   );
 
   const onAuthenticated = useCallback(() => {
-    taxBehavior.state.setIsAuthenticated?.(true);
-  }, [taxBehavior]);
-
-  if (authLoading) {
-    return <div className="auth-shell">Checking session...</div>;
-  }
+    setIsAuthenticated(true);
+  }, [setIsAuthenticated]);
 
   if (!isAuthenticated) {
     if (noDbConnection) {
@@ -62,7 +59,13 @@ export default function App() {
         />
       );
     }
-    return <AuthPage onAuthenticated={onAuthenticated} />;
+    return (
+      <AuthPage
+        onAuthenticated={onAuthenticated}
+        isBusy={isLoading}
+        setIsBusy={taxBehavior.state.setIsLoading}
+      />
+    );
   }
 
   return (

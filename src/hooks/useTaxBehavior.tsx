@@ -25,11 +25,7 @@ type UseTaxBehaviorResult = {
   advancedWithErrors: boolean;
 }
 
-type UseTaxBehaviorProps = {
-  setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export function useTaxBehavior(props?: UseTaxBehaviorProps): UseTaxBehaviorResult {
+export function useTaxBehavior(): UseTaxBehaviorResult {
   const [currentStep, setCurrentStep] = useState<Steps | undefined>(undefined);
   const [responses, setResponses] = useState<TaxResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +65,6 @@ export function useTaxBehavior(props?: UseTaxBehaviorProps): UseTaxBehaviorResul
         setContextMenu,
         setDuplicateResponses,
         setAdvancedWithErrors,
-        setIsAuthenticated: props?.setIsAuthenticated,
       }),
     [
       setCurrentStep,
@@ -85,7 +80,6 @@ export function useTaxBehavior(props?: UseTaxBehaviorProps): UseTaxBehaviorResul
       setToastMessage,
       setDuplicateResponses,
       setAdvancedWithErrors,
-      props?.setIsAuthenticated,
     ],
   );
 

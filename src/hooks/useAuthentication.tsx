@@ -2,13 +2,17 @@ import { useState, useEffect } from "react";
 
 type UseAuthenticationResult = {
   isAuthenticated: boolean;
-  authLoading: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-}
+};
 
-export default function useAuthentication(): UseAuthenticationResult {
+type UseAuthenticationProps = {
+  readonly setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function useAuthentication(
+  props?: UseAuthenticationProps,
+): UseAuthenticationResult {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     let disposed = false;
@@ -25,7 +29,7 @@ export default function useAuthentication(): UseAuthenticationResult {
         }
       } finally {
         if (!disposed) {
-          setAuthLoading(false);
+          props?.setIsAuthenticated?.(false);
         }
       }
     };
@@ -37,5 +41,5 @@ export default function useAuthentication(): UseAuthenticationResult {
     };
   }, []);
 
-  return { isAuthenticated, authLoading, setIsAuthenticated };
+  return { isAuthenticated, setIsAuthenticated };
 }
