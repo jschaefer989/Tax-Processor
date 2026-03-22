@@ -35,6 +35,11 @@ public class StepsController(
     FileProcessor fileProcessor
 ) : ControllerBase
 {
+    private readonly StandardDeductionFetcher _standardDeductionFetcher = standardDeductionFetcher;
+    private readonly Func<FilingStatus, TaxCalculator> _taxCalculatorFactory =
+        taxCalculatorFactory;
+    private readonly FileProcessor _fileProcessor = fileProcessor;
+
     [HttpGet]
     public ActionResult<TaxStep> GetSteps()
     {
@@ -158,7 +163,7 @@ public class StepsController(
     {
         if (Enum.TryParse(request.Form, out ReadableForm form))
         {
-            var result = await fileProcessor.ProcessFile(request.File, form);
+            var result = await _fileProcessor.ProcessFile(request.File, form);
             if (result.Success)
             {
                 return Ok(result.Responses);
@@ -191,7 +196,7 @@ public class StepsController(
         Dictionary<FilingStatus, int>? standardDeductions;
         try
         {
-            standardDeductions = await standardDeductionFetcher.GetStandardDeductionsAsync();
+            standardDeductions = await _standardDeductionFetcher.GetStandardDeductionsAsync();
         }
         catch (Exception ex)
         {
@@ -279,6 +284,6 @@ public class StepsController(
             throw new InvalidOperationException("Invalid filing status in responses.");
         }
 
-        return taxCalculatorFactory(filingStatus);
+        return _taxCalculatorFactory(filingStatus);
     }
 }

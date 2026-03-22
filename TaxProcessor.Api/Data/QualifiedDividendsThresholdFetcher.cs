@@ -9,17 +9,20 @@ public partial class QualifiedDividendsThresholdFetcher(
     IMemoryCache cache
 )
 {
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly IMemoryCache _cache = cache;
+
     private const string CacheKeyPrefix = "irsQualifiedDividendsThresholds";
     private const string IrsTopicUrl = "https://www.irs.gov/taxtopics/tc409";
 
     public async Task<QualifiedDividendsThresholds> GetThresholdsAsync()
     {
-        var client = httpClientFactory.CreateClient();
+        var client = _httpClientFactory.CreateClient();
         var html = await client.GetStringAsync(IrsTopicUrl);
         var parsed = ParseThresholds(html);
 
         var cacheKey = $"{CacheKeyPrefix}:{parsed.TaxYear}";
-        cache.Set(cacheKey, parsed, TimeSpan.FromDays(1));
+        _cache.Set(cacheKey, parsed, TimeSpan.FromDays(1));
         return parsed;
     }
 

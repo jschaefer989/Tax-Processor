@@ -1,11 +1,9 @@
 import { useCallback } from "react";
-import ContextMenuOption, {
-  type ContextMenuIcon,
-} from "../../DataModel/ContextMenuOption";
+import ContextMenuOption from "../../DataModel/ContextMenuOption";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
-import FormValueField from "./FormValueField";
 import type { TaxForm } from "../../DataModel/TaxResponse";
+import FormValueField from "./FormValueField";
 
 type FormLineProps = {
   readonly taxBehavior: TaxBehavior;

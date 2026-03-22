@@ -10,8 +10,14 @@ public class TaxCalculator(
     FilingStatus filingStatus
 )
 {
+    private readonly StandardDeductionFetcher _standardDeductionFetcher = standardDeductionFetcher;
+    private readonly QualifiedDividendsThresholdFetcher _qualifiedDividendsThresholdFetcher =
+        qualifiedDividendsThresholdFetcher;
+    private readonly TaxTableFetcher _taxTableFetcher = taxTableFetcher;
+    private readonly FilingStatus _filingStatus = filingStatus;
+
     public int StandardDeduction =>
-        DetermineStandardDeductionAsync(filingStatus).GetAwaiter().GetResult();
+        DetermineStandardDeductionAsync().GetAwaiter().GetResult();
     public int? OrdinaryDividends { get; set; }
     public int? QualifiedDividends { get; set; }
     public int? TaxableInterest { get; set; }
@@ -28,26 +34,26 @@ public class TaxCalculator(
 
     public int TaxableIncome => CalculateTaxableIncome();
 
-    public async Task<int> DetermineStandardDeductionAsync(FilingStatus filingStatus)
+    public async Task<int> DetermineStandardDeductionAsync()
     {
         Dictionary<FilingStatus, int> standardDeductions;
         try
         {
-            standardDeductions = await standardDeductionFetcher.GetStandardDeductionsAsync();
+            standardDeductions = await _standardDeductionFetcher.GetStandardDeductionsAsync();
         }
         catch (Exception ex)
         {
             throw new Exception($"Error fetching standard deductions: {ex.Message}");
         }
 
-        if (standardDeductions.TryGetValue(filingStatus, out var deduction))
+        if (standardDeductions.TryGetValue(_filingStatus, out var deduction))
         {
             return deduction;
         }
         else
         {
             throw new InvalidOperationException(
-                $"Standard deduction not found for filing status: {filingStatus}"
+                $"Standard deduction not found for filing status: {_filingStatus}"
             );
         }
     }
@@ -70,18 +76,19 @@ public class TaxCalculator(
         if (QualifiedDividends > 0 || (NetLongTermCapitalGains ?? 0) > 0 || (ScheduleD16 ?? 0) > 0)
         {
             var worksheet = new QualifiedDividendsAndCapitalGainsWorksheet(
-                filingStatus,
+                _filingStatus,
+                
                 QualifiedDividends ?? 0,
                 TaxableIncome,
                 NetLongTermCapitalGains,
                 ScheduleD16,
-                qualifiedDividendsThresholdFetcher,
+                _qualifiedDividendsThresholdFetcher,
                 this
             );            
             return await worksheet.CalculateTaxAsync(taxResponses);
         }
 
-        var taxFromTaxTable = await CalculateTax(filingStatus, TaxableIncome);
+        var taxFromTaxTable = await CalculateTax(_filingStatus, TaxableIncome);
         return taxFromTaxTable;
     }
 
@@ -93,7 +100,7 @@ public class TaxCalculator(
         }
         if (amount < 100000)
         {
-            var taxFromTaxTable = await taxTableFetcher.GetTaxTableAsync(filingStatus, amount);
+            var taxFromTaxTable = await _taxTableFetcher.GetTaxTableAsync(filingStatus, amount);
             return taxFromTaxTable ?? throw new InvalidOperationException("Tax from tax table is required to calculate total tax.");
         }
         throw new InvalidOperationException("Tax calculation for amounts $100,000 or greater is not supported yet. Please submit a feature request.");

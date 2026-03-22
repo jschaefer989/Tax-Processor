@@ -10,6 +10,9 @@ public partial class StandardDeductionFetcher(
     IMemoryCache cache
 )
 {
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly IMemoryCache _cache = cache;
+
     private const string CacheKey = "irsStandardDeductions";
     private const string IrsUrl = "https://www.irs.gov/publications/p501";
 
@@ -26,7 +29,7 @@ public partial class StandardDeductionFetcher(
     public async Task<Dictionary<FilingStatus, int>> GetStandardDeductionsAsync()
     {
         if (
-            cache.TryGetValue(CacheKey, out Dictionary<FilingStatus, int>? cached)
+            _cache.TryGetValue(CacheKey, out Dictionary<FilingStatus, int>? cached)
             && cached != null
         )
         {
@@ -35,12 +38,12 @@ public partial class StandardDeductionFetcher(
 
         try
         {
-            var client = httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient();
             var html = await client.GetStringAsync(IrsUrl);
             var parsed = ParseStandardDeductionTable(html);
             if (parsed.Count == Enum.GetValues<FilingStatus>().Length)
             {
-                cache.Set(CacheKey, parsed, TimeSpan.FromDays(1));
+                _cache.Set(CacheKey, parsed, TimeSpan.FromDays(1));
                 return parsed;
             }
         }

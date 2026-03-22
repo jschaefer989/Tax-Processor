@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import { type Steps } from "../../DataModel/TaxStep";
 import type TaxResponse from "../../DataModel/TaxResponse";
 
 type DeleteButtonProps = {
