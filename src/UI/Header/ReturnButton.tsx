@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 
-interface ReturnButtonProps {
+type ReturnButtonProps = {
   isLoading: boolean;
-}
+};
 
 export function ReturnButton(props: ReturnButtonProps) {
   const { isLoading } = props;

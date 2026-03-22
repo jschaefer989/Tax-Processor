@@ -1,18 +1,18 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { ExpandDirection } from "./ExpandButton";
+import { type ExpandDirection } from "./ExpandButton";
 
-interface ExpandContentProps {
+type ExpandContentProps = {
   expanded: boolean;
   children: React.ReactNode;
   direction?: ExpandDirection;
   className?: string;
-}
+};
 
 export function ExpandContent(props: ExpandContentProps) {
   const {
     expanded,
     children,
-    direction = ExpandDirection.Down,
+    direction,
     className,
   } = props;
 
@@ -25,7 +25,7 @@ export function ExpandContent(props: ExpandContentProps) {
   const prevExpanded = useRef(expanded);
 
   const isVertical =
-    direction === ExpandDirection.Down || direction === ExpandDirection.Up;
+    direction === "down" || direction === "up";
 
   const onTransitionEnd = useCallback(
     (event: React.TransitionEvent<HTMLDivElement>) => {

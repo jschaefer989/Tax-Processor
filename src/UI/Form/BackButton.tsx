@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import type { Steps } from "../../DataModel/TaxStep";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
-interface BackButtonProps {
+type BackButtonProps = {
   readonly taxBehavior: TaxBehavior;
   readonly currentStep: Steps;
   readonly isLoading: boolean;

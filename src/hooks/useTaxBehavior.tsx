@@ -6,7 +6,7 @@ import { useContextMenu } from "./useContextMenu";
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
 import type { DuplicateResponse } from "../DataModel/DuplicateResponse";
 
-interface UseTaxBehaviorResult {
+type UseTaxBehaviorResult = {
   taxBehavior: TaxBehavior;
   currentStep: Steps | undefined;
   responses: TaxResponse[];
@@ -25,7 +25,7 @@ interface UseTaxBehaviorResult {
   advancedWithErrors: boolean;
 }
 
-interface UseTaxBehaviorProps {
+type UseTaxBehaviorProps = {
   setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

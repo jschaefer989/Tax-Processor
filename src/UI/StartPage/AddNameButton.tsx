@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import type { StartBehavior } from "../../DataModel/StartBehavior";
 
-interface AddNameButtonProps {
+type AddNameButtonProps = {
   startBehavior: StartBehavior;
   isLoading: boolean;
-}
+};
 
 export function AddNameButton(props: AddNameButtonProps) {
   const { startBehavior, isLoading } = props;

@@ -2,10 +2,10 @@ import type { StartBehavior } from "../../DataModel/StartBehavior";
 import BeginButton from "./BeginButton";
 import DatabaseConnectionForm from "./DatabaseConnectionForm";
 
-interface MissingDatabaseControlsProps {
+type MissingDatabaseControlsProps = {
   startBehavior: StartBehavior;
   isLoading: boolean;
-}
+};
 
 export default function MissingDatabaseControls(
   props: MissingDatabaseControlsProps,

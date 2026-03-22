@@ -1,15 +1,15 @@
 import { TaxBehavior } from "../../DataModel/TaxBehavior";
-import TaxResponse, { TaxForm } from "../../DataModel/TaxResponse";
+import TaxResponse, { type TaxForm } from "../../DataModel/TaxResponse";
 import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
-interface Form8949Props {
+type Form8949Props = {
   taxBehavior: TaxBehavior;
   title: string;
   form: TaxForm;
   responses: TaxResponse[];
   isExpandedOverride?: boolean;
-}
+};
 
 export default function Form8949(props: Form8949Props) {
   const { taxBehavior, title, form, responses, isExpandedOverride } = props;

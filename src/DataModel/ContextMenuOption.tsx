@@ -1,6 +1,4 @@
-export enum ContextMenuIcon {
-    Delete = "Delete",
-}
+export type ContextMenuIcon = "Delete";
 
 export default class ContextMenuOption {
     label: string

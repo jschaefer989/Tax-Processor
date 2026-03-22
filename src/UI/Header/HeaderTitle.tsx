@@ -1,10 +1,10 @@
 import { FeatureRequest } from "./FeatureRequest";
 import InstructionsLink from "./InstructionsLink";
 
-interface HeaderTitleProps {
+type HeaderTitleProps = {
   readonly year?: string;
   readonly name?: string;
-}
+};
 
 export default function HeaderTitle(props: HeaderTitleProps) {
   const { year, name } = props;

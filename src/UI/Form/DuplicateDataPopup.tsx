@@ -3,12 +3,12 @@ import type { DuplicateResponse } from "../../DataModel/DuplicateResponse";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import Popup from "../General/Popup";
 
-interface DuplicateDataPopupProps {
+type DuplicateDataPopupProps = {
   readonly taxBehavior: TaxBehavior;
   readonly duplicateResponses: DuplicateResponse[];
 }
 
-export function DuplicateDataPopup(props: DuplicateDataPopupProps) {
+export default function DuplicateDataPopup(props: DuplicateDataPopupProps) {
   const { taxBehavior, duplicateResponses } = props;
 
   const onClose = useCallback(() => {

@@ -3,7 +3,7 @@ import type TaxResponse from "../../DataModel/TaxResponse";
 import type { TaxStep } from "../../DataModel/TaxStep";
 import FormButton from "./FormButton";
 
-interface FormButtonsProps {
+type FormButtonsProps = {
   readonly step: TaxStep;
   readonly taxBehavior: TaxBehavior;
   readonly responses: TaxResponse[];

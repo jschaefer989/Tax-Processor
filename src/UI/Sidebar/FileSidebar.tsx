@@ -1,21 +1,20 @@
 import { useState } from "react";
 import type TaxResponse from "../../DataModel/TaxResponse";
-import { TaxForm } from "../../DataModel/TaxResponse";
-import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
+import { ExpandButton } from "../General/ExpandButton";
 import Form1040 from "./Form1040";
 import Form8949 from "./Form8949";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import RestartButton from "../Header/RestartButton";
 import ScheduleD from "./ScheduleD";
 
-interface FileSidebarProps {
+type FileSidebarProps = {
   readonly taxBehavior: TaxBehavior;
   readonly responses: TaxResponse[];
   readonly isExpanded: boolean;
   readonly year: number;
   readonly name: string;
   readonly isLoading: boolean;
-}
+};
 
 export default function FileSidebar(props: FileSidebarProps) {
   const {
@@ -32,15 +31,15 @@ export default function FileSidebar(props: FileSidebarProps) {
   const skippedResponses = responses.filter((response) => !response.isSkip());
 
   const form1040Responses = skippedResponses.filter(
-    (response) => response.form === TaxForm.Form1040,
+    (response) => response.form === "Form1040",
   );
 
   const form8949Page1Responses = skippedResponses.filter(
-    (response) => response.form === TaxForm.Form8949Page1,
+    (response) => response.form === "Form8949Page1",
   );
 
   const form8949Page2Responses = skippedResponses.filter(
-    (response) => response.form === TaxForm.Form8949Page2,
+    (response) => response.form === "Form8949Page2",
   );
 
   return (
@@ -67,7 +66,7 @@ export default function FileSidebar(props: FileSidebarProps) {
                     ? "Collapse all sections"
                     : "Expand all sections"
                 }
-                direction={ExpandDirection.Down}
+                direction="down"
                 inline={true}
               />
             </div>
@@ -86,22 +85,22 @@ export default function FileSidebar(props: FileSidebarProps) {
             <Form8949
               taxBehavior={taxBehavior}
               title="Form 8949 - Page 1"
-              form={TaxForm.Form8949Page1}
+              form="Form8949Page1"
               responses={form8949Page1Responses}
               isExpandedOverride={allSectionsExpanded}
             />
             <Form8949
               taxBehavior={taxBehavior}
               title="Form 8949 - Page 2"
-              form={TaxForm.Form8949Page2}
+              form="Form8949Page2"
               responses={form8949Page2Responses}
               isExpandedOverride={allSectionsExpanded}
             />
             <ScheduleD
               taxBehavior={taxBehavior}
               title="Schedule D"
-              form={TaxForm.ScheduleD}
-              responses={skippedResponses.filter((response) => response.form === TaxForm.ScheduleD)}
+              form="ScheduleD"
+              responses={skippedResponses.filter((response) => response.form === "ScheduleD")}
               isExpandedOverride={allSectionsExpanded}
             />
           </div>

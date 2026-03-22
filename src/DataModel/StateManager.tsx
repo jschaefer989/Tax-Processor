@@ -3,7 +3,7 @@ import type { DuplicateResponse } from "./DuplicateResponse";
 import type TaxResponse from "./TaxResponse";
 import type { Steps } from "./TaxStep";
 
-export interface StateSetters {
+export type StateSetters = {
   setCurrentStep: React.Dispatch<React.SetStateAction<Steps | undefined>>;
   setResponses: React.Dispatch<React.SetStateAction<TaxResponse[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;

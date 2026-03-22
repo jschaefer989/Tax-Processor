@@ -1,11 +1,6 @@
 import type { TaxForm } from "./TaxResponse";
 
-export enum ReadableForm {
-  Form1099 = "Form1099",
-  Form1099DIV = "Form1099DIV",
-  Form1099INT = "Form1099INT",
-  Form1099B = "Form1099B",
-}
+export type ReadableForm = "Form 1099" | "Form 1099-DIV" | "Form 1099-INT" | "Form 1099-B";
 
 export default class TaxFile {
   fromForm: ReadableForm;

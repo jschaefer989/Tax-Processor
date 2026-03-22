@@ -1,8 +1,8 @@
 import ExclamationMarkIcon from "./ExclamationMarkIcon";
 
-interface ErrorMessageProps {
+type ErrorMessageProps = {
   text: string;
-}
+};
 
 export default function ErrorMessage(props: ErrorMessageProps) {
   const { text } = props;

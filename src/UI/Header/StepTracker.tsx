@@ -1,18 +1,23 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
-import { Steps } from "../../DataModel/TaxStep";
+import type { Steps } from "../../DataModel/TaxStep";
 import CheckmarkIcon from "../General/CheckmarkIcon";
 
-interface StepTrackerProps {
+const steps: Steps[] = [
+  "demographics",
+  "income",
+  "taxAndCredits",
+  "paymentsAndRefundableCredits",
+];
+
+type StepTrackerProps = {
   readonly taxBehavior: TaxBehavior;
   readonly activeStep: Steps;
   readonly responses: TaxResponse[];
-}
+};
 
 export default function StepTracker(props: StepTrackerProps) {
   const { taxBehavior, activeStep, responses } = props;
-
-  const steps = Object.values(Steps);
 
   return (
     <div className="stepper">
@@ -27,12 +32,12 @@ export default function StepTracker(props: StepTrackerProps) {
   );
 }
 
-interface StepTrackerNumbersProps {
+type StepTrackerNumbersProps = {
   readonly taxBehavior: TaxBehavior;
   readonly steps: Steps[];
   readonly activeStep: Steps;
   readonly responses: TaxResponse[];
-}
+};
 
 function StepTrackerNumbers(props: StepTrackerNumbersProps) {
   const { taxBehavior, steps, activeStep, responses } = props;
@@ -57,7 +62,7 @@ function StepTrackerNumbers(props: StepTrackerNumbersProps) {
   );
 }
 
-interface StepTrackerNumberProps {
+type StepTrackerNumberProps = {
   readonly taxBehavior: TaxBehavior;
   readonly step: Steps;
   readonly index: number;
@@ -65,7 +70,7 @@ interface StepTrackerNumberProps {
   readonly steps: Steps[];
   readonly activeStep: Steps;
   readonly responses: TaxResponse[];
-}
+};
 
 function OneStepTrackerNumber(props: StepTrackerNumberProps) {
   const { taxBehavior, step, index, activeIndex, steps, activeStep, responses } = props;
@@ -106,10 +111,10 @@ function OneStepTrackerNumber(props: StepTrackerNumberProps) {
   );
 }
 
-interface StepTrackerLabelsProps {
+type StepTrackerLabelsProps = {
   readonly steps: Steps[];
   readonly activeStep: Steps;
-}
+};
 
 function StepTrackerLabels(props: StepTrackerLabelsProps) {
   const { steps, activeStep } = props;
@@ -130,11 +135,11 @@ function StepTrackerLabels(props: StepTrackerLabelsProps) {
   );
 }
 
-interface OneStepTrackerLabelProps {
+type OneStepTrackerLabelProps = {
   readonly step: Steps;
   readonly activeIndex: number;
   readonly index: number;
-}
+};
 
 function OneStepTrackerLabel(props: OneStepTrackerLabelProps) {
   const { step, activeIndex, index } = props;
@@ -157,13 +162,15 @@ function OneStepTrackerLabel(props: OneStepTrackerLabelProps) {
 
 function getStepLabel(step: Steps): string {
   switch (step) {
-    case Steps.Demographics:
+    case "demographics":
       return "Demographics";
-    case Steps.Income:
+    case "income":
       return "Income";
-    case Steps.TaxAndCredits:
+    case "taxAndCredits":
       return "Tax and Credits";
-    case Steps.PaymentsAndRefundableCredits:
+    case "paymentsAndRefundableCredits":
       return "Payments and Refundable Credits";
+    default:
+      return step;
   }
 }

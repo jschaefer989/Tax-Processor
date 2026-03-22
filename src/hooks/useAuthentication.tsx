@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-interface UseAuthenticationResult {
+type UseAuthenticationResult = {
   isAuthenticated: boolean;
   authLoading: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;

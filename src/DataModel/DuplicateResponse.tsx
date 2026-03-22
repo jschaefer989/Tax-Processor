@@ -1,4 +1,4 @@
-import TaxResponse, { TaxFieldLabel, TaxForm } from "./TaxResponse";
+import TaxResponse, { type TaxFieldLabel, type TaxForm } from "./TaxResponse";
 
 export class DuplicateResponse extends TaxResponse {
   newValue: string;

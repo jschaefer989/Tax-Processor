@@ -2,12 +2,12 @@ import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
 
-interface NextButtonProps {
+type NextButtonProps = {
   readonly taxBehavior: TaxBehavior;
   readonly currentStep: Steps;
   readonly isLoading: boolean;
   readonly responses: TaxResponse[];
-}
+};
 
 export default function NextButton(props: NextButtonProps) {
   const { taxBehavior, currentStep, isLoading, responses } = props;

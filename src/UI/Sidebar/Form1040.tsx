@@ -1,16 +1,14 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import TaxResponse, {
-  TaxForm,
-} from "../../DataModel/TaxResponse";
-import { Steps } from "../../DataModel/TaxStep";
+import TaxResponse from "../../DataModel/TaxResponse";
+import type { Steps } from "../../DataModel/TaxStep";
 import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
-interface Form1040Props {
+type Form1040Props = {
   taxBehavior: TaxBehavior;
   responses: TaxResponse[];
   isExpandedOverride?: boolean;
-}
+};
 
 export default function Form1040(props: Form1040Props) {
   const { taxBehavior, responses, isExpandedOverride } = props;
@@ -20,19 +18,19 @@ export default function Form1040(props: Form1040Props) {
   }
 
   const demographicsResponses = responses.filter(
-    (response) => hasSubsection(response, Steps.Demographics),
+    (response) => hasSubsection(response, "demographics"),
   );
 
   const incomeResponses = responses.filter(
-    (response) => hasSubsection(response, Steps.Income),
+    (response) => hasSubsection(response, "income"),
   );
 
   const taxAndCreditsResponses = responses.filter(
-    (response) => hasSubsection(response, Steps.TaxAndCredits),
+    (response) => hasSubsection(response, "taxAndCredits"),
   );
 
   const paymentsAndRefundableCreditsResponses = responses.filter(
-    (response) => hasSubsection(response, Steps.PaymentsAndRefundableCredits),
+    (response) => hasSubsection(response, "paymentsAndRefundableCredits"),
   );
 
   if (
@@ -48,7 +46,7 @@ export default function Form1040(props: Form1040Props) {
     <FormHeader
       taxBehavior={taxBehavior}
       title="Form 1040"
-      form={TaxForm.Form1040}
+      form="Form1040"
       isExpandedOverride={isExpandedOverride}
     >
       {demographicsResponses.length > 0 && (

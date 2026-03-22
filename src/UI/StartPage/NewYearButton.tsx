@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import type { StartBehavior } from "../../DataModel/StartBehavior";
 
-interface NewYearButtonProps {
+type NewYearButtonProps = {
   readonly startBehavior: StartBehavior;
   readonly years: number[];
   readonly isLoading: boolean;
-}
+};
 
 export default function NewYearButton(props: NewYearButtonProps) {
   const { startBehavior, years, isLoading } = props;

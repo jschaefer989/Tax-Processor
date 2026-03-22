@@ -1,18 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
+import useAuthentication from "../hooks/useAuthentication";
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import { useTaxBehavior } from "../hooks/useTaxBehavior";
 import AuthPage from "./Auth/AuthPage";
-import { DuplicateDataPopup } from "./Form/DuplicateDataPopup";
+import DuplicateDataPopup from "./Form/DuplicateDataPopup";
 import MainForm from "./Form/MainForm";
 import ContextMenu from "./General/ContextMenu";
-import { ExpandButton, ExpandDirection } from "./General/ExpandButton";
+import { ExpandButton } from "./General/ExpandButton";
 import Toast from "./General/Toast";
 import MainAppHeader from "./Header/MainAppHeader";
 import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
-import useAuthentication from "../hooks/useAuthentication";
-
-// TODO: make custom hooks for authentication and tax behavior, and split this component up into smaller pieces. This file is getting pretty unwieldy.
 
 export default function App() {
   const { isAuthenticated, authLoading, setIsAuthenticated } =
@@ -132,7 +130,7 @@ export default function App() {
                 expanded={sidebarExpanded}
                 setExpanded={taxBehavior.state.setSidebarExpanded}
                 title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
-                direction={ExpandDirection.Right}
+                direction="right"
               />
             )}
 

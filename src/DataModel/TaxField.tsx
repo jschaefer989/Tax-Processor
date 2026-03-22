@@ -1,16 +1,9 @@
 import type SelectionOption from "./SelectionOption";
 import type { TaxFieldLabel, TaxForm } from "./TaxResponse";
 
-export enum TaxFieldType {
-  Text = "text",
-  Number = "number",
-  Currency = "currency",
-  Date = "date",
-  Select = "select",
-  Button = "button",
-}
+export type TaxFieldType = "text" | "number" | "currency" | "date" | "select" | "button";
 
-interface ConstructionOptions {
+type ConstructionOptions = {
   isRequired?: boolean;
   helperText?: string;
   selectionOptions?: SelectionOption[];

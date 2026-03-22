@@ -5,13 +5,13 @@ import NameButton from "./NameButton";
 import NewYearButton from "./NewYearButton";
 import YearButton from "./YearButton";
 
-interface YearSelectionControlsProps {
+type YearSelectionControlsProps = {
   startBehavior: StartBehavior;
   isLoading: boolean;
   year: number | undefined;
   names: string[];
   years: number[];
-}
+};
 
 export default function YearSelectionControls(
   props: YearSelectionControlsProps,

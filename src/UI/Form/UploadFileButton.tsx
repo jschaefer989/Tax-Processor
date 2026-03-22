@@ -3,10 +3,10 @@ import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxFile from "../../DataModel/TaxFile";
 import Popup from "../General/Popup";
 
-interface UploadFileButtonProps {
+type UploadFileButtonProps = {
   taxBehavior: TaxBehavior;
   file: TaxFile;
-}
+};
 
 export default function UploadFileButton(props: UploadFileButtonProps) {
   const { taxBehavior, file } = props;

@@ -1,11 +1,10 @@
-export enum Orientation {
-    Down = "down",
-    Up = "up",
-    Left = "left",
-    Right = "right"
-}
+export type Orientation =
+  | "down"
+  | "up"
+  | "left"
+  | "right";
 
-interface ExpandArrowIconProps {
+type ExpandArrowIconProps = {
     className?: string;
     size?: number | string;
     orientation?: Orientation;
@@ -39,13 +38,13 @@ export default function ExpandArrowIcon(props: ExpandArrowIconProps) {
 
 function getRotation(orientation: Orientation): number {
   switch (orientation) {
-    case Orientation.Up:
+    case "up":
       return 180;
-    case Orientation.Left:
+    case "left":
       return -90;
-    case Orientation.Right:
+    case "right":
       return 90;
-    case Orientation.Down:
+    case "down":
     default:
       return 0;
   }

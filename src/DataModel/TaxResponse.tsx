@@ -1,52 +1,50 @@
-export enum TaxForm {
-  Form1040 = "Form1040",
-  Form8949Page1 = "Form8949Page1",
-  Form8949Page2 = "Form8949Page2",
-  ScheduleD = "ScheduleD",
-}
+export type TaxForm =
+  | "Form1040"
+  | "Form8949Page1"
+  | "Form8949Page2"
+  | "ScheduleD";
 
-export enum TaxFieldLabel {
-  oneA = "oneA",
-  oneB = "oneB",
-  oneC = "oneC",
-  oneD = "oneD",
-  oneE = "oneE",
-  oneF = "oneF",
-  oneG = "oneG",
-  oneH = "oneH",
-  twoA = "twoA",
-  twoB = "twoB",
-  twoD = "twoD",
-  twoE = "twoE",
-  twoG = "twoG",
-  twoH = "twoH",  
-  threeA = "threeA",
-  threeB = "threeB",
-  threeD = "threeD",
-  threeE = "threeE",
-  threeG = "threeG",
-  threeH = "threeH",
-  seven = "seven",
-  sevenA = "sevenA",
-  eightD = "eightD",
-  eightE = "eightE",
-  eightG = "eightG",
-  eightH = "eightH",
-  nineD = "nineD",
-  nineE = "nineE",
-  nineG = "nineG",
-  nineH = "nineH",
-  tenD = "tenD",
-  tenE = "tenE",
-  tenG = "tenG",
-  tenH = "tenH",
-  twelveE = "twelveE",
-  fifteen = "fifteen",
-  sixteen = "sixteen",
-  FilingStatus = "FilingStatus",
-}
+export type TaxFieldLabel =
+  | "oneA"
+  | "oneB"
+  | "oneC"
+  | "oneD"
+  | "oneE"
+  | "oneF"
+  | "oneG"
+  | "oneH"
+  | "twoA"
+  | "twoB"
+  | "twoD"
+  | "twoE"
+  | "twoG"
+  | "twoH"
+  | "threeA"
+  | "threeB"
+  | "threeD"
+  | "threeE"
+  | "threeG"
+  | "threeH"
+  | "seven"
+  | "sevenA"
+  | "eightD"
+  | "eightE"
+  | "eightG"
+  | "eightH"
+  | "nineD"
+  | "nineE"
+  | "nineG"
+  | "nineH"
+  | "tenD"
+  | "tenE"
+  | "tenG"
+  | "tenH"
+  | "twelveE"
+  | "fifteen"
+  | "sixteen"
+  | "FilingStatus";
 
-interface ConstructionOptions {
+type ConstructionOptions = {
   fromCode?: string;
   subsection?: string;
 }
@@ -76,79 +74,79 @@ export default class TaxResponse {
 
   getUserFriendlyLabel(): string {
     switch (this.label) {
-      case TaxFieldLabel.oneA:
+      case "oneA":
         return "1a";
-      case TaxFieldLabel.oneB:
+      case "oneB":
         return "1b";
-      case TaxFieldLabel.oneC:
+      case "oneC":
         return "1c";
-      case TaxFieldLabel.oneD:
+      case "oneD":
         return "1d";
-      case TaxFieldLabel.oneE:
+      case "oneE":
         return "1e";
-      case TaxFieldLabel.oneF:
+      case "oneF":
         return "1f";
-      case TaxFieldLabel.oneG:
+      case "oneG":
         return "1g";
-      case TaxFieldLabel.oneH:
+      case "oneH":
         return "1h";
-      case TaxFieldLabel.twoA:
+      case "twoA":
         return "2a";
-      case TaxFieldLabel.twoB:
+      case "twoB":
         return "2b";
-      case TaxFieldLabel.twoD:
+      case "twoD":
         return "2d";
-      case TaxFieldLabel.twoE:
+      case "twoE":
         return "2e";
-      case TaxFieldLabel.twoG:
+      case "twoG":
         return "2g";
-      case TaxFieldLabel.twoH:
+      case "twoH":
         return "2h";
-      case TaxFieldLabel.threeA:
+      case "threeA":
         return "3a";
-      case TaxFieldLabel.threeB:
-        return "3b";      
-      case TaxFieldLabel.threeD:
+      case "threeB":
+        return "3b";
+      case "threeD":
         return "3d";
-      case TaxFieldLabel.threeE:
+      case "threeE":
         return "3e";
-      case TaxFieldLabel.threeG:
+      case "threeG":
         return "3g";
-      case TaxFieldLabel.threeH:
+      case "threeH":
         return "3h";
-      case TaxFieldLabel.seven:
+      case "seven":
         return "7";
-      case TaxFieldLabel.sevenA:
+      case "sevenA":
         return "7a";
-      case TaxFieldLabel.eightD:
+      case "eightD":
         return "8d";
-      case TaxFieldLabel.eightE:
+      case "eightE":
         return "8e";
-      case TaxFieldLabel.eightG:
+      case "eightG":
         return "8g";
-      case TaxFieldLabel.eightH:
+      case "eightH":
         return "8h";
-      case TaxFieldLabel.nineD:
+      case "nineD":
         return "9d";
-      case TaxFieldLabel.nineE:
+      case "nineE":
         return "9e";
-      case TaxFieldLabel.nineG:
+      case "nineG":
         return "9g";
-      case TaxFieldLabel.nineH:
+      case "nineH":
         return "9h";
-      case TaxFieldLabel.tenD:
+      case "tenD":
         return "10d";
-      case TaxFieldLabel.tenE:
+      case "tenE":
         return "10e";
-      case TaxFieldLabel.tenG:
+      case "tenG":
         return "10g";
-      case TaxFieldLabel.tenH:
+      case "tenH":
         return "10h";
-      case TaxFieldLabel.twelveE:
+      case "twelveE":
         return "12e";
-      case TaxFieldLabel.fifteen:
+      case "fifteen":
         return "15";
-      case TaxFieldLabel.sixteen:
+      case "sixteen":
         return "16";
       default:
         return this.label;
@@ -157,13 +155,13 @@ export default class TaxResponse {
 
   getUserFriendlyForm(): string {
     switch (this.form) {
-      case TaxForm.Form1040:
+      case "Form1040":
         return "Form 1040";
-      case TaxForm.Form8949Page1:
+      case "Form8949Page1":
         return "Form 8949 (Page 1)";
-      case TaxForm.Form8949Page2:
+      case "Form8949Page2":
         return "Form 8949 (Page 2)";
-      case TaxForm.ScheduleD:
+      case "ScheduleD":
         return "Schedule D";
       default:
         return this.form;
@@ -172,79 +170,79 @@ export default class TaxResponse {
 
   getFormLabelOrder(): number {
     switch (this.label) {
-      case TaxFieldLabel.oneA:
+      case "oneA":
         return 1;
-      case TaxFieldLabel.oneB:
+      case "oneB":
         return 2;
-      case TaxFieldLabel.oneC:
+      case "oneC":
         return 3;
-      case TaxFieldLabel.oneD:
+      case "oneD":
         return 4;
-      case TaxFieldLabel.oneE:
+      case "oneE":
         return 5;
-      case TaxFieldLabel.oneF:
+      case "oneF":
         return 6;
-      case TaxFieldLabel.oneG:
+      case "oneG":
         return 7;
-      case TaxFieldLabel.oneH:
+      case "oneH":
         return 8;
-      case TaxFieldLabel.twoA:
+      case "twoA":
         return 9;
-      case TaxFieldLabel.twoB:
+      case "twoB":
         return 10;
-      case TaxFieldLabel.twoD:
+      case "twoD":
         return 11;
-      case TaxFieldLabel.twoE:
+      case "twoE":
         return 12;
-      case TaxFieldLabel.twoG:
+      case "twoG":
         return 13;
-      case TaxFieldLabel.twoH:
+      case "twoH":
         return 14;
-      case TaxFieldLabel.threeA:
+      case "threeA":
         return 15;
-      case TaxFieldLabel.threeB:
+      case "threeB":
         return 16;
-      case TaxFieldLabel.threeD:
+      case "threeD":
         return 17;
-      case TaxFieldLabel.threeE:
+      case "threeE":
         return 18;
-      case TaxFieldLabel.threeG:
+      case "threeG":
         return 19;
-      case TaxFieldLabel.threeH:
+      case "threeH":
         return 20;
-      case TaxFieldLabel.seven:
+      case "seven":
         return 21;
-      case TaxFieldLabel.sevenA:
+      case "sevenA":
         return 21.1;
-      case TaxFieldLabel.eightD:
+      case "eightD":
         return 22;
-      case TaxFieldLabel.eightE:
+      case "eightE":
         return 23;
-      case TaxFieldLabel.eightG:
+      case "eightG":
         return 24;
-      case TaxFieldLabel.eightH:
+      case "eightH":
         return 25;
-      case TaxFieldLabel.nineD:
+      case "nineD":
         return 26;
-      case TaxFieldLabel.nineE:
+      case "nineE":
         return 27;
-      case TaxFieldLabel.nineG:
+      case "nineG":
         return 28;
-      case TaxFieldLabel.nineH:
+      case "nineH":
         return 29;
-      case TaxFieldLabel.tenD:
+      case "tenD":
         return 30;
-      case TaxFieldLabel.tenE:
+      case "tenE":
         return 31;
-      case TaxFieldLabel.tenG:
+      case "tenG":
         return 32;
-      case TaxFieldLabel.tenH:
+      case "tenH":
         return 33;
-      case TaxFieldLabel.twelveE:
+      case "twelveE":
         return 34;
-      case TaxFieldLabel.fifteen:
+      case "fifteen":
         return 35;
-      case TaxFieldLabel.sixteen:
+      case "sixteen":
         return 36;
       default:
         return Number.MAX_SAFE_INTEGER;
@@ -257,7 +255,7 @@ export default class TaxResponse {
 
   isSkip(): boolean {
     switch (this.label) {
-      case TaxFieldLabel.FilingStatus:
+      case "FilingStatus":
         return true;
       default:
         return false;

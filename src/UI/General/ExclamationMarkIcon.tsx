@@ -1,6 +1,6 @@
-interface ExclamationMarkIconProps {
+type ExclamationMarkIconProps = {
   className?: string;
-}
+};
 
 export default function ExclamationMarkIcon(props: ExclamationMarkIconProps) {
   const { className } = props;

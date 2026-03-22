@@ -1,14 +1,13 @@
 import { useCallback } from "react";
-import ExpandArrowIcon, { Orientation } from "./ExpandArrowIcon";
+import ExpandArrowIcon, { type Orientation } from "./ExpandArrowIcon";
 
-export enum ExpandDirection {
-  Left,
-  Right,
-  Down,
-  Up,
-}
+export type ExpandDirection =
+  | "left"
+  | "right"
+  | "down"
+  | "up";
 
-interface ExpandButtonProps {
+type ExpandButtonProps = {
   expanded: boolean;
   setExpanded: (value: boolean) => void;
   title: string;
@@ -21,7 +20,7 @@ export function ExpandButton(props: ExpandButtonProps) {
     expanded,
     setExpanded,
     title,
-    direction = ExpandDirection.Left,
+    direction = "left",
     inline = false,
   } = props;
 
@@ -57,13 +56,13 @@ function getOrientation(
   expanded: boolean,
 ): Orientation {
   switch (direction) {
-    case ExpandDirection.Left:
-      return expanded ? Orientation.Right : Orientation.Left;
-    case ExpandDirection.Right:
-      return expanded ? Orientation.Left : Orientation.Right;
-    case ExpandDirection.Down:
-      return expanded ? Orientation.Up : Orientation.Down;
-    case ExpandDirection.Up:
-      return expanded ? Orientation.Down : Orientation.Up;
+    case "left":
+      return expanded ? "right" : "left";
+    case "right":
+      return expanded ? "left" : "right";
+    case "down":
+      return expanded ? "up" : "down";
+    case "up":
+      return expanded ? "down" : "up";
   }
 }

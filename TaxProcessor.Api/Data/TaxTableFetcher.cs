@@ -7,23 +7,26 @@ namespace TaxProcessor.Api.Data;
 
 public partial class TaxTableFetcher(IHttpClientFactory httpClientFactory, IMemoryCache cache)
 {
+
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly IMemoryCache _cache = cache;
     private const string CacheKey = "irsTaxTable";
     private const string IrsUrl = "https://www.irs.gov/publications/p1040#d0e40925";
 
     public async Task<int?> GetTaxTableAsync(FilingStatus filingStatus, int taxableIncome)
     {
         var cacheKey = $"{CacheKey}:{filingStatus}:{taxableIncome}";
-        if (cache.TryGetValue(cacheKey, out int? cached) && cached != null)
+        if (_cache.TryGetValue(cacheKey, out int? cached) && cached != null)
         {
             return cached;
         }
 
         try
         {
-            var client = httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient();
             var html = await client.GetStringAsync(IrsUrl);
             var parsed = ParseTaxTable(html, filingStatus, taxableIncome);
-            cache.Set(cacheKey, parsed, TimeSpan.FromDays(1));
+            _cache.Set(cacheKey, parsed, TimeSpan.FromDays(1));
             return parsed;
         }
         catch (Exception ex)

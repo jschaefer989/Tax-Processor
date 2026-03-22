@@ -5,7 +5,7 @@ import HeaderButtons from "./HeaderButtons";
 import HeaderTitle from "./HeaderTitle";
 import StepTracker from "./StepTracker";
 
-interface HeaderProps {
+type HeaderProps = {
   readonly currentStep: Steps | undefined;
   readonly isLoading: boolean;
   readonly taxBehavior: TaxBehavior;
@@ -14,7 +14,7 @@ interface HeaderProps {
   readonly year?: number;
   readonly name?: string;
   readonly noDbConnection: boolean;
-}
+};
 
 export default function MainAppHeader(props: HeaderProps) {
   const {

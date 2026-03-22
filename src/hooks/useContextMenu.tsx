@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
 
-interface UseContextMenuResult {
+type UseContextMenuResult = {
   contextMenu: ContextMenuProps | undefined;
   setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuProps | undefined>>;
   onWhitespaceClick: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-interface UseContextMenuProps {
+type UseContextMenuProps = {
     keepOpenOnClick?: boolean;
 }
 

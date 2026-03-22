@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { StartBehavior } from "../DataModel/StartBehavior";
 import type { TaxBehavior } from "../DataModel/TaxBehavior";
 
-interface UseStartBehaviorResult {
+type UseStartBehaviorResult = {
     years: number[];
     names: string[];
     newYear: boolean;

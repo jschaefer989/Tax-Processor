@@ -1,12 +1,11 @@
 import { useCallback } from "react";
-import { Steps } from "../../DataModel/TaxStep";
 import type { StartBehavior } from "../../DataModel/StartBehavior";
 
-interface BeginButtonProps {
+type BeginButtonProps = {
   readonly startBehavior: StartBehavior;
   readonly tempName?: string;
   readonly isLoading: boolean;
-}
+};
 
 export default function BeginButton(props: BeginButtonProps) {
   const { tempName, isLoading, startBehavior } = props;
@@ -16,7 +15,7 @@ export default function BeginButton(props: BeginButtonProps) {
     if (!stepsLoaded) {
       return;
     }
-    startBehavior.taxBehavior.state.setCurrentStep(Steps.Income);
+    startBehavior.taxBehavior.state.setCurrentStep("income");
     startBehavior.taxBehavior.state.setShowStartPage(false);
   }, [startBehavior]);
 

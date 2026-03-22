@@ -8,7 +8,9 @@ export function useRefreshDbConnection(
   enabled: boolean,
 ) {
   useEffect(() => {
-    if (!enabled) {
+    // Only poll while authenticated users are on the start page and
+    // currently marked as disconnected.
+    if (!enabled || !showStartPage || !noDbConnection) {
       return;
     }
 
@@ -22,12 +24,6 @@ export function useRefreshDbConnection(
     };
 
     void refreshDbConnection();
-
-    if (!noDbConnection) {
-      return () => {
-        isCancelled = true;
-      };
-    }
 
     const intervalId = window.setInterval(() => {
       void refreshDbConnection();

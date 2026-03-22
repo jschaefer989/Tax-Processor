@@ -1,18 +1,16 @@
 import { useCallback, useState, type JSX } from "react";
-import ContextMenuOption, {
-  ContextMenuIcon,
-} from "../../DataModel/ContextMenuOption";
+import ContextMenuOption from "../../DataModel/ContextMenuOption";
 import { TaxBehavior } from "../../DataModel/TaxBehavior";
 import TaxResponse from "../../DataModel/TaxResponse";
-import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
+import { ExpandButton } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
 import FormLine from "./FormLine";
 
-interface FormSectionProps {
+type FormSectionProps = {
   taxBehavior: TaxBehavior;
   title?: string;
   responses: TaxResponse[];
-}
+};
 
 export default function FormSection(props: FormSectionProps) {
   const { taxBehavior, title, responses } = props;
@@ -49,7 +47,7 @@ export default function FormSection(props: FormSectionProps) {
           new ContextMenuOption(
             "Delete " + (title ?? "section"), 
             onDeleteSection,
-            ContextMenuIcon.Delete,
+            "Delete",
           ),
         ],
       });
@@ -85,7 +83,7 @@ export default function FormSection(props: FormSectionProps) {
             expanded={isExpanded}
             setExpanded={setIsExpanded}
             title={isExpanded ? "Collapse section" : "Expand section"}
-            direction={ExpandDirection.Down}
+            direction="down"
             inline={true}
           />
         )}

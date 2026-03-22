@@ -6,7 +6,7 @@ import LastSavedText from "./LastSavedText";
 import { ReturnButton } from "./ReturnButton";
 import SaveButton from "./SaveButton";
 
-interface HeaderButtonsProps {
+type HeaderButtonsProps = {
   readonly currentStep: Steps | undefined;
   readonly responses: TaxResponse[];
   readonly taxBehavior: TaxBehavior;
@@ -15,7 +15,7 @@ interface HeaderButtonsProps {
   readonly year?: number;
   readonly name?: string;
   readonly noDbConnection: boolean;
-}
+};
 
 export default function HeaderButtons(props: HeaderButtonsProps) {
   const {

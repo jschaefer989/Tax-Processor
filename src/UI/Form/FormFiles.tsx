@@ -2,7 +2,7 @@ import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type { TaxStep } from "../../DataModel/TaxStep";
 import UploadFileButton from "./UploadFileButton";
 
-interface FormFilesProps {
+type FormFilesProps = {
   taxBehavior: TaxBehavior;
   step: TaxStep;
 }

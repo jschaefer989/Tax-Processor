@@ -2,10 +2,10 @@ import { useCallback } from "react";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
-interface FormValueProps {
+type FormValueProps = {
     readonly taxBehavior: TaxBehavior;
     readonly response: TaxResponse;
-}
+};
 
 export function FormValue(props: FormValueProps) {
     const { taxBehavior, response } = props;

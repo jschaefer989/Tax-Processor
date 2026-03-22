@@ -3,10 +3,10 @@ import type { StartBehavior } from "../../DataModel/StartBehavior";
 import ExclamationMarkIcon from "../General/ExclamationMarkIcon";
 import ExpandArrowIcon from "../General/ExpandArrowIcon";
 
-interface DatabaseConnectionFormProps {
+type DatabaseConnectionFormProps = {
   readonly startBehavior: StartBehavior;
   readonly isLoading: boolean;
-}
+};
 
 export default function DatabaseConnectionForm(
   props: DatabaseConnectionFormProps,
@@ -35,7 +35,6 @@ export default function DatabaseConnectionForm(
 
     if (isConnected) {
       startBehavior.loadYears();
-      startBehavior.taxBehavior.state.setIsAuthenticated?.(false);
     }
   }, [dbHost, dbPort, dbName, dbUsername, dbPassword]);
 

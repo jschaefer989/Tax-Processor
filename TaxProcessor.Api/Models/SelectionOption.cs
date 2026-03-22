@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace TaxProcessor.Api.Data;
+namespace TaxProcessor.Api.Models;
 
 public class SelectionOption
 {

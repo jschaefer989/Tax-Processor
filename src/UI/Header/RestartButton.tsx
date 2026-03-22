@@ -1,15 +1,15 @@
 import { useCallback } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import { Steps } from "../../DataModel/TaxStep";
+import { type Steps } from "../../DataModel/TaxStep";
 import type TaxResponse from "../../DataModel/TaxResponse";
 
-interface DeleteButtonProps {
+type DeleteButtonProps = {
   readonly taxBehavior: TaxBehavior;
   readonly responses: TaxResponse[];
   readonly year: number;
   readonly name: string;
   readonly isLoading: boolean;
-}
+};
 
 export default function RestartButton(props: DeleteButtonProps) {
   const {
@@ -26,7 +26,7 @@ export default function RestartButton(props: DeleteButtonProps) {
     );
     if (confirmed) {
       taxBehavior.state.setResponses([]);
-      taxBehavior.state.setCurrentStep(Steps.Income);
+      taxBehavior.state.setCurrentStep("income");
       taxBehavior.state.setLastSavedTime(undefined);
     }
   }, [name, year]);

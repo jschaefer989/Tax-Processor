@@ -1,17 +1,17 @@
 import { useCallback } from "react";
 import ContextMenuOption, {
-  ContextMenuIcon,
+  type ContextMenuIcon,
 } from "../../DataModel/ContextMenuOption";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import FormValueField from "./FormValueField";
 import type { TaxForm } from "../../DataModel/TaxResponse";
 
-interface FormLineProps {
+type FormLineProps = {
   readonly taxBehavior: TaxBehavior;
   readonly form: TaxForm;
   readonly responses: TaxResponse[];
-}
+};
 
 export default function FormLine(props: FormLineProps) {
   const { taxBehavior, form, responses } = props;
@@ -45,7 +45,7 @@ export default function FormLine(props: FormLineProps) {
           new ContextMenuOption(
             "Delete line " + line,
             onDeleteLine,
-            ContextMenuIcon.Delete,
+            "Delete",
           ),
         ],
       });

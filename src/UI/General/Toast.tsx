@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 
-interface ToastProps {
+type ToastProps = {
   readonly toastMessage: string;
   readonly taxBehavior: TaxBehavior;
-}
+};
 
 export default function Toast(props: ToastProps) {
   const { toastMessage, taxBehavior } = props;

@@ -2,12 +2,12 @@ import { DuplicateResponse } from "./DuplicateResponse";
 import ServerNormalizer from "./ServerNormalizer";
 import type { StateSetters } from "./StateManager";
 import StateManager from "./StateManager";
-import TaxButton, { FieldCalculationCallback } from "./TaxButton";
+import TaxButton, { type FieldCalculationCallback } from "./TaxButton";
 import TaxField from "./TaxField";
-import TaxFile, { ReadableForm } from "./TaxFile";
+import TaxFile, { type ReadableForm } from "./TaxFile";
 import TaxProgress from "./TaxProgress";
-import TaxResponse, { TaxFieldLabel, TaxForm } from "./TaxResponse";
-import { Steps, TaxStep } from "./TaxStep";
+import TaxResponse, { type TaxFieldLabel, type TaxForm } from "./TaxResponse";
+import { TaxStep, type Steps } from "./TaxStep";
 
 export class TaxBehavior {
   /** Static steps and associated fields loaded from the database for the user to populate */

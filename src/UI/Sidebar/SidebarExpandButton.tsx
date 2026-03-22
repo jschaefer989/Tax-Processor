@@ -1,10 +1,10 @@
 import { useCallback } from "react";
-import ExpandArrowIcon, { Orientation } from "../General/ExpandArrowIcon";
+import ExpandArrowIcon from "../General/ExpandArrowIcon";
 
-interface SidebarExpandButtonProps {
+type SidebarExpandButtonProps = {
   sidebarExpanded: boolean;
   setSidebarExpanded: React.Dispatch<React.SetStateAction<boolean>>;
-}
+};
 
 export default function SidebarExpandButton(props: SidebarExpandButtonProps) {
   const { sidebarExpanded, setSidebarExpanded } = props;
@@ -23,7 +23,7 @@ export default function SidebarExpandButton(props: SidebarExpandButtonProps) {
       >
         <div className="sidebar-toggle-header">
           <ExpandArrowIcon
-            orientation={sidebarExpanded ? Orientation.Left : Orientation.Right}
+            orientation={sidebarExpanded ? "left" : "right"}
             size="10px"
           />
         </div>

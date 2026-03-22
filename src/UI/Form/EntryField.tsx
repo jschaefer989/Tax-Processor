@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxField from "../../DataModel/TaxField";
-import { TaxFieldType } from "../../DataModel/TaxField";
 import TaxResponse, {
   type TaxFieldLabel,
   type TaxForm,
 } from "../../DataModel/TaxResponse";
 
-interface EntryFieldComponentProps {
+type EntryFieldComponentProps = {
   readonly field: TaxField;
   readonly line: number;
   readonly responses: TaxResponse[];
@@ -69,7 +68,7 @@ export default function EntryField(props: EntryFieldComponentProps) {
     field.isRequired &&
     String(matchingValue ?? "").trim().length === 0;
 
-  if (normalizedType === TaxFieldType.Select) {
+  if (normalizedType === "select") {
     return (
       <select
         id={field.taxFieldLabel}
@@ -94,8 +93,8 @@ export default function EntryField(props: EntryFieldComponentProps) {
   }
 
   const inputType =
-    normalizedType === TaxFieldType.Currency ||
-    normalizedType === TaxFieldType.Number
+    normalizedType === "currency" ||
+    normalizedType === "number"
       ? "number"
       : normalizedType;
   return (
@@ -110,11 +109,11 @@ export default function EntryField(props: EntryFieldComponentProps) {
       title={hasValidationError ? "This field is required" : undefined}
       type={inputType}
       inputMode={
-        normalizedType === TaxFieldType.Currency ? "decimal" : undefined
+        normalizedType === "currency" ? "decimal" : undefined
       }
-      step={normalizedType === TaxFieldType.Currency ? "0.01" : undefined}
+      step={normalizedType === "currency" ? "0.01" : undefined}
       placeholder={
-        normalizedType === TaxFieldType.Currency ? "0.00" : undefined
+        normalizedType === "currency" ? "0.00" : undefined
       }
       value={matchingValue ?? ""}
       onChange={(event) => handleResponseChange(event.target.value)}

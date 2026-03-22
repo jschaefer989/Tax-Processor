@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
-import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
+import { ExpandButton, type ExpandDirection } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
 import ContextMenuOption, {
-  ContextMenuIcon,
+  type ContextMenuIcon,
 } from "../../DataModel/ContextMenuOption";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import { TaxForm } from "../../DataModel/TaxResponse";
+import { type TaxForm } from "../../DataModel/TaxResponse";
 
-interface FormHeaderProps {
+type FormHeaderProps = {
   taxBehavior: TaxBehavior;
   title: string;
   form: TaxForm;
   formCode?: string;
   children?: React.ReactNode;
   isExpandedOverride?: boolean;
-}
+};
 
 export function FormHeader(props: FormHeaderProps) {
   const { taxBehavior, title, form, formCode, children, isExpandedOverride } =
@@ -51,7 +51,7 @@ export function FormHeader(props: FormHeaderProps) {
           new ContextMenuOption(
             "Delete " + title,
             onDeleteForm,
-            ContextMenuIcon.Delete,
+            "Delete",
           ),
         ],
       });
@@ -73,7 +73,7 @@ export function FormHeader(props: FormHeaderProps) {
           expanded={isExpanded}
           setExpanded={setIsExpanded}
           title={isExpanded ? "Collapse section" : "Expand section"}
-          direction={ExpandDirection.Down}
+          direction="down"
           inline={true}
         />
       </div>

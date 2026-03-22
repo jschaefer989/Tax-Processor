@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 
-interface Popup {
+type Popup = {
   title: string;
   children: React.ReactNode;
   onSubmit: () => void
   onClose: () => void;
   submitButtonText?: string;
-}
+};
 
 export default function Popup(props: Popup) {
   const { title, onClose, onSubmit, submitButtonText, children } = props;

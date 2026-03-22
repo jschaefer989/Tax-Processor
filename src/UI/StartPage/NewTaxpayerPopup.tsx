@@ -1,13 +1,12 @@
 import { useCallback, useState } from "react";
 import type { StartBehavior } from "../../DataModel/StartBehavior";
-import { Steps } from "../../DataModel/TaxStep";
 import Popup from "../General/Popup";
 import NewTaxpayerField from "./NewTaxpayerField";
 
-interface NewYearPageProps {
+type NewYearPageProps = {
   readonly startBehavior: StartBehavior;
   readonly year: number;
-}
+};
 
 export default function NewTaxpayerPopup(props: NewYearPageProps) {
   const { startBehavior, year } = props;
@@ -31,7 +30,7 @@ export default function NewTaxpayerPopup(props: NewYearPageProps) {
     }
 
     startBehavior.taxBehavior.state.setName(tempName?.trim());
-    startBehavior.taxBehavior.state.setCurrentStep(Steps.Demographics);
+    startBehavior.taxBehavior.state.setCurrentStep("demographics");
     startBehavior.taxBehavior.state.setShowStartPage(false);
 
     onClose();

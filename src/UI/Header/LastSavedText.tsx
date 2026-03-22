@@ -1,6 +1,6 @@
-interface LastSavedTextProps {
+type LastSavedTextProps = {
   readonly lastSavedTime?: Date;
-}
+};
 
 export default function LastSavedText(props: LastSavedTextProps) {
   const { lastSavedTime } = props;

@@ -6,13 +6,13 @@ import NewTaxpayerPopup from "./NewTaxpayerPopup";
 import YearSelectionControls from "./YearSelectionControls";
 import LogoutButton from "../Header/LogoutButton";
 
-interface StartPageProps {
+type StartPageProps = {
   readonly taxBehavior: TaxBehavior;
   readonly selectedYear: number | undefined;
   readonly selectedName: string | undefined;
   readonly isLoading: boolean;
   readonly noDbConnection: boolean;
-}
+};
 
 export default function StartPage(props: StartPageProps) {
   const { taxBehavior, selectedYear, isLoading, noDbConnection } = props;
@@ -29,6 +29,13 @@ export default function StartPage(props: StartPageProps) {
     let isCancelled = false;
 
     const initialize = async () => {
+      // Preserve an already-established connection state (for example,
+      // after a successful manual connection test before auth).
+      if (!noDbConnection) {
+        await startBehavior.loadYears();
+        return;
+      }
+
       const hasDbConnection = await taxBehavior.checkDatabaseConnection();
 
       if (isCancelled) {
@@ -47,7 +54,7 @@ export default function StartPage(props: StartPageProps) {
     return () => {
       isCancelled = true;
     };
-  }, [selectedYear, startBehavior, taxBehavior]);
+  }, [selectedYear, noDbConnection, startBehavior, taxBehavior]);
 
   // Reload the years whenever the selected year changes back to undefined
   // (e.g. after deleting a progress), or if we establish a database connection

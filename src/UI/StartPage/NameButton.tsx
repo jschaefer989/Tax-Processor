@@ -1,15 +1,13 @@
 import { useCallback } from "react";
 import type { StartBehavior } from "../../DataModel/StartBehavior";
-import ContextMenuOption, {
-  ContextMenuIcon,
-} from "../../DataModel/ContextMenuOption";
+import ContextMenuOption from "../../DataModel/ContextMenuOption";
 
-interface NameButtonProps {
+type NameButtonProps = {
   readonly year?: number;
   readonly name: string;
   readonly startBehavior: StartBehavior;
   readonly isLoading: boolean;
-}
+};
 
 export default function NameButton(props: NameButtonProps) {
   const { year, name, startBehavior, isLoading } = props;
@@ -64,7 +62,7 @@ export default function NameButton(props: NameButtonProps) {
         x: event.clientX,
         y: event.clientY,
         options: [
-          new ContextMenuOption("Delete", onDeleteName, ContextMenuIcon.Delete),
+          new ContextMenuOption("Delete", onDeleteName, "Delete"),
         ],
       });
     },

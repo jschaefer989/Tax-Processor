@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 
-interface NewTaxpayerFieldProps {
+type NewTaxpayerFieldProps = {
   setTempName: React.Dispatch<React.SetStateAction<string>>;
   onStart: () => Promise<void>;
-}
+};
 
 export default function NewTaxpayerField(props: NewTaxpayerFieldProps) {
   const { setTempName, onStart } = props;

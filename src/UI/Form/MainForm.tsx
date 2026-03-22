@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { TaxBehavior } from "../../DataModel/TaxBehavior";
 import TaxResponse from "../../DataModel/TaxResponse";
-import { Steps } from "../../DataModel/TaxStep";
+import type { Steps } from "../../DataModel/TaxStep";
 import ErrorMessage from "../General/ErrorMessage";
 import BackButton from "./BackButton";
 import FormFields from "./FormFields";
@@ -10,13 +10,14 @@ import FormHeader from "./FormHeader";
 import NextButton from "./NextButton";
 import FormButtons from "./FormButtons";
 
-interface MainFormProps {
+type MainFormProps = {
   readonly currentStep: Steps | undefined;
   readonly responses: TaxResponse[];
   readonly isLoading: boolean;
   readonly taxBehavior: TaxBehavior;
   readonly advancedWithErrors: boolean;
-}
+};
+
 export default function MainForm(props: MainFormProps) {
   const { currentStep, responses, isLoading, taxBehavior, advancedWithErrors } =
     props;

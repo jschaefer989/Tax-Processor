@@ -1,15 +1,13 @@
 import { useCallback } from "react";
-import ContextMenuOption, {
-  ContextMenuIcon,
-} from "../../DataModel/ContextMenuOption";
+import ContextMenuOption from "../../DataModel/ContextMenuOption";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import { FormValue } from "./FormValue";
 
-interface FormValueFieldProps {
+type FormValueFieldProps = {
   taxBehavior: TaxBehavior;
   response: TaxResponse;
-}
+};
 
 export default function FormValueField(props: FormValueFieldProps) {
   const { response, taxBehavior } = props;
@@ -45,7 +43,7 @@ export default function FormValueField(props: FormValueFieldProps) {
           new ContextMenuOption(
             "Delete row",
             onDeleteField,
-            ContextMenuIcon.Delete,
+            "Delete",
           ),
         ],
       });

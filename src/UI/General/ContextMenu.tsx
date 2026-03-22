@@ -1,11 +1,11 @@
-import { ContextMenuIcon } from "../../DataModel/ContextMenuOption";
+import { type ContextMenuIcon } from "../../DataModel/ContextMenuOption";
 import ContextMenuOption from "../../DataModel/ContextMenuOption";
 
-export interface ContextMenuProps {
+export type ContextMenuProps = {
     x: number;
     y: number;
     options: ContextMenuOption[];
-}
+};
 
 export default function ContextMenu(props: ContextMenuProps) {
     const { x, y, options } = props;
@@ -22,16 +22,16 @@ export default function ContextMenu(props: ContextMenuProps) {
     )
 }
 
-interface IconProps {
+type IconProps = {
     icon: ContextMenuIcon;
-}
+};
 
 function Icon(props: IconProps) {
     const { icon } = props;
     switch (icon) {
         // case ContextMenuIcon.Edit:
         //     return <span className="context-menu-icon">✏️</span>;
-        case ContextMenuIcon.Delete:
+        case "Delete":
             return <span className="context-menu-icon">🗑️</span>;
         default:
             return null;

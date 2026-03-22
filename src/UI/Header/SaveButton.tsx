@@ -3,14 +3,14 @@ import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import type { Steps } from "../../DataModel/TaxStep";
 
-interface SaveButtonProps {
+type SaveButtonProps = {
   currentStep: Steps;
   responses: TaxResponse[];
   taxBehavior: TaxBehavior;
   isLoading: boolean;
   year: number;
   name: string;
-}
+};
 
 export default function SaveButton(props: SaveButtonProps) {
   const { currentStep, responses, taxBehavior, isLoading, year, name } = props;

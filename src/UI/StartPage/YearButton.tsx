@@ -1,15 +1,13 @@
 import React, { useCallback } from "react";
-import ContextMenuOption, {
-  ContextMenuIcon,
-} from "../../DataModel/ContextMenuOption";
+import ContextMenuOption from "../../DataModel/ContextMenuOption";
 import type { StartBehavior } from "../../DataModel/StartBehavior";
 
-interface YearButtonProps {
+type YearButtonProps = {
   readonly year: number;
   readonly selectedYear: number | undefined;
   readonly startBehavior: StartBehavior;
   readonly isLoading: boolean;
-}
+};
 
 export default function YearButton(props: YearButtonProps) {
   const { year, selectedYear, startBehavior, isLoading } = props;
@@ -51,7 +49,7 @@ export default function YearButton(props: YearButtonProps) {
         x: event.clientX,
         y: event.clientY,
         options: [
-          new ContextMenuOption("Delete", onDeleteYear, ContextMenuIcon.Delete),
+          new ContextMenuOption("Delete", onDeleteYear, "Delete"),
         ],
       });
     },
