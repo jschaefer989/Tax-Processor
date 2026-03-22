@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using TaxProcessor.Api.Data;
+using TaxProcessor.Api.Extensions;
 using TaxProcessor.Api.Models;
 using TaxProcessor.Api.Models.Requests;
 
 namespace TaxProcessor.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/progress")]
 public class ProgressController(TaxDbContext db) : ControllerBase
 {
@@ -15,8 +18,10 @@ public class ProgressController(TaxDbContext db) : ControllerBase
     [HttpGet("years")]
     public async Task<ActionResult<int[]>> GetYears()
     {
+        var profileId = User.GetProfileId();
         var years = await _db
-            .TaxProgress.Select(progress => progress.Year)
+            .TaxProgress.Where(progress => progress.ProfileId == profileId)
+            .Select(progress => progress.Year)
             .Distinct()
             .OrderByDescending(year => year)
             .ToArrayAsync();
@@ -26,15 +31,20 @@ public class ProgressController(TaxDbContext db) : ControllerBase
     [HttpGet("names")]
     public async Task<ActionResult<string[]>> GetAllNames()
     {
-        var names = await _db.TaxProgress.Select(progress => progress.Name).ToArrayAsync();
+        var profileId = User.GetProfileId();
+        var names = await _db
+            .TaxProgress.Where(progress => progress.ProfileId == profileId)
+            .Select(progress => progress.Name)
+            .ToArrayAsync();
         return Ok(names);
     }
 
     [HttpGet("{year}/names")]
     public async Task<ActionResult<string[]>> GetNames(int year)
     {
+        var profileId = User.GetProfileId();
         var names = await _db
-            .TaxProgress.Where(progress => progress.Year == year)
+            .TaxProgress.Where(progress => progress.ProfileId == profileId && progress.Year == year)
             .Select(progress => progress.Name)
             .ToArrayAsync();
         return Ok(names);
@@ -44,7 +54,8 @@ public class ProgressController(TaxDbContext db) : ControllerBase
     [HttpGet("get/{year}/{name}")]
     public async Task<ActionResult<TaxProgress>> GetProgress(int year, string name)
     {
-        var entity = await GetTaxProgressEntity(year, name);
+        var profileId = User.GetProfileId();
+        var entity = await GetTaxProgressEntity(profileId, year, name);
 
         if (entity is null)
         {
@@ -74,13 +85,15 @@ public class ProgressController(TaxDbContext db) : ControllerBase
     )
     {
         var now = DateTime.UtcNow;
+        var profileId = User.GetProfileId();
 
-        var entity = await GetTaxProgressEntity(request.Year, request.Name);
+        var entity = await GetTaxProgressEntity(profileId, request.Year, request.Name);
 
         if (entity is null)
         {
             entity = new TaxProgressEntity
             {
+                ProfileId = profileId,
                 Name = request.Name,
                 Year = request.Year,
                 UpdatedAt = now,
@@ -100,7 +113,7 @@ public class ProgressController(TaxDbContext db) : ControllerBase
             return BadRequest(new { message = "Invalid current step value." });
         }
 
-        entity.UpdateResponses(request.Responses, request.Year, request.Name);
+        entity.UpdateResponses(request.Responses, profileId, request.Year, request.Name);
 
         await _db.SaveChangesAsync();
 
@@ -120,7 +133,8 @@ public class ProgressController(TaxDbContext db) : ControllerBase
     [HttpDelete("delete/{year}/{name}")]
     public async Task<ActionResult> ClearProgress(int year, string name)
     {
-        var entity = await _db.TaxProgress.FindAsync(year, name);
+        var profileId = User.GetProfileId();
+        var entity = await _db.TaxProgress.FindAsync(profileId, year, name);
         if (entity is null)
         {
             return NotFound(new { message = "Progress not found." });
@@ -132,10 +146,12 @@ public class ProgressController(TaxDbContext db) : ControllerBase
         return Ok(new { message = "Progress cleared successfully." });
     }
 
-    private async Task<TaxProgressEntity?> GetTaxProgressEntity(int year, string name)
+    private async Task<TaxProgressEntity?> GetTaxProgressEntity(Guid profileId, int year, string name)
     {
         return await _db
             .TaxProgress.Include(progress => progress.Responses)
-            .FirstOrDefaultAsync(progress => progress.Year == year && progress.Name == name);
+            .FirstOrDefaultAsync(progress =>
+                progress.ProfileId == profileId && progress.Year == year && progress.Name == name
+            );
     }
 }

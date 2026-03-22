@@ -3,9 +3,11 @@ using TaxProcessor.Api.Models;
 
 namespace TaxProcessor.Api.Data;
 
-[PrimaryKey(nameof(Year), nameof(Name))]
+[PrimaryKey(nameof(ProfileId), nameof(Year), nameof(Name))]
 public class TaxProgressEntity
 {
+    public Guid ProfileId { get; set; }
+
     public int Year { get; set; }
 
     public required string Name { get; set; }
@@ -14,7 +16,9 @@ public class TaxProgressEntity
 
     public string? CurrentStepId { get; set; }
 
-    public ICollection<TaxResponseEntity> Responses { get; set; } = new List<TaxResponseEntity>();
+    public ICollection<TaxResponseEntity> Responses { get; set; } = [];
+
+    public ProfileEntity? Profile { get; set; }
 
     public TaxResponse[] GetResponses()
     {
@@ -55,7 +59,7 @@ public class TaxProgressEntity
         };
     }
 
-    public void UpdateResponses(IEnumerable<TaxResponse?>? responses, int year, string name)
+    public void UpdateResponses(IEnumerable<TaxResponse?>? responses, Guid profileId, int year, string name)
     {
         // Clear existing responses
         Responses.Clear();
@@ -72,6 +76,7 @@ public class TaxProgressEntity
             Responses.Add(
                 new TaxResponseEntity
                 {
+                    ProfileId = profileId,
                     Year = year,
                     Name = name,
                     Form = response.Form.ToString(),

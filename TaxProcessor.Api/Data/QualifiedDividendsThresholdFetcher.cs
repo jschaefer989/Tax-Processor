@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using System.Linq;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Caching.Memory;
 

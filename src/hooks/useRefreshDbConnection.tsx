@@ -5,8 +5,13 @@ export function useRefreshDbConnection(
   showStartPage: boolean,
   noDbConnection: boolean,
   taxBehavior: TaxBehavior,
+  enabled: boolean,
 ) {
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     let isCancelled = false;
 
     const refreshDbConnection = async () => {
@@ -32,5 +37,5 @@ export function useRefreshDbConnection(
       isCancelled = true;
       window.clearInterval(intervalId);
     };
-  }, [showStartPage, noDbConnection, taxBehavior]);
+  }, [showStartPage, noDbConnection, taxBehavior, enabled]);
 }

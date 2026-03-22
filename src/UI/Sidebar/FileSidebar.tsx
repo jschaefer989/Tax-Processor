@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type TaxResponse from "../../DataModel/TaxResponse";
-import { TaxFieldLabel, TaxForm } from "../../DataModel/TaxResponse";
+import { TaxForm } from "../../DataModel/TaxResponse";
 import { ExpandButton, ExpandDirection } from "../General/ExpandButton";
 import Form1040 from "./Form1040";
 import Form8949 from "./Form8949";

@@ -26,6 +26,14 @@ Set the Postgres connection string:
 
 ```bash
 export DATABASE_URL=postgresql://user:password@localhost:5432/tax_processor
+export RECAPTCHA_SECRET_KEY=your_google_recaptcha_secret
+export FRONTEND_BASE_URL=http://localhost:5173
+export SMTP_HOST=smtp.example.com
+export SMTP_PORT=587
+export SMTP_ENABLE_SSL=true
+export SMTP_USERNAME=your_smtp_username
+export SMTP_PASSWORD=your_smtp_password
+export SMTP_FROM_EMAIL=no-reply@example.com
 ```
 
 Then start the API:
@@ -36,6 +44,17 @@ dotnet run
 ```
 
 API runs on http://localhost:5000
+
+### Frontend auth captcha key
+
+Create a `.env` in the frontend root and set:
+
+```bash
+VITE_RECAPTCHA_SITE_KEY=your_google_recaptcha_site_key
+```
+
+The app now requires login before tax pages load. Accounts can be created with email/password, and
+forgot-password sends an email reset link.
 
 ## Useful scripts
 

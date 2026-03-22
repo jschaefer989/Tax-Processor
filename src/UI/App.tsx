@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import { useTaxBehavior } from "../hooks/useTaxBehavior";
+import AuthPage from "./Auth/AuthPage";
 import { DuplicateDataPopup } from "./Form/DuplicateDataPopup";
 import MainForm from "./Form/MainForm";
 import ContextMenu from "./General/ContextMenu";
@@ -9,7 +11,11 @@ import MainAppHeader from "./Header/MainAppHeader";
 import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
 
+// TODO: make custom hooks for authentication and tax behavior, and split this component up into smaller pieces. This file is getting pretty unwieldy.
+
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   const {
     taxBehavior,
     currentStep,
@@ -29,7 +35,47 @@ export default function App() {
     advancedWithErrors,
   } = useTaxBehavior();
 
-  useRefreshDbConnection(showStartPage, noDbConnection, taxBehavior);
+  useRefreshDbConnection(
+    showStartPage,
+    noDbConnection,
+    taxBehavior,
+    isAuthenticated,
+  );
+
+  useEffect(() => {
+    let disposed = false;
+
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (!disposed) {
+          setIsAuthenticated(response.ok);
+        }
+      } catch {
+        if (!disposed) {
+          setIsAuthenticated(false);
+        }
+      } finally {
+        if (!disposed) {
+          setAuthLoading(false);
+        }
+      }
+    };
+
+    void checkAuth();
+
+    return () => {
+      disposed = true;
+    };
+  }, []);
+
+  if (authLoading) {
+    return <div className="auth-shell">Checking session...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <AuthPage onAuthenticated={() => setIsAuthenticated(true)} />;
+  }
 
   return (
     <div className="app" onClick={onWhitespaceClick}>

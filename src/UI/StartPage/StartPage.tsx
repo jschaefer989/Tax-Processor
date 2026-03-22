@@ -4,6 +4,7 @@ import { useStartBehavior } from "../../hooks/useStartBehavior";
 import MissingDatabaseControls from "./MissingDatabaseControls";
 import NewTaxpayerPopup from "./NewTaxpayerPopup";
 import YearSelectionControls from "./YearSelectionControls";
+import LogoutButton from "../Header/LogoutButton";
 
 interface StartPageProps {
   readonly taxBehavior: TaxBehavior;
@@ -75,13 +76,16 @@ export default function StartPage(props: StartPageProps) {
           isLoading={isLoading}
         />
       ) : (
-        <YearSelectionControls
-          startBehavior={startBehavior}
-          isLoading={isLoading}
-          year={selectedYear}
-          names={names}
-          years={years}
-        />
+        <>
+          <YearSelectionControls
+            startBehavior={startBehavior}
+            isLoading={isLoading}
+            year={selectedYear}
+            names={names}
+            years={years}
+          />
+          <LogoutButton />
+        </>
       )}
     </div>
   );

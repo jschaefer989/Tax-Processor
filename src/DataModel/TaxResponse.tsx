@@ -1,5 +1,3 @@
-import TaxField from "./TaxField";
-
 export enum TaxForm {
   Form1040 = "Form1040",
   Form8949Page1 = "Form8949Page1",

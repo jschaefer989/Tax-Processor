@@ -7,6 +7,7 @@ export default function ExclamationMarkIcon(props: ExclamationMarkIconProps) {
 
   return (
     <svg
+      className={className}
       height="32px"
       width="32px"
       version="1.1"

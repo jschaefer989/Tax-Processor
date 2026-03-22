@@ -1,18 +1,49 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.IO;
 using Npgsql;
 using TaxProcessor.Api.Controllers;
 using TaxProcessor.Api.Data;
+using TaxProcessor.Api.Security;
+using TaxProcessor.Api.Services;
+using dotenv.net;
+
+LoadEnvironmentVariables();
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "taxprocessor.auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return Task.CompletedTask;
+            },
+        };
+    });
+builder.Services.AddAuthorization();
 builder.Services.AddSingleton<StandardDeductionFetcher>();
 builder.Services.AddSingleton<TaxTableFetcher>();
 builder.Services.AddSingleton<QualifiedDividendsThresholdFetcher>();
-builder.Services.AddTransient<TaxCalculator>();
+builder.Services.AddSingleton<PasswordHashingService>();
+builder.Services.AddScoped<RecaptchaValidator>();
+builder.Services.AddScoped<EmailSender>();
 builder.Services.AddScoped<Func<FilingStatus, TaxCalculator>>(serviceProvider =>
     filingStatus => ActivatorUtilities.CreateInstance<TaxCalculator>(serviceProvider, filingStatus)
 );
@@ -28,7 +59,7 @@ builder.Services.AddCors(options =>
     );
 });
 
-LoadDotEnv();
+
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
@@ -82,6 +113,8 @@ var app = builder.Build();
 
 app.UseRouting();
 app.UseCors("AllowLocal");
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Automatically create tables on startup
 using (var scope = app.Services.CreateScope())
@@ -99,47 +132,37 @@ var port = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://loca
 
 app.Run(port);
 
-static void LoadDotEnv()
+static void LoadEnvironmentVariables()
 {
-    var current = new DirectoryInfo(Directory.GetCurrentDirectory());
+    var currentDirectory = Directory.GetCurrentDirectory();
+    var appBaseDirectory = AppContext.BaseDirectory;
 
-    while (current != null)
+    var envFiles = new[]
     {
-        var envPath = Path.Combine(current.FullName, ".env");
-        if (File.Exists(envPath))
-        {
-            foreach (var line in File.ReadAllLines(envPath))
-            {
-                var trimmed = line.Trim();
-                if (
-                    string.IsNullOrEmpty(trimmed)
-                    || trimmed.StartsWith("#", StringComparison.Ordinal)
-                )
-                {
-                    continue;
-                }
-
-                var splitIndex = trimmed.IndexOf('=');
-                if (splitIndex <= 0)
-                {
-                    continue;
-                }
-
-                var key = trimmed[..splitIndex].Trim();
-                var value = trimmed[(splitIndex + 1)..].Trim();
-                if (!string.IsNullOrEmpty(key) && Environment.GetEnvironmentVariable(key) == null)
-                {
-                    Environment.SetEnvironmentVariable(key, value);
-                }
-            }
-
-            break;
-        }
-
-        current = current.Parent;
+        Path.Combine(currentDirectory, ".env"),
+        Path.GetFullPath(Path.Combine(currentDirectory, "..", ".env")),
+        Path.Combine(appBaseDirectory, ".env"),
+        Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", "..", ".env")),
     }
+        .Where(File.Exists)
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+    if (envFiles.Length == 0)
+    {
+        return;
+    }
+
+    DotEnv.Load(
+        options: new DotEnvOptions(
+            envFilePaths: envFiles,
+            overwriteExistingVars: false,
+            ignoreExceptions: true
+        )
+    );
 }
 
+// TODO: see if this stuff can be done with libraries instead of custom code
 static string NormalizeConnectionString(string connectionString)
 {
     if (

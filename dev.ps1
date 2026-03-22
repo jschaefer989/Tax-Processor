@@ -4,13 +4,25 @@
 Write-Host "Starting Tax Processor development environment..." -ForegroundColor Green
 Write-Host ""
 
+# Load .env file into current process environment so dotnet run inherits them
+$envFile = Join-Path $PSScriptRoot ".env"
+if (Test-Path $envFile) {
+    Get-Content $envFile | Where-Object { $_ -notmatch '^\s*#' -and $_ -match '=' } | ForEach-Object {
+        $parts = $_ -split '=', 2
+        $key = $parts[0].Trim()
+        $value = $parts[1].Trim()
+        Set-Item -Path "env:$key" -Value $value
+    }
+    Write-Host "Loaded environment variables from .env" -ForegroundColor DarkGray
+}
+
 # Kill any existing processes on ports 5000-5175
 Write-Host "Cleaning up existing processes..." -ForegroundColor Yellow
 Get-Process dotnet -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -eq "dotnet" } | Stop-Process -Force -ErrorAction SilentlyContinue
 Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 2
 
-# Start backend API
+# Start backend API — inherits env vars set above via Set-Item env:
 Write-Host "Starting .NET backend on port 5000..." -ForegroundColor Cyan
 $backendProcess = Start-Process -NoNewWindow -PassThru -FilePath "dotnet" -ArgumentList "run" -WorkingDirectory "$PSScriptRoot\TaxProcessor.Api"
 

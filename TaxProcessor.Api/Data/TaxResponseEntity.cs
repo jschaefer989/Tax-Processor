@@ -2,9 +2,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TaxProcessor.Api.Data;
 
-[PrimaryKey(nameof(Year), nameof(Name), nameof(Form), nameof(Label), nameof(Line))]
+[PrimaryKey(nameof(ProfileId), nameof(Year), nameof(Name), nameof(Form), nameof(Label), nameof(Line))]
 public class TaxResponseEntity
 {
+    public Guid ProfileId { get; set; }
+
     public int Year { get; set; }
 
     public required string Name { get; set; }

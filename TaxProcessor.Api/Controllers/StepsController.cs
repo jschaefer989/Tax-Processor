@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaxProcessor.Api.Data;
 using TaxProcessor.Api.Models;
@@ -27,6 +28,7 @@ public enum FilingStatus
 }
 
 [ApiController]
+[Authorize]
 [Route("api/steps")]
 public class StepsController(
     StandardDeductionFetcher standardDeductionFetcher,
@@ -173,6 +175,7 @@ public class StepsController(
         }
     }
 
+    // TODO: make this into a bunch of separate API calls instead of one big one that does everything.
     [HttpPost("calculate-field")]
     public async Task<ActionResult<string>> CalculateField([FromBody] CalculateFieldRequest request)
     {

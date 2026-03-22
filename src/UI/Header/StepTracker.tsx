@@ -1,7 +1,7 @@
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import type TaxResponse from "../../DataModel/TaxResponse";
 import { Steps } from "../../DataModel/TaxStep";
-import CheckmarkIcon from "../General/CheckMarkIcon";
+import CheckmarkIcon from "../General/CheckmarkIcon";
 
 interface StepTrackerProps {
   readonly taxBehavior: TaxBehavior;
