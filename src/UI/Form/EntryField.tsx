@@ -77,6 +77,7 @@ export default function EntryField(props: EntryFieldComponentProps) {
             ? "field-control field-control--error"
             : "field-control"
         }
+        required={field.isRequired}
         aria-invalid={hasValidationError}
         title={hasValidationError ? "This field is required" : undefined}
         value={matchingValue ?? ""}
@@ -105,6 +106,7 @@ export default function EntryField(props: EntryFieldComponentProps) {
           ? "field-control field-control--error"
           : "field-control"
       }
+      required={field.isRequired}
       aria-invalid={hasValidationError}
       title={hasValidationError ? "This field is required" : undefined}
       type={inputType}

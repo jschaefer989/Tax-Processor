@@ -19,7 +19,7 @@ export default function FormSection(props: FormSectionProps) {
 
   const onDeleteSection = useCallback(() => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete all the data for this form? This cannot be undone.",
+      "Are you sure you want to delete all the data for this section? This cannot be undone.",
     );
     if (confirmed) {
       taxBehavior.state.setResponses((prevResponses) => {
@@ -28,13 +28,16 @@ export default function FormSection(props: FormSectionProps) {
             !responses.some(
               (response) =>
                 response.form === currentResponse.form &&
-                response.line === currentResponse.line,
+                response.formCode === currentResponse.formCode &&
+                response.line === currentResponse.line &&
+                response.label === currentResponse.label &&
+                response.subsection === currentResponse.subsection,
             ),
         );
       });
       taxBehavior.state.setContextMenu(undefined);
     }
-  }, [taxBehavior]);
+  }, [responses, taxBehavior]);
 
   const onContextMenuTitle = useCallback(
     (event: React.MouseEvent) => {
@@ -88,7 +91,9 @@ export default function FormSection(props: FormSectionProps) {
           />
         )}
       </div>
-      <ExpandContent expanded={isExpanded}>{lines}</ExpandContent>
+      <ExpandContent expanded={isExpanded} direction="down">
+        {lines}
+      </ExpandContent>
     </div>
   );
 }

@@ -22,58 +22,12 @@ export default function ResetPasswordTab(props: ResetPasswordTabProps) {
 
   const onResetPassword = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    authBehavior.setError(undefined);
-    authBehavior.setMessage(undefined);
-
-    if (!authBehavior.resetToken) {
-      authBehavior.setError("Missing reset token.");
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      authBehavior.setError("Password must be at least 8 characters.");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      authBehavior.setError("Password confirmation does not match.");
-      return;
-    }
-
-    try {
-      authBehavior.setIsBusy(true);
-      const captchaToken = await executeRecaptcha("reset_password");
-      const response = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          token: authBehavior.resetToken,
-          newPassword,
-          captchaToken,
-        }),
-      });
-
-      const data = (await response.json().catch(() => ({}))) as {
-        message?: string;
-      };
-      if (!response.ok) {
-        throw new Error(data.message ?? "Unable to reset password.");
-      }
-
-      authBehavior.setMessage("Password updated. You can now log in.");
-      authBehavior.setMode("login");
-      authBehavior.setPassword("");
-      authBehavior.setNewPassword("");
-      authBehavior.setConfirmPassword("");
-      window.history.replaceState({}, "", "/");
-    } catch (err) {
-      authBehavior.setError(
-        err instanceof Error ? err.message : "Unable to reset password.",
-      );
-    } finally {
-      authBehavior.setIsBusy(false);
-    }
+    authBehavior.resetPassword(
+      newPassword,
+      confirmPassword,
+      executeRecaptcha,
+      email,
+    );
   };
 
   return (

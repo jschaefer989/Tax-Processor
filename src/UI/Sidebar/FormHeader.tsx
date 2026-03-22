@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { ExpandButton, type ExpandDirection } from "../General/ExpandButton";
+import { ExpandButton } from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
-import ContextMenuOption, {
-  type ContextMenuIcon,
-} from "../../DataModel/ContextMenuOption";
+import ContextMenuOption from "../../DataModel/ContextMenuOption";
 import type { TaxBehavior } from "../../DataModel/TaxBehavior";
 import { type TaxForm } from "../../DataModel/TaxResponse";
 
@@ -20,7 +18,7 @@ export function FormHeader(props: FormHeaderProps) {
   const { taxBehavior, title, form, formCode, children, isExpandedOverride } =
     props;
 
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(isExpandedOverride ?? true);
 
   const onDeleteForm = useCallback(() => {
     const confirmed = window.confirm(
@@ -60,7 +58,9 @@ export function FormHeader(props: FormHeaderProps) {
   );
 
   useEffect(() => {
-    setIsExpanded(isExpandedOverride ?? true);
+    if (isExpandedOverride !== undefined) {
+      setIsExpanded(isExpandedOverride);
+    }
   }, [isExpandedOverride]);
 
   return (
@@ -77,7 +77,9 @@ export function FormHeader(props: FormHeaderProps) {
           inline={true}
         />
       </div>
-      <ExpandContent expanded={isExpanded}>{children}</ExpandContent>
+      <ExpandContent expanded={isExpanded} direction="down">
+        {children}
+      </ExpandContent>
     </div>
   );
 }

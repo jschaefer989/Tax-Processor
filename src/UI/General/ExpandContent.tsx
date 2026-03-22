@@ -12,7 +12,7 @@ export function ExpandContent(props: ExpandContentProps) {
   const {
     expanded,
     children,
-    direction,
+    direction = "down",
     className,
   } = props;
 
