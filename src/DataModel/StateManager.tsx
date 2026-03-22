@@ -22,6 +22,7 @@ export interface StateSetters {
     React.SetStateAction<DuplicateResponse[] | undefined>
   >;
   setAdvancedWithErrors: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default class StateManager {
@@ -47,6 +48,7 @@ export default class StateManager {
   > = () => {};
   setAdvancedWithErrors: React.Dispatch<React.SetStateAction<boolean>> =
     () => {};
+  setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>> = () => {};
 
   constructor(setters: StateSetters) {
     this.setCurrentStep = setters.setCurrentStep;
@@ -63,5 +65,6 @@ export default class StateManager {
     this.setContextMenu = setters.setContextMenu;
     this.setDuplicateResponses = setters.setDuplicateResponses;
     this.setAdvancedWithErrors = setters.setAdvancedWithErrors;
+    this.setIsAuthenticated = setters.setIsAuthenticated;
   }
 }

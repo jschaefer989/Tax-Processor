@@ -35,6 +35,7 @@ export default function DatabaseConnectionForm(
 
     if (isConnected) {
       startBehavior.loadYears();
+      startBehavior.taxBehavior.state.setIsAuthenticated?.(false);
     }
   }, [dbHost, dbPort, dbName, dbUsername, dbPassword]);
 

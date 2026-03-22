@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import { useTaxBehavior } from "../hooks/useTaxBehavior";
 import AuthPage from "./Auth/AuthPage";
@@ -10,12 +10,14 @@ import Toast from "./General/Toast";
 import MainAppHeader from "./Header/MainAppHeader";
 import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
+import useAuthentication from "../hooks/useAuthentication";
 
 // TODO: make custom hooks for authentication and tax behavior, and split this component up into smaller pieces. This file is getting pretty unwieldy.
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
+  const { isAuthenticated, authLoading, setIsAuthenticated } =
+    useAuthentication();
+
   const {
     taxBehavior,
     currentStep,
@@ -33,7 +35,7 @@ export default function App() {
     onWhitespaceClick,
     duplicateResponses,
     advancedWithErrors,
-  } = useTaxBehavior();
+  } = useTaxBehavior({ setIsAuthenticated });
 
   useRefreshDbConnection(
     showStartPage,
@@ -42,39 +44,27 @@ export default function App() {
     isAuthenticated,
   );
 
-  useEffect(() => {
-    let disposed = false;
-
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/auth/me");
-        if (!disposed) {
-          setIsAuthenticated(response.ok);
-        }
-      } catch {
-        if (!disposed) {
-          setIsAuthenticated(false);
-        }
-      } finally {
-        if (!disposed) {
-          setAuthLoading(false);
-        }
-      }
-    };
-
-    void checkAuth();
-
-    return () => {
-      disposed = true;
-    };
-  }, []);
+  const onAuthenticated = useCallback(() => {
+    taxBehavior.state.setIsAuthenticated?.(true);
+  }, [taxBehavior]);
 
   if (authLoading) {
     return <div className="auth-shell">Checking session...</div>;
   }
 
   if (!isAuthenticated) {
-    return <AuthPage onAuthenticated={() => setIsAuthenticated(true)} />;
+    if (noDbConnection) {
+      return (
+        <StartPage
+          taxBehavior={taxBehavior}
+          selectedYear={year}
+          selectedName={name}
+          isLoading={isLoading}
+          noDbConnection={noDbConnection}
+        />
+      );
+    }
+    return <AuthPage onAuthenticated={onAuthenticated} />;
   }
 
   return (
