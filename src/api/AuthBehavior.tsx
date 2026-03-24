@@ -43,8 +43,7 @@ export default class AuthBehavior {
     executeRecaptcha: (action: string) => Promise<string>,
     onAuthenticated: () => void,
   ) {
-    this.setError(undefined);
-    this.setMessage(undefined);
+    this.clearStatusMessages();
 
     try {
       this.setIsBusy(true);
@@ -77,8 +76,7 @@ export default class AuthBehavior {
     executeRecaptcha: (action: string) => Promise<string>,
     onAuthenticated: () => void,
   ) {
-    this.setError(undefined);
-    this.setMessage(undefined);
+    this.clearStatusMessages();
 
     if (password.length < 8) {
       this.setError("Password must be at least 8 characters.");
@@ -120,8 +118,7 @@ export default class AuthBehavior {
     email: string,
     executeRecaptcha: (action: string) => Promise<string>,
   ) {
-    this.setError(undefined);
-    this.setMessage(undefined);
+    this.clearStatusMessages();
 
     try {
       this.setIsBusy(true);
@@ -159,8 +156,7 @@ export default class AuthBehavior {
     executeRecaptcha: (action: string) => Promise<string>,
     email: string,
   ) {
-    this.setError(undefined);
-    this.setMessage(undefined);
+    this.clearStatusMessages();
 
     if (!this.resetToken) {
       this.setError("Missing reset token.");
@@ -211,5 +207,10 @@ export default class AuthBehavior {
     } finally {
       this.setIsBusy(false);
     }
+  }
+
+  clearStatusMessages() {
+    this.setMessage(undefined);
+    this.setError(undefined);
   }
 }

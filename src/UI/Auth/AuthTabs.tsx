@@ -9,26 +9,36 @@ type AuthTabsProps = {
 export default function AuthTabs(props: AuthTabsProps) {
   const { authBehavior, mode } = props;
 
+  const handleTabClick = (newMode: AuthMode) => {
+    if (newMode === "reset") {
+      console.log("Reset mode is not selectable from tabs.");
+      return;
+    }
+
+    authBehavior.clearStatusMessages();
+    authBehavior.setMode(newMode);
+  }
+
   return (
     <div className="auth-tabs">
       <button
         type="button"
         className={mode === "login" ? "active" : ""}
-        onClick={() => authBehavior.setMode("login")}
+        onClick={() => handleTabClick("login")}
       >
         Login
       </button>
       <button
         type="button"
         className={mode === "register" ? "active" : ""}
-        onClick={() => authBehavior.setMode("register")}
+        onClick={() => handleTabClick("register")}
       >
         Register
       </button>
       <button
         type="button"
         className={mode === "forgot" ? "active" : ""}
-        onClick={() => authBehavior.setMode("forgot")}
+        onClick={() => handleTabClick("forgot")}
       >
         Forgot password
       </button>
