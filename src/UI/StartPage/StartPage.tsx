@@ -90,7 +90,7 @@ export default function StartPage(props: StartPageProps) {
             names={names}
             years={years}
           />
-          <LogoutButton />
+          <LogoutButton taxBehavior={taxBehavior} />
         </>
       )}
     </StartTitle>

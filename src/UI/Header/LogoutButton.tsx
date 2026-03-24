@@ -14,7 +14,7 @@ export default function LogoutButton(props: LogoutButtonProps) {
       credentials: "include",
     });
     window.location.href = "/";
-  }, []);
+  }, [taxBehavior]);
 
   return (
     <button className="logout-button" onClick={handleLogout}>
