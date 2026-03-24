@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import type { StartBehavior } from "../../DataModel/StartBehavior";
+import type { StartBehavior } from "../../api/StartBehavior";
 import Popup from "../General/Popup";
 import NewTaxpayerField from "./NewTaxpayerField";
 

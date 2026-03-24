@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type ServerBehavior from "../api/ServerBehavior";
 
 type UseAuthenticationResult = {
   isAuthenticated: boolean;
@@ -6,12 +7,14 @@ type UseAuthenticationResult = {
 };
 
 type UseAuthenticationProps = {
-  readonly setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly serverBehavior: ServerBehavior;
 };
 
-export default function useAuthentication(
-  props?: UseAuthenticationProps,
+export default function useAuthentication(  
+  props: UseAuthenticationProps,
 ): UseAuthenticationResult {
+  const { serverBehavior } = props;
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -19,7 +22,7 @@ export default function useAuthentication(
 
     const checkAuth = async () => {
       try {
-        const response = await fetch("/api/auth/me");
+        const response = await serverBehavior.serverApiFetch("/api/auth/me");
         if (!disposed) {
           setIsAuthenticated(response.ok);
         }
@@ -29,7 +32,7 @@ export default function useAuthentication(
         }
       } finally {
         if (!disposed) {
-          props?.setIsAuthenticated?.(false);
+          setIsAuthenticated?.(false);
         }
       }
     };

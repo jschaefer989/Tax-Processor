@@ -1,4 +1,4 @@
-import type AuthBehavior from "../../DataModel/AuthBehavior";
+import type AuthBehavior from "../../api/AuthBehavior";
 import type { ExecuteRecaptchaFunction } from "../../hooks/useRecatcha";
 
 type ResetPasswordTabProps = {

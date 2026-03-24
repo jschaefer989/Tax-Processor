@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxFile from "../../DataModel/TaxFile";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import type TaxFile from "../../data/TaxFile";
 import Popup from "../General/Popup";
 
 type UploadFileButtonProps = {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
-import { TaxBehavior } from "../../DataModel/TaxBehavior";
-import TaxResponse from "../../DataModel/TaxResponse";
-import type { Steps } from "../../DataModel/TaxStep";
+import { TaxBehavior } from "../../api/TaxBehavior";
+import TaxResponse from "../../data/TaxResponse";
+import type { Steps } from "../../data/TaxStep";
 import ErrorMessage from "../General/ErrorMessage";
 import BackButton from "./BackButton";
 import FormFields from "./FormFields";

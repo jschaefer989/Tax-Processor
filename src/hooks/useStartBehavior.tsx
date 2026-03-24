@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { StartBehavior } from "../DataModel/StartBehavior";
-import type { TaxBehavior } from "../DataModel/TaxBehavior";
+import { StartBehavior } from "../api/StartBehavior";
+import type { TaxBehavior } from "../api/TaxBehavior";
 
 type UseStartBehaviorResult = {
     years: number[];

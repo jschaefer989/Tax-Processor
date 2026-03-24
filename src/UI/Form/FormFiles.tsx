@@ -1,5 +1,5 @@
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type { TaxStep } from "../../DataModel/TaxStep";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import type { TaxStep } from "../../data/TaxStep";
 import UploadFileButton from "./UploadFileButton";
 
 type FormFilesProps = {

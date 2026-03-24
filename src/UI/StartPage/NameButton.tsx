@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import type { StartBehavior } from "../../DataModel/StartBehavior";
-import ContextMenuOption from "../../DataModel/ContextMenuOption";
+import type { StartBehavior } from "../../api/StartBehavior";
+import ContextMenuOption from "../../data/ContextMenuOption";
 
 type NameButtonProps = {
   readonly year?: number;

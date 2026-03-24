@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type TaxResponse from "../../DataModel/TaxResponse";
+import type TaxResponse from "../../data/TaxResponse";
 import { ExpandButton } from "../General/ExpandButton";
 import Form1040 from "./Form1040";
 import Form8949 from "./Form8949";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type { TaxBehavior } from "../../api/TaxBehavior";
 import RestartButton from "../Header/RestartButton";
 import ScheduleD from "./ScheduleD";
 

@@ -1,7 +1,8 @@
-import { type FieldCalculationCallback } from "./TaxButton";
-import { type TaxFieldType } from "./TaxField";
-import { type TaxFieldLabel } from "./TaxResponse";
-import { type Steps } from "./TaxStep";
+import type { FieldCalculationCallback } from "../data/TaxButton";
+import type { TaxFieldType } from "../data/TaxField";
+import type { TaxFieldLabel } from "../data/TaxResponse";
+import type { Steps } from "../data/TaxStep";
+
 
 const STEP_TO_API_MAP: Record<Steps, string> = {
   demographics: "Demographics",

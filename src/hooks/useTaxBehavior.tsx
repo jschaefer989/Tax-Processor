@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { TaxBehavior } from "../DataModel/TaxBehavior";
-import type TaxResponse from "../DataModel/TaxResponse";
-import type { Steps } from "../DataModel/TaxStep";
+import { TaxBehavior } from "../api/TaxBehavior";
+import type TaxResponse from "../data/TaxResponse";
+import type { Steps } from "../data/TaxStep";
 import { useContextMenu } from "./useContextMenu";
 import type { ContextMenuProps } from "../UI/General/ContextMenu";
-import type { DuplicateResponse } from "../DataModel/DuplicateResponse";
+import type { DuplicateResponse } from "../data/DuplicateResponse";
+import type ServerBehavior from "../api/ServerBehavior";
 
 type UseTaxBehaviorResult = {
   taxBehavior: TaxBehavior;
@@ -23,9 +24,17 @@ type UseTaxBehaviorResult = {
   onWhitespaceClick: (event: React.MouseEvent<HTMLDivElement>) => void;
   duplicateResponses: DuplicateResponse[] | undefined;
   advancedWithErrors: boolean;
-}
+};
 
-export function useTaxBehavior(): UseTaxBehaviorResult {
+type UseTaxBehaviorProps = {
+  serverBehavior: ServerBehavior;
+};
+
+export function useTaxBehavior(
+  props: UseTaxBehaviorProps,
+): UseTaxBehaviorResult {
+  const { serverBehavior } = props;
+
   const [currentStep, setCurrentStep] = useState<Steps | undefined>(undefined);
   const [responses, setResponses] = useState<TaxResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +46,7 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
   );
   const [year, setYear] = useState<number | undefined>(undefined);
   const [name, setName] = useState<string | undefined>(undefined);
-  const [noDbConnection, setNoDbConnection] = useState<boolean>(false);
+  const [noDbConnection, setNoDbConnection] = useState<boolean>(true);
   const [showStartPage, setShowStartPage] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -48,9 +57,12 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
 
   const { contextMenu, setContextMenu, onWhitespaceClick } = useContextMenu();
 
-  const taxBehavior = useMemo(
-    () =>
-      new TaxBehavior({
+  const taxBehavior = useMemo(() => {
+    serverBehavior.setOnServerDown(() => {
+      setToastMessage("Unable to connect to the server.");
+    });
+    return new TaxBehavior(
+      {
         setCurrentStep,
         setResponses,
         setIsLoading,
@@ -65,23 +77,25 @@ export function useTaxBehavior(): UseTaxBehaviorResult {
         setContextMenu,
         setDuplicateResponses,
         setAdvancedWithErrors,
-      }),
-    [
-      setCurrentStep,
-      setResponses,
-      setIsLoading,
-      setLastSavedTime,
-      setYear,
-      setName,
-      setNoDbConnection,
-      setShowStartPage,
-      setPanelExpanded,
-      setSidebarExpanded,
-      setToastMessage,
-      setDuplicateResponses,
-      setAdvancedWithErrors,
-    ],
-  );
+      },
+      serverBehavior,
+    );
+  }, [
+    setCurrentStep,
+    setResponses,
+    setIsLoading,
+    setLastSavedTime,
+    setYear,
+    setName,
+    setNoDbConnection,
+    setShowStartPage,
+    setPanelExpanded,
+    setSidebarExpanded,
+    setToastMessage,
+    setDuplicateResponses,
+    setAdvancedWithErrors,
+    serverBehavior,
+  ]);
 
   return {
     taxBehavior,

@@ -1,6 +1,6 @@
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import TaxResponse from "../../DataModel/TaxResponse";
-import type { TaxStep } from "../../DataModel/TaxStep";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import TaxResponse from "../../data/TaxResponse";
+import type { TaxStep } from "../../data/TaxStep";
 import EntryField from "./EntryField";
 
 type FormFieldsProps = {

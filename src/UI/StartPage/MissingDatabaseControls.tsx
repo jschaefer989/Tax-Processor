@@ -1,4 +1,4 @@
-import type { StartBehavior } from "../../DataModel/StartBehavior";
+import type { StartBehavior } from "../../api/StartBehavior";
 import BeginButton from "./BeginButton";
 import DatabaseConnectionForm from "./DatabaseConnectionForm";
 

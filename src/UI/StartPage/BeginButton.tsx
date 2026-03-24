@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { StartBehavior } from "../../DataModel/StartBehavior";
+import type { StartBehavior } from "../../api/StartBehavior";
 
 type BeginButtonProps = {
   readonly startBehavior: StartBehavior;

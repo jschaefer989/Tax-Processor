@@ -1,6 +1,6 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { SERVER_DOWN_MESSAGE } from "../api/ServerBehavior";
 import useAuthentication from "../hooks/useAuthentication";
-import { useRefreshDbConnection } from "../hooks/useRefreshDbConnection";
 import { useTaxBehavior } from "../hooks/useTaxBehavior";
 import AuthPage from "./Auth/AuthPage";
 import DuplicateDataPopup from "./Form/DuplicateDataPopup";
@@ -11,8 +11,11 @@ import Toast from "./General/Toast";
 import MainAppHeader from "./Header/MainAppHeader";
 import FileSidebar from "./Sidebar/FileSidebar";
 import StartPage from "./StartPage/StartPage";
+import useServerBehavior from "../hooks/useServerBehavior";
 
 export default function App() {
+  const { serverBehavior } = useServerBehavior();
+
   const {
     taxBehavior,
     currentStep,
@@ -30,43 +33,23 @@ export default function App() {
     onWhitespaceClick,
     duplicateResponses,
     advancedWithErrors,
-  } = useTaxBehavior();
+  } = useTaxBehavior({ serverBehavior });
 
   const { isAuthenticated, setIsAuthenticated } = useAuthentication({
-    setIsAuthenticated: taxBehavior.state.setIsLoading,
+    serverBehavior,
   });
 
-  useRefreshDbConnection(
-    showStartPage,
-    noDbConnection,
-    taxBehavior,
-    isAuthenticated,
-  );
+  const onServerDown = useCallback(() => {
+    taxBehavior.state.setToastMessage(SERVER_DOWN_MESSAGE);
+  }, [taxBehavior]);
+
+  useEffect(() => {
+    serverBehavior.setOnServerDown(onServerDown);
+  }, [serverBehavior, onServerDown]);
 
   const onAuthenticated = useCallback(() => {
     setIsAuthenticated(true);
   }, [setIsAuthenticated]);
-
-  if (!isAuthenticated) {
-    if (noDbConnection) {
-      return (
-        <StartPage
-          taxBehavior={taxBehavior}
-          selectedYear={year}
-          selectedName={name}
-          isLoading={isLoading}
-          noDbConnection={noDbConnection}
-        />
-      );
-    }
-    return (
-      <AuthPage
-        onAuthenticated={onAuthenticated}
-        isBusy={isLoading}
-        setIsBusy={taxBehavior.state.setIsLoading}
-      />
-    );
-  }
 
   return (
     <div className="app" onClick={onWhitespaceClick}>
@@ -80,74 +63,87 @@ export default function App() {
           duplicateResponses={duplicateResponses}
         />
       )}
-      {showStartPage ? (
-        <StartPage
-          taxBehavior={taxBehavior}
-          selectedYear={year}
-          selectedName={name}
-          isLoading={isLoading}
-          noDbConnection={noDbConnection}
+      {!isAuthenticated && !noDbConnection ? (
+        <AuthPage
+          serverBehavior={serverBehavior}
+          onAuthenticated={onAuthenticated}
+          isBusy={isLoading}
+          setIsBusy={taxBehavior.state.setIsLoading}
         />
       ) : (
         <>
-          <header>
-            <MainAppHeader
-              currentStep={currentStep}
-              isLoading={isLoading}
+          {showStartPage ? (
+            <StartPage
               taxBehavior={taxBehavior}
-              responses={responses}
-              lastSavedTime={lastSavedTime}
-              year={year}
-              name={name}
+              selectedYear={year}
+              selectedName={name}
+              isLoading={isLoading}
               noDbConnection={noDbConnection}
             />
-          </header>
+          ) : (
+            <>
+              <header>
+                <MainAppHeader
+                  currentStep={currentStep}
+                  isLoading={isLoading}
+                  taxBehavior={taxBehavior}
+                  responses={responses}
+                  lastSavedTime={lastSavedTime}
+                  year={year}
+                  name={name}
+                  noDbConnection={noDbConnection}
+                />
+              </header>
 
-          <main
-            className={`layout ${!sidebarExpanded ? "sidebar-collapsed" : ""} ${!panelExpanded ? "main-collapsed" : ""}`}
-          >
-            <section className="panel">
-              <MainForm
-                currentStep={currentStep}
-                responses={responses}
-                isLoading={isLoading}
-                taxBehavior={taxBehavior}
-                advancedWithErrors={advancedWithErrors}
-              />
-            </section>
+              <main
+                className={`layout ${!sidebarExpanded ? "sidebar-collapsed" : ""} ${!panelExpanded ? "main-collapsed" : ""}`}
+              >
+                <section className="panel">
+                  <MainForm
+                    currentStep={currentStep}
+                    responses={responses}
+                    isLoading={isLoading}
+                    taxBehavior={taxBehavior}
+                    advancedWithErrors={advancedWithErrors}
+                  />
+                </section>
 
-            {sidebarExpanded && (
-              <ExpandButton
-                expanded={panelExpanded}
-                setExpanded={taxBehavior.state.setPanelExpanded}
-                title={
-                  panelExpanded
-                    ? "Collapse income overview"
-                    : "Expand income overview"
-                }
-              />
-            )}
+                {sidebarExpanded && (
+                  <ExpandButton
+                    expanded={panelExpanded}
+                    setExpanded={taxBehavior.state.setPanelExpanded}
+                    title={
+                      panelExpanded
+                        ? "Collapse income overview"
+                        : "Expand income overview"
+                    }
+                  />
+                )}
 
-            {panelExpanded && (
-              <ExpandButton
-                expanded={sidebarExpanded}
-                setExpanded={taxBehavior.state.setSidebarExpanded}
-                title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
-                direction="right"
-              />
-            )}
+                {panelExpanded && (
+                  <ExpandButton
+                    expanded={sidebarExpanded}
+                    setExpanded={taxBehavior.state.setSidebarExpanded}
+                    title={
+                      sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"
+                    }
+                    direction="right"
+                  />
+                )}
 
-            <section className="sidebar-column">
-              <FileSidebar
-                taxBehavior={taxBehavior}
-                responses={responses}
-                isExpanded={sidebarExpanded}
-                year={year ?? new Date().getFullYear()}
-                name={name ?? "Unnamed"}
-                isLoading={isLoading}
-              />
-            </section>
-          </main>
+                <section className="sidebar-column">
+                  <FileSidebar
+                    taxBehavior={taxBehavior}
+                    responses={responses}
+                    isExpanded={sidebarExpanded}
+                    year={year ?? new Date().getFullYear()}
+                    name={name ?? "Unnamed"}
+                    isLoading={isLoading}
+                  />
+                </section>
+              </main>
+            </>
+          )}
         </>
       )}
     </div>

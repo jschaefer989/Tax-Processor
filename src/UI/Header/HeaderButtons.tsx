@@ -1,6 +1,6 @@
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
-import type { Steps } from "../../DataModel/TaxStep";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import type TaxResponse from "../../data/TaxResponse";
+import type { Steps } from "../../data/TaxStep";
 import ErrorMessage from "../General/ErrorMessage";
 import LastSavedText from "./LastSavedText";
 import { ReturnButton } from "./ReturnButton";

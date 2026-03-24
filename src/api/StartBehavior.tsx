@@ -1,10 +1,12 @@
-import type { TaxBehavior } from "./TaxBehavior";
+import type { TaxBehavior } from "../api/TaxBehavior";
+import type ServerBehavior from "./ServerBehavior";
 
 export class StartBehavior {
   setYears: React.Dispatch<React.SetStateAction<number[]>>;
   setNames: React.Dispatch<React.SetStateAction<string[]>>;
   setNewYear: React.Dispatch<React.SetStateAction<boolean>>;
   taxBehavior: TaxBehavior;
+  serverBehavior: ServerBehavior;
 
   constructor(
     setYears: React.Dispatch<React.SetStateAction<number[]>>,
@@ -16,13 +18,19 @@ export class StartBehavior {
     this.setNames = setNames;
     this.setNewYear = setNewYear;
     this.taxBehavior = taxBehavior;
-
+    this.serverBehavior = taxBehavior.serverBehavior;
   }
 
   async loadYears() {
     try {
       this.taxBehavior.state.setIsLoading(true);
-      const response = await fetch("/api/progress/years");
+      const response = await this.serverBehavior.serverApiFetch("/api/progress/years");
+      if (response.status === 401 || response.status === 403) {
+        // Session is not authenticated (common during logout); avoid noisy toasts.
+        this.setYears([]);
+        this.taxBehavior.state.setToastMessage(undefined);
+        return;
+      }
       if (!response.ok) {
         throw new Error("Unable to load tax years.");
       }
@@ -43,7 +51,7 @@ export class StartBehavior {
   ) {
     try {
       this.taxBehavior.state.setIsLoading(true);
-      const response = await fetch(`/api/progress/${year}/names`);
+      const response = await this.serverBehavior.serverApiFetch(`/api/progress/${year}/names`);
       if (!response.ok) {
         throw new Error("Unable to load saved progress names.");
       }
@@ -65,7 +73,7 @@ export class StartBehavior {
   ) {
     try {
       this.taxBehavior.state.setIsLoading(true);
-      const response = await fetch(`/api/progress/names`);
+      const response = await this.serverBehavior.serverApiFetch(`/api/progress/names`);
       if (!response.ok) {
         throw new Error("Unable to load all names.");
       }
@@ -86,7 +94,7 @@ export class StartBehavior {
   ) {
     try {
       this.taxBehavior.state.setIsLoading(true);
-      const response = await fetch(`/api/start/year/${encodeURIComponent(year)}`, {
+      const response = await this.serverBehavior.serverApiFetch(`/api/start/year/${encodeURIComponent(year)}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -106,7 +114,7 @@ export class StartBehavior {
   async deleteName(year: number, name: string) {
     try {
         this.taxBehavior.state.setIsLoading(true);
-        const response = await fetch(`/api/start/name/${encodeURIComponent(year)}/${encodeURIComponent(name)}`, {
+        const response = await this.serverBehavior.serverApiFetch(`/api/start/name/${encodeURIComponent(year)}/${encodeURIComponent(name)}`, {
           method: "DELETE",
         });
         if (!response.ok) {

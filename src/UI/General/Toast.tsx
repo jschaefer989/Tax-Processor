@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type { TaxBehavior } from "../../api/TaxBehavior";
 
 type ToastProps = {
   readonly toastMessage: string;
