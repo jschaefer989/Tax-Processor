@@ -58,9 +58,6 @@ export function useTaxBehavior(
   const { contextMenu, setContextMenu, onWhitespaceClick } = useContextMenu();
 
   const taxBehavior = useMemo(() => {
-    serverBehavior.setOnServerDown(() => {
-      setToastMessage("Unable to connect to the server.");
-    });
     return new TaxBehavior(
       {
         setCurrentStep,

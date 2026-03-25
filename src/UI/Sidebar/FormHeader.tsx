@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ExpandButton } from "../General/ExpandButton";
+import ExpandButton from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
 import ContextMenuOption from "../../data/ContextMenuOption";
 import type { TaxBehavior } from "../../api/TaxBehavior";

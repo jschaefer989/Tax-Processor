@@ -1,21 +1,41 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ServerBehavior from "../api/ServerBehavior";
 
-type UserServerBehaviorProps = {
-  readonly onServerDown?: () => void;
-};
 type UseServerBehaviorResult = {
-    serverBehavior: ServerBehavior;
+  serverBehavior: ServerBehavior;
+  isServerDown: boolean;
 };
 
-export default function useServerBehavior(
-  props?: UserServerBehaviorProps,
-): UseServerBehaviorResult {
-  const { onServerDown } = props ?? {};
+export default function useServerBehavior(): UseServerBehaviorResult {
+
+  const [isServerDown, setIsServerDown] = useState(false);
 
   const serverBehavior = useMemo(() => {
-    return new ServerBehavior(onServerDown);
-  }, [onServerDown]);
+    return new ServerBehavior(setIsServerDown);
+  }, []);
 
-  return { serverBehavior };
+  useEffect(() => {
+    let disposed = false;
+
+    const checkServerHealth = async () => {
+      try {
+        const response = await serverBehavior.serverApiFetch("/api/health");
+        if (!disposed) {
+          setIsServerDown(!response.ok);
+        }
+      } catch {
+        if (!disposed) {
+          setIsServerDown(true);
+        }
+      }
+    };
+
+    void checkServerHealth();
+
+    return () => {
+      disposed = true;
+    };
+  }, []);
+
+  return { serverBehavior, isServerDown };
 }

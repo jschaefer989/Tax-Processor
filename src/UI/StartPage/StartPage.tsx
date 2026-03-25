@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import type { TaxBehavior } from "../../api/TaxBehavior";
 import { useStartBehavior } from "../../hooks/useStartBehavior";
 import MissingDatabaseControls from "./MissingDatabaseControls";
@@ -17,13 +17,15 @@ type StartPageProps = {
 
 export default function StartPage(props: StartPageProps) {
   const { taxBehavior, selectedYear, isLoading, noDbConnection } = props;
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const { years, names, newYear, startBehavior } =
     useStartBehavior(taxBehavior);
 
   // On initial load, check if we have a database connection and load the years if so
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (selectedYear !== undefined) {
+      setHasInitialized(true);
       return;
     }
 
@@ -34,6 +36,9 @@ export default function StartPage(props: StartPageProps) {
       // after a successful manual connection test before auth).
       if (!noDbConnection) {
         await startBehavior.loadYears();
+        if (!isCancelled) {
+          setHasInitialized(true);
+        }
         return;
       }
 
@@ -44,10 +49,16 @@ export default function StartPage(props: StartPageProps) {
       }
 
       if (!hasDbConnection) {
+        if (!isCancelled) {
+          setHasInitialized(true);
+        }
         return;
       }
 
       await startBehavior.loadYears();
+      if (!isCancelled) {
+        setHasInitialized(true);
+      }
     };
 
     initialize();
@@ -71,6 +82,16 @@ export default function StartPage(props: StartPageProps) {
   if (newYear && selectedYear !== undefined) {
     return (
       <NewTaxpayerPopup startBehavior={startBehavior} year={selectedYear} />
+    );
+  }
+
+  if (!hasInitialized) {
+    return (
+      <StartTitle>
+        <div style={{ textAlign: "center", color: "var(--muted)" }}>
+          Loading...
+        </div>
+      </StartTitle>
     );
   }
 

@@ -15,7 +15,7 @@ type ExpandButtonProps = {
   inline?: boolean;
 }
 
-export function ExpandButton(props: ExpandButtonProps) {
+export default function ExpandButton(props: ExpandButtonProps) {
   const {
     expanded,
     setExpanded,

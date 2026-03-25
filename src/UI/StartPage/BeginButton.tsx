@@ -11,6 +11,7 @@ export default function BeginButton(props: BeginButtonProps) {
   const { tempName, isLoading, startBehavior } = props;
 
   const onStart = useCallback(async () => {
+
     const stepsLoaded = await startBehavior.taxBehavior.loadSteps();
     if (!stepsLoaded) {
       return;

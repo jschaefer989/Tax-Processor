@@ -7,7 +7,7 @@ import TaxFile, { type ReadableForm } from "../data/TaxFile";
 import TaxProgress from "../data/TaxProgress";
 import TaxResponse, { type TaxFieldLabel, type TaxForm } from "../data/TaxResponse";
 import { TaxStep, type Steps } from "../data/TaxStep";
-import ServerBehavior, { SERVER_DOWN_MESSAGE } from "./ServerBehavior";
+import ServerBehavior, { ServerDownError } from "./ServerBehavior";
 import ServerNormalizer from "./ServerNormalizer";
 
 export class TaxBehavior {
@@ -88,15 +88,17 @@ export class TaxBehavior {
       const data = (await response.json()) as { connected: boolean };
       this.state.setNoDbConnection(!data.connected);
       return data.connected;
-    } catch {
-      this.state.setNoDbConnection(true);
+    } catch (err) {
+      if (!(err instanceof ServerDownError)) {
+        this.state.setNoDbConnection(true);
+      }
       return false;
     } finally {
       this.state.setIsLoading(false);
     }
   }
 
-  async getDatabaseConnectionStatus(): Promise<boolean> {
+  async getDatabaseConnectionStatus(): Promise<boolean | undefined> {
     try {
       const response = await this.serverBehavior.serverApiFetch("/api/health/db");
       if (!response.ok) {
@@ -105,14 +107,19 @@ export class TaxBehavior {
 
       const data = (await response.json()) as { connected: boolean };
       return data.connected;
-    } catch {
+    } catch (err) {
+      if (err instanceof ServerDownError) {
+        return undefined;
+      }
       return false;
     }
   }
 
-  async refreshDbConnectionState(): Promise<boolean> {
+  async refreshDbConnectionState(): Promise<boolean | undefined> {
     const connected = await this.getDatabaseConnectionStatus();
-    this.state.setNoDbConnection(!connected);
+    if (connected !== undefined) {
+      this.state.setNoDbConnection(!connected);
+    }
     return connected;
   }
 
@@ -151,7 +158,9 @@ export class TaxBehavior {
       this.state.setToastMessage(undefined);
       return true;
     } catch (err) {
-      this.state.setNoDbConnection(true);
+      if (!(err instanceof ServerDownError)) {
+        this.state.setNoDbConnection(true);
+      }
       this.state.setToastMessage(
         err instanceof Error ? err.message : "Unable to connect to database.",
       );

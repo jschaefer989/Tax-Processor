@@ -2,7 +2,7 @@ import { useCallback, useState, type JSX } from "react";
 import ContextMenuOption from "../../data/ContextMenuOption";
 import { TaxBehavior } from "../../api/TaxBehavior";
 import TaxResponse from "../../data/TaxResponse";
-import { ExpandButton } from "../General/ExpandButton";
+import ExpandButton from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
 import FormLine from "./FormLine";
 
