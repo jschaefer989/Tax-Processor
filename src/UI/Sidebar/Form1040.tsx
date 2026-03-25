@@ -1,6 +1,6 @@
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import TaxResponse from "../../DataModel/TaxResponse";
-import type { Steps } from "../../DataModel/TaxStep";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import TaxResponse from "../../data/TaxResponse";
+import type { Steps } from "../../data/TaxStep";
 import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 

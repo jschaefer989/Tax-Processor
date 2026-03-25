@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import type TaxResponse from "../../data/TaxResponse";
 
 type DeleteButtonProps = {
   readonly taxBehavior: TaxBehavior;

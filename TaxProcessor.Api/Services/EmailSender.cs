@@ -53,7 +53,7 @@ public class EmailSender(IConfiguration configuration, ILogger<EmailSender> logg
 
         using var message = new MailMessage(fromEmail, recipientEmail)
         {
-            Subject = "Tax Processor password reset",
+            Subject = "Tax Clarity password reset",
             Body = "Use this link to reset your password: " + resetLink,
             IsBodyHtml = false,
         };

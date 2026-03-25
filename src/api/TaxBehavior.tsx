@@ -1,13 +1,14 @@
-import { DuplicateResponse } from "./DuplicateResponse";
+import { DuplicateResponse } from "../data/DuplicateResponse";
+import type { StateSetters } from "../data/StateManager";
+import StateManager from "../data/StateManager";
+import TaxButton, { type FieldCalculationCallback } from "../data/TaxButton";
+import TaxField from "../data/TaxField";
+import TaxFile, { type ReadableForm } from "../data/TaxFile";
+import TaxProgress from "../data/TaxProgress";
+import TaxResponse, { type TaxFieldLabel, type TaxForm } from "../data/TaxResponse";
+import { TaxStep, type Steps } from "../data/TaxStep";
+import ServerBehavior, { ServerDownError } from "./ServerBehavior";
 import ServerNormalizer from "./ServerNormalizer";
-import type { StateSetters } from "./StateManager";
-import StateManager from "./StateManager";
-import TaxButton, { type FieldCalculationCallback } from "./TaxButton";
-import TaxField from "./TaxField";
-import TaxFile, { type ReadableForm } from "./TaxFile";
-import TaxProgress from "./TaxProgress";
-import TaxResponse, { type TaxFieldLabel, type TaxForm } from "./TaxResponse";
-import { TaxStep, type Steps } from "./TaxStep";
 
 export class TaxBehavior {
   /** Static steps and associated fields loaded from the database for the user to populate */
@@ -16,10 +17,13 @@ export class TaxBehavior {
   /** Incoming responses from a file upload that are held until the duplicate popup is confirmed or cancelled */
   pendingFileResponses: TaxResponse[] = [];
   state: StateManager;
+  serverBehavior: ServerBehavior;
 
-  constructor(stateSetters: StateSetters) {
+  constructor(stateSetters: StateSetters, serverBehavior: ServerBehavior) {
     this.state = new StateManager(stateSetters);
     this.steps = [];
+    this.serverBehavior = serverBehavior;
+
   }
 
   getStep(step: Steps): TaxStep | undefined {
@@ -75,7 +79,7 @@ export class TaxBehavior {
   async checkDatabaseConnection(): Promise<boolean> {
     try {
       this.state.setIsLoading(true);
-      const response = await fetch("/api/health/db");
+      const response = await this.serverBehavior.serverApiFetch("/api/health/db");
       if (!response.ok) {
         this.state.setNoDbConnection(true);
         return false;
@@ -84,31 +88,38 @@ export class TaxBehavior {
       const data = (await response.json()) as { connected: boolean };
       this.state.setNoDbConnection(!data.connected);
       return data.connected;
-    } catch {
-      this.state.setNoDbConnection(true);
+    } catch (err) {
+      if (!(err instanceof ServerDownError)) {
+        this.state.setNoDbConnection(true);
+      }
       return false;
     } finally {
       this.state.setIsLoading(false);
     }
   }
 
-  async getDatabaseConnectionStatus(): Promise<boolean> {
+  async getDatabaseConnectionStatus(): Promise<boolean | undefined> {
     try {
-      const response = await fetch("/api/health/db");
+      const response = await this.serverBehavior.serverApiFetch("/api/health/db");
       if (!response.ok) {
         return false;
       }
 
       const data = (await response.json()) as { connected: boolean };
       return data.connected;
-    } catch {
+    } catch (err) {
+      if (err instanceof ServerDownError) {
+        return undefined;
+      }
       return false;
     }
   }
 
-  async refreshDbConnectionState(): Promise<boolean> {
+  async refreshDbConnectionState(): Promise<boolean | undefined> {
     const connected = await this.getDatabaseConnectionStatus();
-    this.state.setNoDbConnection(!connected);
+    if (connected !== undefined) {
+      this.state.setNoDbConnection(!connected);
+    }
     return connected;
   }
 
@@ -121,7 +132,7 @@ export class TaxBehavior {
   ): Promise<boolean> {
     try {
       this.state.setIsLoading(true);
-      const response = await fetch("/api/health/db/test", {
+      const response = await this.serverBehavior.serverApiFetch("/api/health/db/test", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -147,7 +158,9 @@ export class TaxBehavior {
       this.state.setToastMessage(undefined);
       return true;
     } catch (err) {
-      this.state.setNoDbConnection(true);
+      if (!(err instanceof ServerDownError)) {
+        this.state.setNoDbConnection(true);
+      }
       this.state.setToastMessage(
         err instanceof Error ? err.message : "Unable to connect to database.",
       );
@@ -160,7 +173,7 @@ export class TaxBehavior {
   async loadSteps(): Promise<boolean> {
     try {
       this.state.setIsLoading(true);
-      const response = await fetch("/api/steps");
+      const response = await this.serverBehavior.serverApiFetch("/api/steps");
       if (!response.ok) {
         throw new Error("Unable to load tax steps.");
       }
@@ -233,7 +246,7 @@ export class TaxBehavior {
     }
     try {
       this.state.setIsLoading(true);
-      const response = await fetch(`/api/progress/${year}/${name}`);
+      const response = await this.serverBehavior.serverApiFetch(`/api/progress/${year}/${name}`);
       if (!response.ok) {
         if (response.status === 404) {
           this.state.setNoDbConnection(false);
@@ -299,7 +312,7 @@ export class TaxBehavior {
         currentStep: ServerNormalizer.serializeStepForApi(currentStep),
         responses,
       };
-      const response = await fetch("/api/progress/save", {
+      const response = await this.serverBehavior.serverApiFetch("/api/progress/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -323,7 +336,7 @@ export class TaxBehavior {
   async deleteProgress(year: number, name: string) {
     try {
       this.state.setIsLoading(true);
-      const response = await fetch(`/api/progress/${year}/${name}`, {
+      const response = await this.serverBehavior.serverApiFetch(`/api/progress/${year}/${name}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -346,7 +359,7 @@ export class TaxBehavior {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("form", formType);
-      const response = await fetch("/api/steps/file", {
+      const response = await this.serverBehavior.serverApiFetch("/api/steps/file", {
         method: "POST",
         body: formData,
       });
@@ -411,7 +424,7 @@ export class TaxBehavior {
       this.state.setIsLoading(true);
       const callbackForApi =
         ServerNormalizer.serializeCalculationCallbackForApi(callback);
-      const response = await fetch("/api/steps/calculate-field", {
+      const response = await this.serverBehavior.serverApiFetch("/api/steps/calculate-field", {
         method: "POST",
         body: JSON.stringify({
           calculationCallback: callbackForApi,

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import type { DuplicateResponse } from "../../DataModel/DuplicateResponse";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type { DuplicateResponse } from "../../data/DuplicateResponse";
+import type { TaxBehavior } from "../../api/TaxBehavior";
 import Popup from "../General/Popup";
 
 type DuplicateDataPopupProps = {

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { ExpandButton } from "../General/ExpandButton";
+import ExpandButton from "../General/ExpandButton";
 import { ExpandContent } from "../General/ExpandContent";
-import ContextMenuOption from "../../DataModel/ContextMenuOption";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import { type TaxForm } from "../../DataModel/TaxResponse";
+import ContextMenuOption from "../../data/ContextMenuOption";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import { type TaxForm } from "../../data/TaxResponse";
 
 type FormHeaderProps = {
   taxBehavior: TaxBehavior;

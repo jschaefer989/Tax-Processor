@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import type { StartBehavior } from "../../DataModel/StartBehavior";
+import type { StartBehavior } from "../../api/StartBehavior";
 import ExclamationMarkIcon from "../General/ExclamationMarkIcon";
 import ExpandArrowIcon from "../General/ExpandArrowIcon";
 

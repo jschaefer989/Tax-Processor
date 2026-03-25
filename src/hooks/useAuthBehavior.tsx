@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import type { AuthMode } from "../UI/Auth/AuthPage";
-import AuthBehavior from "../DataModel/AuthBehavior";
+import AuthBehavior from "../api/AuthBehavior";
+import type ServerBehavior from "../api/ServerBehavior";
 
 type UseAuthBehaviorResult = {
   mode: AuthMode;
@@ -15,11 +16,14 @@ type UseAuthBehaviorResult = {
 };
 
 type UseAuthBehaviorProps = {
-    readonly setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly serverBehavior: ServerBehavior;
+  readonly setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function useAuthBehavior(props: UseAuthBehaviorProps): UseAuthBehaviorResult {
-  const { setIsBusy } = props;
+export default function useAuthBehavior(
+  props: UseAuthBehaviorProps,
+): UseAuthBehaviorResult {
+  const { serverBehavior, setIsBusy } = props;
 
   const [mode, setMode] = useState<AuthMode>(() => getInitialMode());
   const [email, setEmail] = useState(() => getInitialEmail());
@@ -34,6 +38,7 @@ export default function useAuthBehavior(props: UseAuthBehaviorProps): UseAuthBeh
   const authBehavior = useMemo(
     () =>
       new AuthBehavior(
+        serverBehavior,
         setMode,
         setEmail,
         setPassword,
@@ -44,7 +49,7 @@ export default function useAuthBehavior(props: UseAuthBehaviorProps): UseAuthBeh
         setIsBusy,
         resetToken,
       ),
-    [resetToken],
+    [resetToken, serverBehavior],
   );
 
   return {

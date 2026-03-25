@@ -8,18 +8,20 @@ import ResetPasswordTab from "./ResetPasswordTab";
 import AuthTabs from "./AuthTabs";
 import ForgotPasswordTab from "./ForgotPasswordTab";
 import RegisterTab from "./RegisterTab";
+import type ServerBehavior from "../../api/ServerBehavior";
 import.meta as ImportMeta;
 
 export type AuthMode = "login" | "register" | "forgot" | "reset";
 
 type AuthPageProps = {
+  readonly serverBehavior: ServerBehavior;
   readonly onAuthenticated: () => void;
   readonly isBusy: boolean;
   readonly setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function AuthPage(props: AuthPageProps) {
-  const { onAuthenticated, isBusy, setIsBusy } = props;
+  const { serverBehavior, onAuthenticated, isBusy, setIsBusy } = props;
 
   const { executeRecaptcha } = useRecaptcha();
 
@@ -32,7 +34,7 @@ export default function AuthPage(props: AuthPageProps) {
     error,
     message,
     authBehavior,
-  } = useAuthBehavior({ setIsBusy });
+  } = useAuthBehavior({ serverBehavior, setIsBusy });
 
   const tab = () => {
     switch (mode) {

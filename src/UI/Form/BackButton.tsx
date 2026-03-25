@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
-import type { Steps } from "../../DataModel/TaxStep";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type { Steps } from "../../data/TaxStep";
+import type { TaxBehavior } from "../../api/TaxBehavior";
 
 type BackButtonProps = {
   readonly taxBehavior: TaxBehavior;

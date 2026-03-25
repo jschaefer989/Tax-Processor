@@ -1,4 +1,5 @@
 import type { AuthMode } from "../UI/Auth/AuthPage";
+import ServerBehavior from "./ServerBehavior";
 
 export default class AuthBehavior {
   setMode: React.Dispatch<React.SetStateAction<AuthMode>>;
@@ -10,8 +11,10 @@ export default class AuthBehavior {
   setMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
   setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
   resetToken: string | undefined;
+  serverBehavior: ServerBehavior;
 
   constructor(
+    serverBehavior: ServerBehavior,
     setMode: React.Dispatch<React.SetStateAction<AuthMode>>,
     setEmail: React.Dispatch<React.SetStateAction<string>>,
     setPassword: React.Dispatch<React.SetStateAction<string>>,
@@ -31,6 +34,7 @@ export default class AuthBehavior {
     this.setMessage = setMessage;
     this.setIsBusy = setIsBusy;
     this.resetToken = resetToken;
+    this.serverBehavior = serverBehavior;
   }
 
   async login(
@@ -39,13 +43,12 @@ export default class AuthBehavior {
     executeRecaptcha: (action: string) => Promise<string>,
     onAuthenticated: () => void,
   ) {
-    this.setError(undefined);
-    this.setMessage(undefined);
+    this.clearStatusMessages();
 
     try {
       this.setIsBusy(true);
       const captchaToken = await executeRecaptcha("login");
-      const response = await fetch("/api/auth/login", {
+      const response = await this.serverBehavior.serverApiFetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, captchaToken }),
@@ -73,8 +76,7 @@ export default class AuthBehavior {
     executeRecaptcha: (action: string) => Promise<string>,
     onAuthenticated: () => void,
   ) {
-    this.setError(undefined);
-    this.setMessage(undefined);
+    this.clearStatusMessages();
 
     if (password.length < 8) {
       this.setError("Password must be at least 8 characters.");
@@ -89,7 +91,7 @@ export default class AuthBehavior {
     try {
       this.setIsBusy(true);
       const captchaToken = await executeRecaptcha("register");
-      const response = await fetch("/api/auth/register", {
+      const response = await this.serverBehavior.serverApiFetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, captchaToken }),
@@ -116,13 +118,12 @@ export default class AuthBehavior {
     email: string,
     executeRecaptcha: (action: string) => Promise<string>,
   ) {
-    this.setError(undefined);
-    this.setMessage(undefined);
+    this.clearStatusMessages();
 
     try {
       this.setIsBusy(true);
       const captchaToken = await executeRecaptcha("forgot_password");
-      const response = await fetch("/api/auth/forgot-password", {
+      const response = await this.serverBehavior.serverApiFetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, captchaToken }),
@@ -155,8 +156,7 @@ export default class AuthBehavior {
     executeRecaptcha: (action: string) => Promise<string>,
     email: string,
   ) {
-    this.setError(undefined);
-    this.setMessage(undefined);
+    this.clearStatusMessages();
 
     if (!this.resetToken) {
       this.setError("Missing reset token.");
@@ -176,7 +176,7 @@ export default class AuthBehavior {
     try {
       this.setIsBusy(true);
       const captchaToken = await executeRecaptcha("reset_password");
-      const response = await fetch("/api/auth/reset-password", {
+      const response = await this.serverBehavior.serverApiFetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -207,5 +207,10 @@ export default class AuthBehavior {
     } finally {
       this.setIsBusy(false);
     }
+  }
+
+  clearStatusMessages() {
+    this.setMessage(undefined);
+    this.setError(undefined);
   }
 }

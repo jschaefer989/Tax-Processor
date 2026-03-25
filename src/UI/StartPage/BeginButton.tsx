@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { StartBehavior } from "../../DataModel/StartBehavior";
+import type { StartBehavior } from "../../api/StartBehavior";
 
 type BeginButtonProps = {
   readonly startBehavior: StartBehavior;
@@ -11,6 +11,7 @@ export default function BeginButton(props: BeginButtonProps) {
   const { tempName, isLoading, startBehavior } = props;
 
   const onStart = useCallback(async () => {
+
     const stepsLoaded = await startBehavior.taxBehavior.loadSteps();
     if (!stepsLoaded) {
       return;

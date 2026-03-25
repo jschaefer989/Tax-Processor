@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxField from "../../DataModel/TaxField";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import type TaxField from "../../data/TaxField";
 import TaxResponse, {
   type TaxFieldLabel,
   type TaxForm,
-} from "../../DataModel/TaxResponse";
+} from "../../data/TaxResponse";
 
 type EntryFieldComponentProps = {
   readonly field: TaxField;

@@ -1,4 +1,4 @@
-import type { TaxStep } from "../../DataModel/TaxStep";
+import type { TaxStep } from "../../data/TaxStep";
 
 type FormHeaderProps = {
   step: TaxStep;

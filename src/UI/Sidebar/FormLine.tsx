@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import ContextMenuOption from "../../DataModel/ContextMenuOption";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
-import type TaxResponse from "../../DataModel/TaxResponse";
-import type { TaxForm } from "../../DataModel/TaxResponse";
+import ContextMenuOption from "../../data/ContextMenuOption";
+import type { TaxBehavior } from "../../api/TaxBehavior";
+import type TaxResponse from "../../data/TaxResponse";
+import type { TaxForm } from "../../data/TaxResponse";
 import FormValueField from "./FormValueField";
 
 type FormLineProps = {

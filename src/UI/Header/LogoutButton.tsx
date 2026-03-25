@@ -1,13 +1,20 @@
 import { useCallback } from "react";
+import type { TaxBehavior } from "../../api/TaxBehavior";
 
-export default function LogoutButton() {
+type LogoutButtonProps = {
+  readonly taxBehavior: TaxBehavior;
+};
+
+export default function LogoutButton(props: LogoutButtonProps) {
+  const { taxBehavior } = props;
+
   const handleLogout = useCallback(async () => {
-    await fetch("/api/auth/logout", {
+    await taxBehavior.serverBehavior.serverApiFetch("/api/auth/logout", {
       method: "POST",
       credentials: "include",
     });
     window.location.href = "/";
-  }, []);
+  }, [taxBehavior]);
 
   return (
     <button className="logout-button" onClick={handleLogout}>

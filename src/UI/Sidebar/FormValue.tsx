@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import type TaxResponse from "../../DataModel/TaxResponse";
-import type { TaxBehavior } from "../../DataModel/TaxBehavior";
+import type TaxResponse from "../../data/TaxResponse";
+import type { TaxBehavior } from "../../api/TaxBehavior";
 
 type FormValueProps = {
     readonly taxBehavior: TaxBehavior;

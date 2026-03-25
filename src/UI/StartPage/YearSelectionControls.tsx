@@ -1,4 +1,4 @@
-import type { StartBehavior } from "../../DataModel/StartBehavior";
+import type { StartBehavior } from "../../api/StartBehavior";
 import { ExpandContent } from "../General/ExpandContent";
 import { AddNameButton } from "./AddNameButton";
 import NameButton from "./NameButton";

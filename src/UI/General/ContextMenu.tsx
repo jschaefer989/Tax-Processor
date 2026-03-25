@@ -1,5 +1,5 @@
-import { type ContextMenuIcon } from "../../DataModel/ContextMenuOption";
-import ContextMenuOption from "../../DataModel/ContextMenuOption";
+import { type ContextMenuIcon } from "../../data/ContextMenuOption";
+import ContextMenuOption from "../../data/ContextMenuOption";
 
 export type ContextMenuProps = {
     x: number;
