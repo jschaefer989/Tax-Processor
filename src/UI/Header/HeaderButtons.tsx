@@ -3,6 +3,7 @@ import type TaxResponse from "../../data/TaxResponse";
 import type { Steps } from "../../data/TaxStep";
 import ErrorMessage from "../General/ErrorMessage";
 import LastSavedText from "./LastSavedText";
+import LogoutButton from "./LogoutButton";
 import { ReturnButton } from "./ReturnButton";
 import SaveButton from "./SaveButton";
 
@@ -55,6 +56,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
             name={name}
           />
           <ReturnButton taxBehavior={taxBehavior} isLoading={isLoading} />
+          <LogoutButton taxBehavior={taxBehavior} isLoading={isLoading} />
         </div>
       ) : (
         <p>Loading...</p>

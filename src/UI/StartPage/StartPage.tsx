@@ -96,24 +96,28 @@ export default function StartPage(props: StartPageProps) {
   }
 
   return (
-    <StartTitle>
-      {noDbConnection ? (
-        <MissingDatabaseControls
-          startBehavior={startBehavior}
-          isLoading={isLoading}
-        />
-      ) : (
-        <>
-          <YearSelectionControls
+    <>
+      <div className="data-buttons">
+        <LogoutButton taxBehavior={taxBehavior} isLoading={isLoading} />
+      </div>
+      <StartTitle>
+        {noDbConnection ? (
+          <MissingDatabaseControls
             startBehavior={startBehavior}
             isLoading={isLoading}
-            year={selectedYear}
-            names={names}
-            years={years}
           />
-          <LogoutButton taxBehavior={taxBehavior} />
-        </>
-      )}
-    </StartTitle>
+        ) : (
+          <>
+            <YearSelectionControls
+              startBehavior={startBehavior}
+              isLoading={isLoading}
+              year={selectedYear}
+              names={names}
+              years={years}
+            />
+          </>
+        )}
+      </StartTitle>
+    </>
   );
 }
