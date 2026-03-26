@@ -9,7 +9,7 @@ import PageWrapper from "./PageWrapper";
 import StartPage from "./StartPage/StartPage";
 
 export default function TaxClarity() {
-  const { serverBehavior, isServerDown } = useServerBehavior();
+  const { serverBehavior, isServerDown, isInitialized } = useServerBehavior();
 
   const {
     taxBehavior,
@@ -45,6 +45,10 @@ export default function TaxClarity() {
     taxBehavior,
     onWhitespaceClick,
   };
+
+  if (!isInitialized) {
+    return <PageWrapper {...pageWrapperProps} />;
+  }
 
   if (isServerDown) {
     return (

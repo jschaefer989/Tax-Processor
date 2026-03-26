@@ -1,20 +1,22 @@
 import { useCallback } from "react";
+import type { TaxBehavior } from "../../api/TaxBehavior";
 
 type ReturnButtonProps = {
-  isLoading: boolean;
+  readonly taxBehavior: TaxBehavior;
+  readonly isLoading: boolean;
 };
 
 export function ReturnButton(props: ReturnButtonProps) {
-  const { isLoading } = props;
+  const { taxBehavior, isLoading } = props;
 
   const onClick = useCallback(() => {
     const confirmed = window.confirm(
       "Are you sure you want to return to the start page? Any unsaved progress will be lost.",
     );
     if (confirmed) {
-      window.location.reload();
+      taxBehavior.returnToStartPage();
     }
-  }, []);
+  }, [taxBehavior]);
 
   return (
     <button

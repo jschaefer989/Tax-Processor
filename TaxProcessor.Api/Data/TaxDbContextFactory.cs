@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace TaxProcessor.Api.Data;
 
@@ -10,10 +12,27 @@ public class TaxDbContextFactory : IDesignTimeDbContextFactory<TaxDbContext>
 {
     public TaxDbContext CreateDbContext(string[] args)
     {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile($"appsettings.{environment}.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "No database connection string was found for EF design-time operations."
+            );
+        }
+
         var optionsBuilder = new DbContextOptionsBuilder<TaxDbContext>();
-        optionsBuilder.UseNpgsql(
-            "Host=localhost;Port=5432;Database=taxprocessor_design;Username=postgres;Password=postgres"
-        );
+        optionsBuilder.UseNpgsql(SetupHelpers.NormalizeConnectionString(connectionString));
         return new TaxDbContext(optionsBuilder.Options);
     }
 }

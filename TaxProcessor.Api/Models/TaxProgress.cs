@@ -13,6 +13,9 @@ public class TaxProgress
     [JsonPropertyName("updatedAt")]
     public DateTime UpdatedAt { get; set; }
 
+    [JsonPropertyName("version")]
+    public long Version { get; set; }
+
     [JsonPropertyName("currentStep")]
     public Steps? CurrentStep { get; set; }
 

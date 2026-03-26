@@ -14,6 +14,10 @@ public class TaxProgressEntity
 
     public DateTime UpdatedAt { get; set; }
 
+    public long Version { get; set; }
+
+    public DateTime? DeletedAtUtc { get; set; }
+
     public string? CurrentStepId { get; set; }
 
     public ICollection<TaxResponseEntity> Responses { get; set; } = [];
@@ -33,6 +37,17 @@ public class TaxProgressEntity
                 subsection: response.Subsection
             )),
         ];
+    }
+
+    public bool Delete()
+    {
+        if (DeletedAtUtc == null)
+        {
+            DeletedAtUtc = DateTime.UtcNow;
+            Version += 1;
+            return true;
+        }
+        return false;
     }
 
     private static TaxFieldLabel ParseTaxFieldLabel(string label)

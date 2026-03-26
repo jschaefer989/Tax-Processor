@@ -19,21 +19,11 @@ public class StartController(TaxDbContext context) : ControllerBase
         var profileId = User.GetProfileId();
         try
         {
-            var names = await _db
+            var entries = await _db
                 .TaxProgress.Where(progress => progress.ProfileId == profileId && progress.Year == year)
-                .Select(progress => progress.Name)
                 .ToListAsync();
 
-            foreach (var name in names)
-            {
-                var entity = await _db.TaxProgress.FirstOrDefaultAsync(progress =>
-                    progress.ProfileId == profileId && progress.Year == year && progress.Name == name
-                );
-                if (entity != null)
-                {
-                    _db.TaxProgress.Remove(entity);
-                }
-            }
+            entries.ForEach(entry => entry.Delete());            
 
             await _db.SaveChangesAsync();
         }
@@ -59,10 +49,7 @@ public class StartController(TaxDbContext context) : ControllerBase
                 )
                 .FirstOrDefaultAsync();
 
-            if (entity != null)
-            {
-                _db.TaxProgress.Remove(entity);
-            }
+            entity?.Delete();
 
             await _db.SaveChangesAsync();
         }

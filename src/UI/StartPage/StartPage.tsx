@@ -29,14 +29,14 @@ export default function StartPage(props: StartPageProps) {
       return;
     }
 
-    let isCancelled = false;
+    let isDisposed = false;
 
     const initialize = async () => {
       // Preserve an already-established connection state (for example,
       // after a successful manual connection test before auth).
       if (!noDbConnection) {
         await startBehavior.loadYears();
-        if (!isCancelled) {
+        if (!isDisposed) {
           setHasInitialized(true);
         }
         return;
@@ -44,19 +44,19 @@ export default function StartPage(props: StartPageProps) {
 
       const hasDbConnection = await taxBehavior.checkDatabaseConnection();
 
-      if (isCancelled) {
+      if (isDisposed) {
         return;
       }
 
       if (!hasDbConnection) {
-        if (!isCancelled) {
+        if (!isDisposed) {
           setHasInitialized(true);
         }
         return;
       }
 
       await startBehavior.loadYears();
-      if (!isCancelled) {
+      if (!isDisposed) {
         setHasInitialized(true);
       }
     };
@@ -64,7 +64,7 @@ export default function StartPage(props: StartPageProps) {
     initialize();
 
     return () => {
-      isCancelled = true;
+      isDisposed = true;
     };
   }, [selectedYear, noDbConnection, startBehavior, taxBehavior]);
 

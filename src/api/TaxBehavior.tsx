@@ -10,12 +10,15 @@ import { TaxStep, type Steps } from "../data/TaxStep";
 import ServerBehavior, { ServerDownError } from "./ServerBehavior";
 import ServerNormalizer from "./ServerNormalizer";
 
+// TODO: the APIs in this file could use more modularization
+
 export class TaxBehavior {
   /** Static steps and associated fields loaded from the database for the user to populate */
   steps: TaxStep[];
   progress: TaxProgress | undefined = undefined;
   /** Incoming responses from a file upload that are held until the duplicate popup is confirmed or cancelled */
   pendingFileResponses: TaxResponse[] = [];
+  progressVersion: number | undefined = undefined;
   state: StateManager;
   serverBehavior: ServerBehavior;
 
@@ -173,6 +176,7 @@ export class TaxBehavior {
   async loadSteps(): Promise<boolean> {
     try {
       this.state.setIsLoading(true);
+      this.progressVersion = undefined;
       const response = await this.serverBehavior.serverApiFetch("/api/steps");
       if (!response.ok) {
         throw new Error("Unable to load tax steps.");
@@ -249,6 +253,7 @@ export class TaxBehavior {
       const response = await this.serverBehavior.serverApiFetch(`/api/progress/${year}/${name}`);
       if (!response.ok) {
         if (response.status === 404) {
+          this.progressVersion = undefined;
           this.state.setNoDbConnection(false);
           this.state.setToastMessage(undefined);
           return true;
@@ -259,6 +264,7 @@ export class TaxBehavior {
       if (saved.year !== year) {
         return false;
       }
+      this.progressVersion = saved.version;
       this.state.setNoDbConnection(false);
       this.state.setCurrentStep(
         ServerNormalizer.normalizeStep(saved.currentStep),
@@ -305,11 +311,13 @@ export class TaxBehavior {
         year: number;
         name: string;
         currentStep: string;
+        expectedVersion?: number;
         responses: TaxResponse[];
       } = {
         year,
         name,
         currentStep: ServerNormalizer.serializeStepForApi(currentStep),
+        expectedVersion: this.progressVersion,
         responses,
       };
       const response = await this.serverBehavior.serverApiFetch("/api/progress/save", {
@@ -318,9 +326,27 @@ export class TaxBehavior {
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
+        if (response.status === 409) {
+          const data = (await response.json().catch(() => ({}))) as {
+            message?: string;
+          };
+          const message =
+            data.message ??
+            "This return was changed in another session. Reload and try again.";
+
+          // TODO: Consider a more robust way to detect deleted progress rather than relying on message text
+          if (message.toLowerCase().includes("deleted")) {
+            this.returnToStartPage();
+            this.progressVersion = undefined;
+          }
+
+          throw new Error(message);
+        }
+
         throw new Error("Unable to save progress.");
       }
       const saved = (await response.json()) as TaxProgress;
+      this.progressVersion = saved.version;
       const savedTime = new Date(saved.updatedAt);
       this.state.setLastSavedTime(savedTime);
       this.state.setToastMessage(`Saved at ${savedTime.toLocaleTimeString()}`);
@@ -342,6 +368,7 @@ export class TaxBehavior {
       if (!response.ok) {
         throw new Error(response.statusText);
       }
+      this.progressVersion = undefined;
       this.state.setToastMessage("Progress deleted.");
     } catch (err) {
       this.state.setToastMessage(
@@ -465,6 +492,13 @@ export class TaxBehavior {
     }
   }
   //#endregion API Calls
+
+  returnToStartPage() {
+    this.state.setYear(undefined);
+    this.state.setCurrentStep(undefined);
+    this.state.setResponses([]);
+    this.state.setShowStartPage(true);
+  }
 
   getDuplicateResponses(
     incomingResponses: TaxResponse[],

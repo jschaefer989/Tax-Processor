@@ -1,31 +1,35 @@
-import { useEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import ServerBehavior from "../api/ServerBehavior";
 
 type UseServerBehaviorResult = {
-  serverBehavior: ServerBehavior;
-  isServerDown: boolean;
+  readonly serverBehavior: ServerBehavior;
+  readonly isServerDown: boolean;
+  readonly isInitialized: boolean;
 };
 
 export default function useServerBehavior(): UseServerBehaviorResult {
 
   const [isServerDown, setIsServerDown] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const serverBehavior = useMemo(() => {
     return new ServerBehavior(setIsServerDown);
   }, []);
 
-  useEffect(() => {
-    let disposed = false;
+  useLayoutEffect(() => {
+    let isDisposed = false;
 
     const checkServerHealth = async () => {
       try {
         const response = await serverBehavior.serverApiFetch("/api/health");
-        if (!disposed) {
+        if (!isDisposed) {
           setIsServerDown(!response.ok);
+          setIsInitialized(true);
         }
       } catch {
-        if (!disposed) {
+        if (!isDisposed) {
           setIsServerDown(true);
+          setIsInitialized(true);
         }
       }
     };
@@ -33,9 +37,9 @@ export default function useServerBehavior(): UseServerBehaviorResult {
     void checkServerHealth();
 
     return () => {
-      disposed = true;
+      isDisposed = true;
     };
   }, []);
 
-  return { serverBehavior, isServerDown };
+  return { serverBehavior, isServerDown, isInitialized };
 }

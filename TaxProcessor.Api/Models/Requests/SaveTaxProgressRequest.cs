@@ -8,5 +8,7 @@ public class SaveTaxProgressRequest
 
     public string? CurrentStep { get; set; }
 
+    public long? ExpectedVersion { get; set; }
+
     public TaxResponse[]? Responses { get; set; }
 }

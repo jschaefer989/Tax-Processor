@@ -27,7 +27,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
     year,
     name,
     noDbConnection,
-  } = props;  
+  } = props;
 
   if (noDbConnection) {
     return (
@@ -37,7 +37,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
     );
   }
 
-  if (!year || !name) {    
+  if (!year || !name) {
     return null;
   }
 
@@ -54,7 +54,7 @@ export default function HeaderButtons(props: HeaderButtonsProps) {
             year={year}
             name={name}
           />
-          <ReturnButton isLoading={isLoading} />
+          <ReturnButton taxBehavior={taxBehavior} isLoading={isLoading} />
         </div>
       ) : (
         <p>Loading...</p>
