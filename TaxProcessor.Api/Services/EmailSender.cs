@@ -10,6 +10,24 @@ public class EmailSender(IConfiguration configuration, ILogger<EmailSender> logg
 
     public async Task SendPasswordResetEmailAsync(string recipientEmail, string resetLink)
     {
+        await SendEmailAsync(
+            recipientEmail,
+            "Tax Clarity password reset",
+            "Use this link to reset your password: " + resetLink
+        );
+    }
+
+    public async Task SendLoginOtpEmailAsync(string recipientEmail, string otpCode)
+    {
+        await SendEmailAsync(
+            recipientEmail,
+            "Tax Clarity login verification code",
+            "Use this verification code to finish signing in: " + otpCode
+        );
+    }
+
+    private async Task SendEmailAsync(string recipientEmail, string subject, string body)
+    {
         var host = _configuration["SMTP_HOST"];
         var fromEmail = _configuration["SMTP_FROM_EMAIL"];
 
@@ -53,8 +71,8 @@ public class EmailSender(IConfiguration configuration, ILogger<EmailSender> logg
 
         using var message = new MailMessage(fromEmail, recipientEmail)
         {
-            Subject = "Tax Clarity password reset",
-            Body = "Use this link to reset your password: " + resetLink,
+            Subject = subject,
+            Body = body,
             IsBodyHtml = false,
         };
 
@@ -69,11 +87,11 @@ public class EmailSender(IConfiguration configuration, ILogger<EmailSender> logg
         try
         {
             await client.SendMailAsync(message);
-            _logger.LogInformation("Password reset email sent to {RecipientEmail}.", recipientEmail);
+            _logger.LogInformation("Email with subject '{Subject}' sent to {RecipientEmail}.", subject, recipientEmail);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send password reset email.");
+            _logger.LogError(ex, "Failed to send email with subject '{Subject}'.", subject);
         }
     }
 }

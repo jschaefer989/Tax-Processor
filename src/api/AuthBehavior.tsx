@@ -7,6 +7,8 @@ export default class AuthBehavior {
   setPassword: React.Dispatch<React.SetStateAction<string>>;
   setNewPassword: React.Dispatch<React.SetStateAction<string>>;
   setConfirmPassword: React.Dispatch<React.SetStateAction<string>>;
+  setOtpCode: React.Dispatch<React.SetStateAction<string>>;
+  setOtpChallengeToken: React.Dispatch<React.SetStateAction<string | undefined>>;
   setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   setMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
   setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,6 +22,8 @@ export default class AuthBehavior {
     setPassword: React.Dispatch<React.SetStateAction<string>>,
     setNewPassword: React.Dispatch<React.SetStateAction<string>>,
     setConfirmPassword: React.Dispatch<React.SetStateAction<string>>,
+    setOtpCode: React.Dispatch<React.SetStateAction<string>>,
+    setOtpChallengeToken: React.Dispatch<React.SetStateAction<string | undefined>>,
     setError: React.Dispatch<React.SetStateAction<string | undefined>>,
     setMessage: React.Dispatch<React.SetStateAction<string | undefined>>,
     setIsBusy: React.Dispatch<React.SetStateAction<boolean>>,
@@ -30,6 +34,8 @@ export default class AuthBehavior {
     this.setPassword = setPassword;
     this.setNewPassword = setNewPassword;
     this.setConfirmPassword = setConfirmPassword;
+    this.setOtpCode = setOtpCode;
+    this.setOtpChallengeToken = setOtpChallengeToken;
     this.setError = setError;
     this.setMessage = setMessage;
     this.setIsBusy = setIsBusy;
@@ -61,12 +67,92 @@ export default class AuthBehavior {
         throw new Error(data.message ?? "Unable to log in.");
       }
 
+      const data = (await response.json().catch(() => ({}))) as {
+        requiresOtp?: boolean;
+        challengeToken?: string;
+        message?: string;
+      };
+
+      if (data.requiresOtp) {
+        if (!data.challengeToken) {
+          throw new Error("Login challenge is invalid. Please try again.");
+        }
+
+        this.setPassword("");
+        this.setOtpCode("");
+        this.setOtpChallengeToken(data.challengeToken);
+        this.setMessage(
+          data.message ?? "A login verification code has been sent to your email.",
+        );
+        this.setMode("otp");
+        return;
+      }
+
       onAuthenticated();
     } catch (err) {
       this.setError(err instanceof Error ? err.message : "Unable to log in.");
     } finally {
       this.setIsBusy(false);
     }
+  }
+
+  async verifyLoginOtp(
+    email: string,
+    otpCode: string,
+    executeRecaptcha: (action: string) => Promise<string>,
+    onAuthenticated: () => void,
+    otpChallengeToken?: string,
+  ) {
+    this.clearStatusMessages();
+
+    if (!otpChallengeToken) {
+      this.setError("Verification session expired. Please log in again.");
+      this.setMode("login");
+      return;
+    }
+
+    const normalizedOtpCode = otpCode.trim();
+    if (!/^\d{6}$/.test(normalizedOtpCode)) {
+      this.setError("Verification code must be 6 digits.");
+      return;
+    }
+
+    try {
+      this.setIsBusy(true);
+      const captchaToken = await executeRecaptcha("verify_otp");
+      const response = await this.serverBehavior.serverApiFetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          otpCode: normalizedOtpCode,
+          challengeToken: otpChallengeToken,
+          captchaToken,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as {
+          message?: string;
+        };
+        throw new Error(data.message ?? "Unable to verify code.");
+      }
+
+      this.setOtpCode("");
+      this.setOtpChallengeToken(undefined);
+      onAuthenticated();
+    } catch (err) {
+      this.setError(err instanceof Error ? err.message : "Unable to verify code.");
+    } finally {
+      this.setIsBusy(false);
+    }
+  }
+
+  backToLoginFromOtp() {
+    this.setOtpCode("");
+    this.setOtpChallengeToken(undefined);
+    this.setMode("login");
+    this.clearStatusMessages();
   }
 
   async register(

@@ -19,6 +19,9 @@ export default function AuthSubtitle(props: AuthSubtitleProps) {
         case "reset":
             subtitle = "Set a new password.";
             break;
+        case "otp":
+            subtitle = "Enter the 6-digit code from your email.";
+            break;
     }
 
     return <p className="subtitle">{subtitle}</p>;

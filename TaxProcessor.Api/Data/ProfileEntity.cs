@@ -22,5 +22,11 @@ public class ProfileEntity
 
     public DateTime? PasswordResetTokenExpiresAtUtc { get; set; }
 
+    public string? LoginOtpCodeHash { get; set; }
+
+    public DateTime? LoginOtpCodeExpiresAtUtc { get; set; }
+
+    public string? LoginOtpChallengeTokenHash { get; set; }
+
     public ICollection<TaxProgressEntity> ProgressEntries { get; set; } = [];
 }

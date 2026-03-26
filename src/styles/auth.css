@@ -97,6 +97,12 @@
   cursor: not-allowed;
 }
 
+.auth-form .auth-secondary-button {
+  background: transparent;
+  border: 1px solid rgba(246, 198, 91, 0.45);
+  color: var(--text);
+}
+
 .auth-recaptcha-notice {
   margin-top: 1.25rem;
   font-size: 0.75rem;

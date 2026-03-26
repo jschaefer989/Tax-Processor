@@ -23,6 +23,9 @@ public class AuthController(
     IConfiguration configuration
 ) : ControllerBase
 {
+    private const int LoginOtpCodeLength = 6;
+    private static readonly TimeSpan LoginOtpLifetime = TimeSpan.FromMinutes(10);
+
     private readonly TaxDbContext _db = db;
     private readonly PasswordHashingService _passwordHashingService = passwordHashingService;
     private readonly RecaptchaValidator _recaptchaValidator = recaptchaValidator;
@@ -114,6 +117,74 @@ public class AuthController(
             return Unauthorized(new { message = "Invalid email or password." });
         }
 
+        var otpCode = CreateOtpCode();
+        var challengeToken = CreateToken();
+        profile.LoginOtpCodeHash = HashToken(otpCode);
+        profile.LoginOtpChallengeTokenHash = HashToken(challengeToken);
+        profile.LoginOtpCodeExpiresAtUtc = DateTime.UtcNow.Add(LoginOtpLifetime);
+        await _db.SaveChangesAsync();
+
+        await _emailSender.SendLoginOtpEmailAsync(profile.Email, otpCode);
+
+        return Ok(
+            new
+            {
+                requiresOtp = true,
+                challengeToken,
+                message = "A login verification code has been sent to your email.",
+            }
+        );
+    }
+
+    [HttpPost("verify-otp")]
+    public async Task<ActionResult> VerifyLoginOtp([FromBody] VerifyLoginOtpRequest request)
+    {
+        if (!await _recaptchaValidator.IsValidAsync(request.CaptchaToken))
+        {
+            return BadRequest(new { message = "Captcha verification failed." });
+        }
+
+        if (!IsValidOtpCode(request.OtpCode))
+        {
+            return BadRequest(new { message = "Verification code must be 6 digits." });
+        }
+
+        var email = request.Email.Trim().ToLowerInvariant();
+        var profile = await _db.Profiles.FirstOrDefaultAsync(item => item.Email == email);
+        if (profile is null)
+        {
+            return Unauthorized(new { message = "Invalid verification code." });
+        }
+
+        if (
+            string.IsNullOrWhiteSpace(profile.LoginOtpCodeHash)
+            || string.IsNullOrWhiteSpace(profile.LoginOtpChallengeTokenHash)
+            || profile.LoginOtpCodeExpiresAtUtc is null
+            || profile.LoginOtpCodeExpiresAtUtc <= DateTime.UtcNow
+        )
+        {
+            return Unauthorized(new { message = "Verification code is invalid or expired." });
+        }
+
+        var incomingCodeHash = HashToken(request.OtpCode);
+        var incomingChallengeHash = HashToken(request.ChallengeToken);
+        var validCode = CryptographicOperations.FixedTimeEquals(
+            Convert.FromHexString(profile.LoginOtpCodeHash),
+            Convert.FromHexString(incomingCodeHash)
+        );
+        var validChallenge = CryptographicOperations.FixedTimeEquals(
+            Convert.FromHexString(profile.LoginOtpChallengeTokenHash),
+            Convert.FromHexString(incomingChallengeHash)
+        );
+
+        if (!validCode || !validChallenge)
+        {
+            return Unauthorized(new { message = "Verification code is invalid or expired." });
+        }
+
+        profile.LoginOtpCodeHash = null;
+        profile.LoginOtpChallengeTokenHash = null;
+        profile.LoginOtpCodeExpiresAtUtc = null;
         profile.LastLoginAtUtc = DateTime.UtcNow;
         await _db.SaveChangesAsync();
 
@@ -240,6 +311,12 @@ public class AuthController(
             .Replace('/', '_');
     }
 
+    private static string CreateOtpCode()
+    {
+        var codeValue = RandomNumberGenerator.GetInt32(0, (int)Math.Pow(10, LoginOtpCodeLength));
+        return codeValue.ToString($"D{LoginOtpCodeLength}");
+    }
+
     private static string HashToken(string token)
     {
         var hash = SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(token));
@@ -262,5 +339,10 @@ public class AuthController(
         {
             return false;
         }
+    }
+
+    private static bool IsValidOtpCode(string otpCode)
+    {
+        return otpCode.Length == LoginOtpCodeLength && otpCode.All(char.IsDigit);
     }
 }

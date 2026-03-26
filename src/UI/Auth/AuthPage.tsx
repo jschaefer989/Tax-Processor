@@ -9,9 +9,10 @@ import AuthTabs from "./AuthTabs";
 import ForgotPasswordTab from "./ForgotPasswordTab";
 import RegisterTab from "./RegisterTab";
 import type ServerBehavior from "../../api/ServerBehavior";
+import OtpTab from "./OtpTab";
 import.meta as ImportMeta;
 
-export type AuthMode = "login" | "register" | "forgot" | "reset";
+export type AuthMode = "login" | "register" | "forgot" | "reset" | "otp";
 
 type AuthPageProps = {
   readonly serverBehavior: ServerBehavior;
@@ -31,6 +32,8 @@ export default function AuthPage(props: AuthPageProps) {
     password,
     newPassword,
     confirmPassword,
+    otpCode,
+    otpChallengeToken,
     error,
     message,
     authBehavior,
@@ -81,14 +84,28 @@ export default function AuthPage(props: AuthPageProps) {
             executeRecaptcha={executeRecaptcha}
           />
         );
+      case "otp":
+        return (
+          <OtpTab
+            authBehavior={authBehavior}
+            email={email}
+            otpCode={otpCode}
+            otpChallengeToken={otpChallengeToken}
+            isBusy={isBusy}
+            onAuthenticated={onAuthenticated}
+            executeRecaptcha={executeRecaptcha}
+          />
+        );
     }
   };
+
+  const tabMode = mode === "login" || mode === "register" || mode === "forgot";
 
   return (
     <StartTitle>
       <AuthSubtitle authMode={mode} />
       <div className="auth-container">
-        <AuthTabs authBehavior={authBehavior} mode={mode} />
+        {tabMode && <AuthTabs authBehavior={authBehavior} mode={mode} />}
         {tab()}
         {error && <p className="auth-error">{error}</p>}
         {message && <p className="auth-message">{message}</p>}

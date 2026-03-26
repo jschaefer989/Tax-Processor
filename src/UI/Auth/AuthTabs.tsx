@@ -3,15 +3,14 @@ import type { AuthMode } from "./AuthPage";
 
 type AuthTabsProps = {
   readonly authBehavior: AuthBehavior;
-  mode: Omit<AuthMode | "reset", "reset">;
+  mode: "login" | "register" | "forgot";
 };
 
 export default function AuthTabs(props: AuthTabsProps) {
   const { authBehavior, mode } = props;
 
   const handleTabClick = (newMode: AuthMode) => {
-    if (newMode === "reset") {
-      console.log("Reset mode is not selectable from tabs.");
+    if (newMode === "reset" || newMode === "otp") {
       return;
     }
 

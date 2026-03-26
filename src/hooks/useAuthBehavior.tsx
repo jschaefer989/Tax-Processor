@@ -9,6 +9,8 @@ type UseAuthBehaviorResult = {
   password: string;
   newPassword: string;
   confirmPassword: string;
+  otpCode: string;
+  otpChallengeToken: string | undefined;
   error: string | undefined;
   message: string | undefined;
   authBehavior: AuthBehavior;
@@ -30,6 +32,10 @@ export default function useAuthBehavior(
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpChallengeToken, setOtpChallengeToken] = useState<string | undefined>(
+    undefined,
+  );
   const [error, setError] = useState<string | undefined>(undefined);
   const [message, setMessage] = useState<string | undefined>(undefined);
 
@@ -44,6 +50,8 @@ export default function useAuthBehavior(
         setPassword,
         setNewPassword,
         setConfirmPassword,
+        setOtpCode,
+        setOtpChallengeToken,
         setError,
         setMessage,
         setIsBusy,
@@ -58,6 +66,8 @@ export default function useAuthBehavior(
     password,
     newPassword,
     confirmPassword,
+    otpCode,
+    otpChallengeToken,
     error,
     message,
     authBehavior,
