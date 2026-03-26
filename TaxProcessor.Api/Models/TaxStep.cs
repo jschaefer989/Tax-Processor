@@ -14,8 +14,8 @@ public enum Steps
     [JsonPropertyName("taxAndCredits")]
     TaxAndCredits,
 
-    [JsonPropertyName("paymentsAndRefundableCredits")]
-    PaymentsAndRefundableCredits,
+    [JsonPropertyName("file")]
+    File,
 }
 
 public class TaxStep
@@ -45,7 +45,7 @@ public class TaxStep
             Steps.Demographics => "demographics",
             Steps.Income => "income",
             Steps.TaxAndCredits => "taxAndCredits",
-            Steps.PaymentsAndRefundableCredits => "paymentsAndRefundableCredits",
+            Steps.File => "file",
             _ => throw new ArgumentOutOfRangeException(nameof(step), step, null),
         };
     }

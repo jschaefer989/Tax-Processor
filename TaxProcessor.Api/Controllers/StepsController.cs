@@ -136,7 +136,7 @@ public class StepsController(
                         Label = "Calculate taxable income",
                         CalculationCallback = FieldCalculationCallback.TaxableIncome,
                         Subsection = TaxStep.GetStepValue(Steps.TaxAndCredits),
-                        HelperText = "Verify that this matches the auto-calculated taxable income.",
+                        HelperText = "Verify that this matches the auto-calculated taxable income on your Form 1040.",
                     },
                     new()
                     {
@@ -153,6 +153,17 @@ public class StepsController(
                     },
                 ],
             },
+            new ()
+            {
+                Step = Steps.File,
+                Title = "File your taxes",
+                Description =
+                    "Use the Tax form data to file your taxes efficiently. \n"
+                    + "Forms are separated and must be manually added when filing. "
+                    + "Some forms are broken down into subsections. "
+                    + "Use the label on the left to determine the field in the form to fill with the value on the right. "
+                    + "Clicking the value on the right will copy it to your clipboard for easy pasting into your tax forms.",
+            }
         };
 
         return Ok(steps);

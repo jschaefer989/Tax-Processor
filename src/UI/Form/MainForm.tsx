@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { TaxBehavior } from "../../api/TaxBehavior";
 import TaxResponse from "../../data/TaxResponse";
-import type { Steps } from "../../data/TaxStep";
+import { Steps } from "../../data/TaxStep";
 import ErrorMessage from "../General/ErrorMessage";
 import BackButton from "./BackButton";
 import FormFields from "./FormFields";
@@ -9,6 +9,7 @@ import FormFiles from "./FormFiles";
 import FormHeader from "./FormHeader";
 import NextButton from "./NextButton";
 import FormButtons from "./FormButtons";
+import FileStep from "./FileStep";
 
 type MainFormProps = {
   readonly currentStep: Steps | undefined;
@@ -47,6 +48,12 @@ export default function MainForm(props: MainFormProps) {
 
   if (!currentStep || !step) {
     return <div className="panel__loading">No steps available yet.</div>;
+  }
+
+  if (currentStep === Steps.File) {
+    return (
+      <FileStep taxBehavior={taxBehavior} step={step} isLoading={isLoading} />
+    );
   }
 
   return (

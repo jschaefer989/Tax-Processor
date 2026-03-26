@@ -8,18 +8,18 @@ const STEP_TO_API_MAP: Record<Steps, string> = {
   demographics: "Demographics",
   income: "Income",
   taxAndCredits: "TaxAndCredits",
-  paymentsAndRefundableCredits: "PaymentsAndRefundableCredits",
+  file: "File",
 };
 
 export const STEP_MAP: Record<string, Steps> = {
-  demographics: "demographics",
-  Demographics: "demographics",
-  income: "income",
-  Income: "income",
-  taxAndCredits: "taxAndCredits",
-  TaxAndCredits: "taxAndCredits",
-  paymentsAndRefundableCredits: "paymentsAndRefundableCredits",
-  PaymentsAndRefundableCredits: "paymentsAndRefundableCredits",
+  demographics: "demographics" as Steps,
+  Demographics: "demographics" as Steps,
+  income: "income" as Steps,
+  Income: "income" as Steps,
+  taxAndCredits: "taxAndCredits" as Steps,
+  TaxAndCredits: "taxAndCredits" as Steps,
+  file: "file" as Steps,
+  File: "file" as Steps,
 };
 
 export const FIELD_LABEL_MAP: Record<string, TaxFieldLabel> = {

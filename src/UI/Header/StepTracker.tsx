@@ -1,14 +1,7 @@
 import type { TaxBehavior } from "../../api/TaxBehavior";
 import type TaxResponse from "../../data/TaxResponse";
-import type { Steps } from "../../data/TaxStep";
+import { Steps } from "../../data/TaxStep";
 import CheckmarkIcon from "../General/CheckmarkIcon";
-
-const steps: Steps[] = [
-  "demographics",
-  "income",
-  "taxAndCredits",
-  "paymentsAndRefundableCredits",
-];
 
 type StepTrackerProps = {
   readonly taxBehavior: TaxBehavior;
@@ -23,11 +16,11 @@ export default function StepTracker(props: StepTrackerProps) {
     <div className="stepper">
       <StepTrackerNumbers
         taxBehavior={taxBehavior}
-        steps={steps}
+        steps={Object.values(Steps)}
         activeStep={activeStep}
         responses={responses}
       />
-      <StepTrackerLabels steps={steps} activeStep={activeStep} />
+      <StepTrackerLabels steps={Object.values(Steps)} activeStep={activeStep} />
     </div>
   );
 }
@@ -168,8 +161,8 @@ function getStepLabel(step: Steps): string {
       return "Income";
     case "taxAndCredits":
       return "Tax and Credits";
-    case "paymentsAndRefundableCredits":
-      return "Payments and Refundable Credits";
+    case "file":
+      return "File";
     default:
       return step;
   }

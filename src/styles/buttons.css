@@ -86,3 +86,20 @@ button:disabled {
   opacity: 1;
   background: rgba(250, 200, 80, 0.08);
 }
+
+.button-link {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.75rem 1.6rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: #1b1300;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 18px 30px -20px rgba(250, 200, 80, 0.7);
+}
+
+.button-link:hover {
+  transform: translateY(-2px);
+}

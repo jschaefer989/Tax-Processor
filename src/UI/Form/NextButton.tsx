@@ -37,7 +37,7 @@ export default function NextButton(props: NextButtonProps) {
   return (
     <button
       onClick={handleNext}
-      disabled={currentIndex >= taxBehavior.steps.length - 1 || isLoading}
+      disabled={isLoading}
       title={
         isLoading
           ? "Server is busy. Please wait..."

@@ -1,6 +1,6 @@
 import type { TaxBehavior } from "../../api/TaxBehavior";
 import TaxResponse from "../../data/TaxResponse";
-import type { Steps } from "../../data/TaxStep";
+import { Steps } from "../../data/TaxStep";
 import { FormHeader } from "./FormHeader";
 import FormSection from "./FormSection";
 
@@ -18,26 +18,21 @@ export default function Form1040(props: Form1040Props) {
   }
 
   const demographicsResponses = responses.filter(
-    (response) => hasSubsection(response, "demographics"),
+    (response) => hasSubsection(response, Steps.Demographics),
   );
 
   const incomeResponses = responses.filter(
-    (response) => hasSubsection(response, "income"),
+    (response) => hasSubsection(response, Steps.Income),
   );
 
   const taxAndCreditsResponses = responses.filter(
-    (response) => hasSubsection(response, "taxAndCredits"),
-  );
-
-  const paymentsAndRefundableCreditsResponses = responses.filter(
-    (response) => hasSubsection(response, "paymentsAndRefundableCredits"),
+    (response) => hasSubsection(response, Steps.TaxAndCredits),
   );
 
   if (
     demographicsResponses.length === 0 &&
     incomeResponses.length === 0 &&
-    taxAndCreditsResponses.length === 0 &&
-    paymentsAndRefundableCreditsResponses.length === 0
+    taxAndCreditsResponses.length === 0
   ) {
     return null;
   }
@@ -69,16 +64,7 @@ export default function Form1040(props: Form1040Props) {
           title="Tax and Credits"
           responses={TaxResponse.sortByLabel(taxAndCreditsResponses)}
         />
-      )}
-      {paymentsAndRefundableCreditsResponses.length > 0 && (
-        <FormSection
-          taxBehavior={taxBehavior}
-          title="Payments and Refundable Credits"
-          responses={TaxResponse.sortByLabel(
-            paymentsAndRefundableCreditsResponses,
-          )}
-        />
-      )}      
+      )}     
     </FormHeader>
   );
 }

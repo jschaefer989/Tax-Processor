@@ -2,11 +2,12 @@ import type TaxButton from "./TaxButton";
 import type TaxField from "./TaxField";
 import type TaxFile from "./TaxFile";
 
-export type Steps =
-  | "demographics"
-  | "income"
-  | "taxAndCredits"
-  | "paymentsAndRefundableCredits";
+export enum Steps {
+  Demographics = "demographics",
+  Income = "income",
+  TaxAndCredits = "taxAndCredits",
+  File = "file",
+}
 
 export type FilingStatus =
   | "Single"
